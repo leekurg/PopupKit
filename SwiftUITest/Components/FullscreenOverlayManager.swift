@@ -7,117 +7,8 @@
 
 import SwiftUI
 
-@Observable public class FullscreenOverlayPresenter {
-    private(set) var presentingId: UUID?
-    private(set) var presentingContent: AnyView?
-    
-    public init() { }
-    
-    func present<Content: View>(id: UUID, content: @escaping () -> Content) {
-        presentingId = id
-        presentingContent = AnyView(content())
-    }
-    
-    func dismiss() {
-        presentingId = nil
-        presentingContent = nil
-    }
-}
-
-struct FullscreenOverlay<Overlay: View>: ViewModifier {
-    @Environment(FullscreenOverlayPresenter.self) var manager
-    
-    @Binding var isPresented: Bool
-    let overlay: () -> Overlay
-    
-    @State private var overlayId = UUID()
-    
-    func body(content: Content) -> some View {
-        content
-            .onChange(of: isPresented) { oldPresented, presented in
-                // No presentation at the moment
-                if manager.presentingId == nil {
-                    withAnimation(.spring) {
-                        presented
-                            ? manager.present(id: overlayId, content: overlay)
-                            : manager.dismiss()
-                    }
-                    return
-                }
-                
-                // Some presentation is there
-                if manager.presentingId == overlayId {
-                    // It's this presentation
-                    if !presented { withAnimation(.spring) { manager.dismiss() } }
-                    return
-                }
-
-                // It's another presentation - ignore & set isPresented to false
-                // Warning! Carefuly check for possible recursion
-                isPresented = oldPresented
-            }
-            .onChange(of: manager.presentingId) { oldValue, newValue in
-                if oldValue == overlayId && newValue == nil {
-                    isPresented = false
-                }
-            }
-    }
-}
-
-/// View modifier for presenting overlays.
-struct FullscreenPresenter: ViewModifier {
-    @Environment(FullscreenOverlayPresenter.self) private var manager
-
-    private let closeButtonSize = 20.0
-    private let closeButtonPadding = 15.0
-
-    func body(content: Content) -> some View {
-        content
-            .overlay {
-                if let content = manager.presentingContent {
-                    ZStack {
-                        content
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .overlay(alignment: .topTrailing) {
-                        XMarkButton(size: closeButtonSize) {
-                            withAnimation(.spring) { manager.dismiss() }
-                        }
-                        .padding(closeButtonPadding)
-                        //TODO: orientation
-//                        .padding(.top, -(closeButtonSize + 2 * closeButtonPadding))
-                    }
-                    .background(.ultraThinMaterial, ignoresSafeAreaEdges: .all)
-                    .transition(
-                        .scale(scale: 1.5)
-                        .combined(with: .opacity)
-                    )
-                }
-            }
-            .statusBarHidden(manager.presentingId != nil)
-    }
-}
-
-public extension View {
-    func fullscreenOverlayRoot() -> some View {
-        modifier(FullscreenPresenter())
-    }
-    
-    func fullscreenOverlay<Content: View>(
-        isPresented: Binding<Bool>,
-        content: @escaping () -> Content
-    ) -> some View {
-        modifier(FullscreenOverlay(isPresented: isPresented, overlay: content))
-    }
-}
-
-// MARK: - Stack
-
-
-
 // MARK: - Presenter
-@Observable public class OverlayStackPresenter {
-    //    private(set) var path: [Destination: () -> AnyView] = [:]
+@Observable public class FullscreenOverlayPresenter {
     private(set) var stack: [StackEntry] = []
     
     public init() { }
@@ -132,13 +23,9 @@ public extension View {
             return nil
         }
         
-        stack.append(StackEntry(id: id, view: AnyView(content())))
+        stack.append(StackEntry(id: id, deep: (stack.last?.deep ?? 0) + 1, view: AnyView(content())))
         print("✅ presenting \(id)")
         return id
-    }
-    
-    func isPresented(_ id: UUID) -> Bool {
-        stack.find(id) != nil
     }
     
     func dismiss(_ id: UUID) {
@@ -151,17 +38,28 @@ public extension View {
             print("⚠️ id \(id) is not found in hierarchy - skip")
         }
     }
-}
-
-extension Array where Element == OverlayStackPresenter.StackEntry {
-    func find(_ entryId: UUID) -> OverlayStackPresenter.StackEntry? {
-        first { $0.id == entryId }
+    
+    func isStacked(_ id: UUID) -> Bool {
+        stack.find(id) != nil
+    }
+    
+    func popToRoot() {
+        stack.removeAll()
+    }
+    
+    func popFirst() {
+        stack.removeFirst()
+    }
+    
+    func popLast() {
+        stack.removeLast()
     }
 }
 
-extension OverlayStackPresenter {
+extension FullscreenOverlayPresenter {
     struct StackEntry: Identifiable, Equatable {
         let id: UUID
+        let deep: Int
         let view: AnyView
         
         static func == (lhs: StackEntry, rhs: StackEntry) -> Bool {
@@ -170,9 +68,16 @@ extension OverlayStackPresenter {
     }
 }
 
+fileprivate extension Array where Element == FullscreenOverlayPresenter.StackEntry {
+    func find(_ entryId: UUID) -> FullscreenOverlayPresenter.StackEntry? {
+        first { $0.id == entryId }
+    }
+}
+
 // MARK: - Overlay
-struct _FullscreenOverlay<Overlay: View>: ViewModifier {
-    @Environment(OverlayStackPresenter.self) var presenter
+struct FullscreenOverlay<Overlay: View>: ViewModifier {
+    @Environment(FullscreenOverlayPresenter.self) private var presenter
+    @Environment(\.overlayTransitionAnimation) private var transitionAnimation
     
     @Binding var isPresented: Bool
     let overlay: () -> Overlay
@@ -185,14 +90,16 @@ struct _FullscreenOverlay<Overlay: View>: ViewModifier {
                 if isPresented {
                     print("overlay [\(overlayId)]: present me 🤲")
                     var presentedId: UUID?
-                    withAnimation(.spring) {
+                    withAnimation(transitionAnimation.insertion) {
                         presentedId = presenter.present(id: overlayId, content: overlay)
                     }
                     if presentedId == nil { isPresented = false }
                 } else {
-                    if presenter.isPresented(overlayId) {
+                    if presenter.isStacked(overlayId) {
                         print("overlay[\(overlayId)]: dismiss me 🫠")
-                        withAnimation(.spring) { presenter.dismiss(overlayId) }
+                        withAnimation(transitionAnimation.removal) {
+                            presenter.dismiss(overlayId)
+                        }
                     }
                 }
             }
@@ -204,8 +111,11 @@ struct _FullscreenOverlay<Overlay: View>: ViewModifier {
 
 // MARK: - Stack
 /// View modifier for presenting overlays.
-struct _FullscreenStack: ViewModifier {
-    @Environment(OverlayStackPresenter.self) private var presenter
+struct FullscreenStack: ViewModifier {
+    @Environment(FullscreenOverlayPresenter.self) private var presenter
+    @Environment(\.overlayTransitionAnimation) var transitionAnimation
+    
+    let transition: AnyTransition
 
     private let closeButtonSize = 20.0
     private let closeButtonPadding = 15.0
@@ -220,64 +130,69 @@ struct _FullscreenStack: ViewModifier {
                                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                                 .overlay(alignment: .topTrailing) {
                                     XMarkButton(size: closeButtonSize) {
-                                        withAnimation(.spring) { presenter.dismiss(entry.id) }
+                                        withAnimation(transitionAnimation.removal) {
+                                            presenter.dismiss(entry.id)
+                                        }
                                     }
                                     .padding(closeButtonPadding)
-                                    //TODO: orientation
-                                    //                        .padding(.top, -(closeButtonSize + 2 * closeButtonPadding))
+                                    //TODO: support orientation change
+//                                    .padding(.top, -(closeButtonSize + 2 * closeButtonPadding))
                                 }
-                                .zIndex(Double(presenter.stack.firstIndex { $0.id == entry.id } ?? 0))
+                                .zIndex(Double(entry.deep))
                                 .background(.ultraThinMaterial, ignoresSafeAreaEdges: .all)
-                                .transition(
-                                    .scale(scale: 1.5)
-                                    .combined(with: .opacity)
-                                )
+                                .transition(transition)
                         }
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .transition(
-                        .scale(scale: 1.5)
-                        .combined(with: .opacity)
-                    )
+                    .transition(transition)
                 }
             }
     }
 }
 
-//public extension View {
-//    func fullscreenOverlayRoot() -> some View {
-//        modifier(FullscreenPresenter())
-//    }
-//    
-//    func fullscreenOverlay<Content: View>(
-//        isPresented: Binding<Bool>,
-//        content: @escaping () -> Content
-//    ) -> some View {
-//        modifier(FullscreenOverlay(isPresented: isPresented, overlay: content))
-//    }
-//}
+// MARK: - Environment
+extension EnvironmentValues {
+    var overlayTransitionAnimation: OverlayTransitionAnimation {
+        get { self[OverlayTransitionAnimationKey.self] }
+        set { self[OverlayTransitionAnimationKey.self] = newValue }
+    }
+}
+
+fileprivate struct OverlayTransitionAnimationKey: EnvironmentKey {
+    static let defaultValue: OverlayTransitionAnimation = .init(
+        insertion: .spring(duration: 0.5),
+        removal: .linear(duration: 0.3)
+     )
+}
+
+struct OverlayTransitionAnimation {
+    let insertion: Animation
+    let removal: Animation
+}
 
 // MARK: - View
-//struct MyRootView: View {
-//    @State var presenter = OverlayStackPresenter()
-//    @State var isA = false
-//
-//    var body: some View {
-//        Button("View A") {
-//            isA.toggle()
-//        }
-//        .buttonStyle(.borderedProminent)
-//        .modifier(_FullscreenStack())
-//        .modifier(_FullscreenOverlay(isPresented: $isA, overlay: {
-//            ViewA()
-//        }))
-//        .environment(presenter)
-//    }
-//}
+public extension AnyTransition {
+    static let fullscreenOverlay: AnyTransition = .scale(scale: 1.5).combined(with: .opacity)
+}
 
+public extension View {
+    func fullscreenOverlayRoot(_ transition: AnyTransition = .fullscreenOverlay) -> some View {
+        modifier(FullscreenStack(transition: transition))
+    }
+    
+    func fullscreenOverlay<Content: View>(
+        isPresented: Binding<Bool>,
+        content: @escaping () -> Content
+    ) -> some View {
+        modifier(FullscreenOverlay(isPresented: isPresented, overlay: content))
+    }
+}
+
+// MARK: - Test Views
 struct MyRootView: View {
-    @State private var presenter = OverlayStackPresenter()
+    @State private var presenter = FullscreenOverlayPresenter()
     @State private var isA = false
+    @State private var isB = false
 
     var body: some View {
         VStack {
@@ -293,6 +208,11 @@ struct MyRootView: View {
                     
                     Circle().fill(isA ? .green : .red)
                         .frame(width: 20)
+                    
+                    Button("View B") {
+                        isB.toggle()
+                    }
+                    .buttonStyle(.borderedProminent)
                 }
                 
                 Color.brown.frame(height: 200)
@@ -300,10 +220,13 @@ struct MyRootView: View {
                 Color.orange.frame(height: 200)
             }
         }
-        .modifier(_FullscreenStack())
-        .modifier(_FullscreenOverlay(isPresented: $isA, overlay: {
+        .fullscreenOverlayRoot()
+        .fullscreenOverlay(isPresented: $isA) {
             ViewA()
-        }))
+        }
+        .fullscreenOverlay(isPresented: $isB) {
+            ViewB()
+        }
         .environment(presenter)
     }
 }
@@ -324,9 +247,9 @@ struct ViewA: View {
             .buttonStyle(.borderedProminent)
         }
         .frame(maxHeight: .infinity)
-        .modifier(_FullscreenOverlay(isPresented: $isB, overlay: {
+        .fullscreenOverlay(isPresented: $isB) {
             ViewB()
-        }))
+        }
     }
 }
 
@@ -345,14 +268,16 @@ struct ViewB: View {
             }
             .buttonStyle(.borderedProminent)
         }
-        .modifier(_FullscreenOverlay(isPresented: $isC, overlay: {
+        .fullscreenOverlay(isPresented: $isC) {
             ViewC()
-        }))
+        }
     }
 }
 
 struct ViewC: View {
     @State var isB = false
+    @Environment(FullscreenOverlayPresenter.self) var presenter
+    @Environment(\.overlayTransitionAnimation) var overlayTransitionAnimation
 
     var body: some View {
         VStack {
@@ -361,10 +286,19 @@ struct ViewC: View {
             Rectangle().fill(.pink)
                 .frame(width: 100, height: 200)
             
-//            Button("View B") {
-//                isB.toggle()
-//            }
-//            .buttonStyle(.borderedProminent)
+            Button("Pop to root") {
+                withAnimation(.spring) {
+                    presenter.popToRoot()
+                }
+            }
+            .buttonStyle(.borderedProminent)
+            
+            Button("Pop first") {
+                withAnimation(overlayTransitionAnimation.removal) {
+                    presenter.popFirst()
+                }
+            }
+            .buttonStyle(.borderedProminent)
         }
     }
 }
