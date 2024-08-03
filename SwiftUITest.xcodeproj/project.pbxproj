@@ -12,8 +12,8 @@
 		1EAB81A12C56B985007AFC52 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EAB81A02C56B985007AFC52 /* ContentView.swift */; };
 		1EAB81A32C56B986007AFC52 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1EAB81A22C56B986007AFC52 /* Assets.xcassets */; };
 		1EAB81A72C56B986007AFC52 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1EAB81A62C56B986007AFC52 /* Preview Assets.xcassets */; };
-		1EF4695C2C58F0950046C136 /* FullscreenOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EF4695B2C58F0950046C136 /* FullscreenOverlay.swift */; };
-		1EF4695E2C58F0FB0046C136 /* FullscreenOverlayManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EF4695D2C58F0FB0046C136 /* FullscreenOverlayManager.swift */; };
+		1EECD9952C5E3210007401DD /* FullscreenOverlay in Frameworks */ = {isa = PBXBuildFile; productRef = 1EECD9942C5E3210007401DD /* FullscreenOverlay */; };
+		1EF4695E2C58F0FB0046C136 /* FullscreenOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EF4695D2C58F0FB0046C136 /* FullscreenOverlay.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,8 +24,8 @@
 		1EAB81A22C56B986007AFC52 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		1EAB81A42C56B986007AFC52 /* SwiftUITest.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SwiftUITest.entitlements; sourceTree = "<group>"; };
 		1EAB81A62C56B986007AFC52 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		1EF4695B2C58F0950046C136 /* FullscreenOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullscreenOverlay.swift; sourceTree = "<group>"; };
-		1EF4695D2C58F0FB0046C136 /* FullscreenOverlayManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullscreenOverlayManager.swift; sourceTree = "<group>"; };
+		1EECD9922C5E31D3007401DD /* FullscreenOverlay */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = FullscreenOverlay; path = ../../FullscreenOverlay; sourceTree = "<group>"; };
+		1EF4695D2C58F0FB0046C136 /* FullscreenOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullscreenOverlay.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -33,6 +33,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1EECD9952C5E3210007401DD /* FullscreenOverlay in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -44,6 +45,7 @@
 			children = (
 				1EAB819D2C56B985007AFC52 /* SwiftUITest */,
 				1EAB819C2C56B985007AFC52 /* Products */,
+				1EECD9932C5E3210007401DD /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -58,6 +60,7 @@
 		1EAB819D2C56B985007AFC52 /* SwiftUITest */ = {
 			isa = PBXGroup;
 			children = (
+				1EECD9922C5E31D3007401DD /* FullscreenOverlay */,
 				1EF4695A2C58F07D0046C136 /* Components */,
 				1EAB819E2C56B985007AFC52 /* SwiftUITestApp.swift */,
 				1EAB81A02C56B985007AFC52 /* ContentView.swift */,
@@ -76,11 +79,17 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
+		1EECD9932C5E3210007401DD /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		1EF4695A2C58F07D0046C136 /* Components */ = {
 			isa = PBXGroup;
 			children = (
-				1EF4695B2C58F0950046C136 /* FullscreenOverlay.swift */,
-				1EF4695D2C58F0FB0046C136 /* FullscreenOverlayManager.swift */,
+				1EF4695D2C58F0FB0046C136 /* FullscreenOverlay.swift */,
 				1E5F033C2C59A48600034347 /* XMarkButton.swift */,
 			);
 			path = Components;
@@ -103,6 +112,7 @@
 			);
 			name = SwiftUITest;
 			packageProductDependencies = (
+				1EECD9942C5E3210007401DD /* FullscreenOverlay */,
 			);
 			productName = SwiftUITest;
 			productReference = 1EAB819B2C56B985007AFC52 /* SwiftUITest.app */;
@@ -160,9 +170,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1EF4695C2C58F0950046C136 /* FullscreenOverlay.swift in Sources */,
 				1E5F033D2C59A48600034347 /* XMarkButton.swift in Sources */,
-				1EF4695E2C58F0FB0046C136 /* FullscreenOverlayManager.swift in Sources */,
+				1EF4695E2C58F0FB0046C136 /* FullscreenOverlay.swift in Sources */,
 				1EAB81A12C56B985007AFC52 /* ContentView.swift in Sources */,
 				1EAB819F2C56B985007AFC52 /* SwiftUITestApp.swift in Sources */,
 			);
@@ -385,6 +394,13 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		1EECD9942C5E3210007401DD /* FullscreenOverlay */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = FullscreenOverlay;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 1EAB81932C56B985007AFC52 /* Project object */;
 }

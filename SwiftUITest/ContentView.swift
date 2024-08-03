@@ -6,107 +6,57 @@
 //
 
 import SwiftUI
+import FullscreenOverlay
 
 struct ContentView: View {
     var body: some View {
 //        RootView()
-        MyRootView()
+//        MyRootView()
+        OverlayTest()
     }
 }
 
-//struct FullscreenTest: View {
-//    @State private var isSearching = false
-//    @State private var isCapsule = false
-//
-//    var body: some View {
-//        VStack {
-//            ScrollView {
-//                Color.red.frame(height: 200)
-//                Color.indigo.frame(height: 200)
-//                
-//                Button("Search") {
-//                    withAnimation(.spring) {
-//                        isSearching.toggle()
-//                    }
-//                }
-//                .buttonStyle(.borderedProminent)
-//                
-//                Capsule().fill(.cyan)
-//                    .frame(width: 300, height: 150)
-//                    .onTapGesture {
-//                        withAnimation(.spring) {
-//                            isCapsule.toggle()
-//                        }
-//                    }
-//                    .fullscreenOverlay(isPresented: $isCapsule) {
-//                        Circle()
-//                            .fill(.mint)
-//                    }
-//                
-//                Color.orange.frame(height: 200)
-//                Color.purple.frame(height: 200)
-//                
-//            }
-//        }
-//        .fullscreenOverlay(isPresented: $isSearching, backgroundStyle: .thinMaterial) {
-//            Text("Custom fullscreen")
-//                .font(.title)
-//        }
-//    }
-//}
+struct OverlayTest: View {
+    @State private var isShow: Bool = false
+    @State private var overlayPresenter = FullscreenOverlayPresenter()
 
-//struct RootView: View {
-//    @State private var overlayManager = FullscreenOverlayPresenter()
-//    
-//    @State private var isA = false
-//
-//    var body: some View {
-//        VStack {
-//            ScrollView {
-//                Color.red.frame(height: 200)
-//                Color.mint.frame(height: 200)
-//                
-//                HStack {
-//                    Button("View A") {
-//                        isA.toggle()
-//                    }
-//                    .buttonStyle(.borderedProminent)
-//                    
-//                    Circle().fill(isA ? .green : .red)
-//                        .frame(width: 20)
-//                }
-//                
-//                ChildView()
-//                
-//                Color.brown.frame(height: 200)
-//                Color.blue.frame(height: 200)
-//                Color.orange.frame(height: 200)
-//            }
-//        }
-//        .fullscreenOverlayRoot()
-//        .fullscreenOverlay(isPresented: $isA) {
-//            Text("View A").font(.title)
-//        }
-//        .environment(overlayManager)
-//    }
-//}
+    var body: some View {
+        ZStack {
+            Button("Show overlay") {
+                isShow.toggle()
+            }
+            .buttonStyle(.borderedProminent)
+            .fullscreenOverlay(isPresented: $isShow, axes: .vertical) {
+                SearchView()
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .border(.red)
+        .fullscreenOverlayRoot()
+        .environment(overlayPresenter)
+    }
+}
 
-//struct ChildView: View {
-//    @State var isShow = false
-//
-//    var body: some View {
-//        Button("Fullscreen on child") {
-//            isShow.toggle()
-//        }
-//        .buttonStyle(.borderedProminent)
-//        .padding(25)
-//        .background(.green, in: Capsule())
-//        .fullscreenOverlay(isPresented: $isShow) {
-//            Text("Child fullscreen presented")
-//                .font(.title)
-//        }
-//    }
-//}
+struct SearchView: View {
+    var body: some View {
+        ScrollView {
+            VStack {
+                ForEach(1...15, id: \.self) { index in
+                    Color.brown
+                        .frame(height: 100)
+                        .clipShape(RoundedRectangle(cornerRadius: 25))
+                        .overlay(alignment: .leading) {
+                            Text("\(index)").font(.title)
+                                .padding(15)
+                                .background(.ultraThinMaterial, in: Circle())
+                                .padding(.horizontal)
+                        }
+                }
+            }
+            .padding(.horizontal)
+        }
+    }
+}
 
 #Preview {
     ContentView()

@@ -6,46 +6,123 @@
 //
 
 import SwiftUI
+import FullscreenOverlay
 
-extension View {
-    func fullscreenOverlay<Content: View, Background: ShapeStyle>(
-        isPresented: Binding<Bool>,
-        backgroundStyle: Background = .ultraThinMaterial,
-        content: @escaping () -> Content
-    ) -> some View {
-        let closeButtonSize = 25.0
-        let closeButtonPadding = 15.0
-        
-        let closeButton = Button {
-            withAnimation(.spring) {
-                isPresented.wrappedValue = false
+struct MyRootView: View {
+    @State private var presenter = FullscreenOverlayPresenter()
+    @State private var isA = false
+    @State private var isB = false
+
+    var body: some View {
+        VStack {
+            ScrollView {
+                Color.red.frame(height: 200)
+                Color.mint.frame(height: 200)
+                
+                HStack {
+                    Button("View A") {
+                        isA.toggle()
+                    }
+                    .buttonStyle(.borderedProminent)
+                    
+                    Circle().fill(isA ? .green : .red)
+                        .frame(width: 20)
+                    
+                    Button("View B") {
+                        isB.toggle()
+                    }
+                    .buttonStyle(.borderedProminent)
+                }
+                
+                Color.brown.frame(height: 200)
+                Color.blue.frame(height: 200)
+                Color.orange.frame(height: 200)
             }
-        } label: {
-            Image(systemName: "xmark.circle")
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(width: closeButtonSize, height: closeButtonSize)
-                .padding(closeButtonPadding)
         }
-        .padding(.top, -(closeButtonSize + 2 * closeButtonPadding))
-        
-        return self
-            .overlay {
-                if isPresented.wrappedValue {
-                    ZStack {
-                        content()
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .overlay(alignment: .topTrailing) {
-                        closeButton
-                    }
-                    .background(backgroundStyle, ignoresSafeAreaEdges: .all)
-//                    .border(.orange)
-                    .transition(
-                        .scale(scale: 1.5)
-                        .combined(with: .opacity)
-                    )
+        .fullscreenOverlayRoot()
+        .fullscreenOverlay(isPresented: $isA) {
+            ViewA()
+        }
+        .fullscreenOverlay(isPresented: $isB) {
+            ViewB()
+        }
+        .environment(presenter)
+    }
+}
+
+struct ViewA: View {
+    @State var isB = false
+
+    var body: some View {
+        VStack {
+            Text("View A")
+            
+            Circle().fill(.mint)
+                .frame(width: 100, height: 100)
+            
+            Button("View B") {
+                isB.toggle()
+            }
+            .buttonStyle(.borderedProminent)
+        }
+        .frame(maxHeight: .infinity)
+        .fullscreenOverlay(isPresented: $isB) {
+            ViewB()
+        }
+    }
+}
+
+struct ViewB: View {
+    @State var isC = false
+
+    var body: some View {
+        VStack {
+            Text("View B")
+            
+            Capsule().fill(.indigo)
+                .frame(width: 200, height: 100)
+            
+            Button("View C") {
+                isC.toggle()
+            }
+            .buttonStyle(.borderedProminent)
+        }
+        .fullscreenOverlay(isPresented: $isC) {
+            ViewC()
+        }
+    }
+}
+
+struct ViewC: View {
+    @State var isB = false
+    @Environment(FullscreenOverlayPresenter.self) var presenter
+    @Environment(\.overlayTransitionAnimation) var overlayTransitionAnimation
+
+    var body: some View {
+        VStack {
+            Text("View C")
+            
+            Rectangle().fill(.pink)
+                .frame(width: 100, height: 200)
+            
+            Button("Pop to root") {
+                withAnimation(.spring) {
+                    presenter.popToRoot()
                 }
             }
+            .buttonStyle(.borderedProminent)
+            
+            Button("Pop first") {
+                withAnimation(overlayTransitionAnimation.removal) {
+                    presenter.popFirst()
+                }
+            }
+            .buttonStyle(.borderedProminent)
+        }
     }
+}
+
+
+#Preview {
+    MyRootView()
 }
