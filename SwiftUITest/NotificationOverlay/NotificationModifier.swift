@@ -52,7 +52,7 @@ struct NotificationModifier<Overlay: View>: ViewModifier {
                     if presenter.isStacked(notificationId) {
                         dprint(presenter.isVerbose, "notification [\(notificationId)]: dismiss me 🫠")
                         withAnimation(transitionAnimation.removal) {
-                            presenter.dismiss(notificationId)
+                            presenter.dismiss(notificationId, nextDismissAnimation: transitionAnimation.removal)
                         }
                     }
                 }
