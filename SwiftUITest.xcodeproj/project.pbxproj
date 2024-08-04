@@ -8,6 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		1E5F033D2C59A48600034347 /* XMarkButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E5F033C2C59A48600034347 /* XMarkButton.swift */; };
+		1E870B872C5EAA5500C2486A /* NotificationPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E870B862C5EAA5500C2486A /* NotificationPresenter.swift */; };
+		1E870B8A2C5EAB0E00C2486A /* NotificationRootModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E870B892C5EAB0E00C2486A /* NotificationRootModifier.swift */; };
+		1E870B8C2C5EABE200C2486A /* NotificationModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E870B8B2C5EABE200C2486A /* NotificationModifier.swift */; };
+		1E870B8E2C5EB88D00C2486A /* Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E870B8D2C5EB88D00C2486A /* Environment.swift */; };
 		1EAB819F2C56B985007AFC52 /* SwiftUITestApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EAB819E2C56B985007AFC52 /* SwiftUITestApp.swift */; };
 		1EAB81A12C56B985007AFC52 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EAB81A02C56B985007AFC52 /* ContentView.swift */; };
 		1EAB81A32C56B986007AFC52 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1EAB81A22C56B986007AFC52 /* Assets.xcassets */; };
@@ -18,6 +22,10 @@
 
 /* Begin PBXFileReference section */
 		1E5F033C2C59A48600034347 /* XMarkButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XMarkButton.swift; sourceTree = "<group>"; };
+		1E870B862C5EAA5500C2486A /* NotificationPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationPresenter.swift; sourceTree = "<group>"; };
+		1E870B892C5EAB0E00C2486A /* NotificationRootModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationRootModifier.swift; sourceTree = "<group>"; };
+		1E870B8B2C5EABE200C2486A /* NotificationModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationModifier.swift; sourceTree = "<group>"; };
+		1E870B8D2C5EB88D00C2486A /* Environment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Environment.swift; sourceTree = "<group>"; };
 		1EAB819B2C56B985007AFC52 /* SwiftUITest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftUITest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1EAB819E2C56B985007AFC52 /* SwiftUITestApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftUITestApp.swift; sourceTree = "<group>"; };
 		1EAB81A02C56B985007AFC52 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -40,6 +48,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1E870B882C5EAADE00C2486A /* NotificationOverlay */ = {
+			isa = PBXGroup;
+			children = (
+				1E870B862C5EAA5500C2486A /* NotificationPresenter.swift */,
+				1E870B892C5EAB0E00C2486A /* NotificationRootModifier.swift */,
+				1E870B8B2C5EABE200C2486A /* NotificationModifier.swift */,
+				1E870B8D2C5EB88D00C2486A /* Environment.swift */,
+			);
+			path = NotificationOverlay;
+			sourceTree = "<group>";
+		};
 		1EAB81922C56B985007AFC52 = {
 			isa = PBXGroup;
 			children = (
@@ -60,6 +79,7 @@
 		1EAB819D2C56B985007AFC52 /* SwiftUITest */ = {
 			isa = PBXGroup;
 			children = (
+				1E870B882C5EAADE00C2486A /* NotificationOverlay */,
 				1EECD9922C5E31D3007401DD /* FullscreenOverlay */,
 				1EF4695A2C58F07D0046C136 /* Components */,
 				1EAB819E2C56B985007AFC52 /* SwiftUITestApp.swift */,
@@ -170,10 +190,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1E870B8C2C5EABE200C2486A /* NotificationModifier.swift in Sources */,
+				1E870B8E2C5EB88D00C2486A /* Environment.swift in Sources */,
 				1E5F033D2C59A48600034347 /* XMarkButton.swift in Sources */,
 				1EF4695E2C58F0FB0046C136 /* FullscreenOverlay.swift in Sources */,
+				1E870B872C5EAA5500C2486A /* NotificationPresenter.swift in Sources */,
 				1EAB81A12C56B985007AFC52 /* ContentView.swift in Sources */,
 				1EAB819F2C56B985007AFC52 /* SwiftUITestApp.swift in Sources */,
+				1E870B8A2C5EAB0E00C2486A /* NotificationRootModifier.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
