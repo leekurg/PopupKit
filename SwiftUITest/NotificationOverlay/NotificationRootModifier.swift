@@ -50,7 +50,6 @@ struct NotificationRootModifier: ViewModifier {
                             .background {
                                 RoundedRectangle(cornerRadius: 30)
                                     .fill(.thinMaterial)
-//                                    .fill(.gray.opacity(0.5))
                                     .overlay {
                                         ContainerRelativeShape()
                                             .stroke(.blue, lineWidth: 0.5)
@@ -61,40 +60,18 @@ struct NotificationRootModifier: ViewModifier {
                             .padding()
                             .zIndex(Double(entry.deep))
                             .offset(
-//                                calcOffset(deep: entry.deep, alignment: alignment)
-                                calcOffset(
-                                    deep: presenter.stack.firstIndex { $0.id == entry.id } ?? 0,
-                                    alignment: alignment
-                                )
+                                calcOffset(deep: entry.deep, alignment: alignment)
                             )
                             .scaleEffect(
-//                                calcScale(
-//                                    deep: entry.deep,
-//                                    total: presenter.stack.count
-//                                )
-                                calcScale(
-                                    deep: presenter.stack.firstIndex { $0.id == entry.id } ?? 0,
-                                    total: presenter.stack.count
-                                )
+                                calcScale(deep: entry.deep, total: presenter.stack.count)
                             )
                             .blur(
-//                                radius: calcBlur(
-//                                    deep: entry.deep,
-//                                    total: presenter.stack.count
-//                                )
-                                radius: calcBlur(
-                                    deep: presenter.stack.firstIndex { $0.id == entry.id } ?? 0,
-                                    total: presenter.stack.count
-                                )
+                                radius: calcBlur(deep: entry.deep, total: presenter.stack.count)
                             )
                             .transition(transition)
                         }
                     }
-                    .frame(
-                        maxWidth: .infinity,
-                        maxHeight: .infinity,
-                        alignment: alignment
-                    )
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: alignment)
 //                    .border(.green)
             }
     }
@@ -110,22 +87,6 @@ struct NotificationRootModifier: ViewModifier {
         default: .zero
         }
     }
-    
-    /// Only last is showing fullsized, after hide previous scaled up
-//    private func calcScale(index: Int?, total: Int) -> CGSize {
-//        guard let index, /*index > 0,*/ total > 0 else {
-//            print("index \(index)/\(total): \(1)")
-//            return CGSize(width: 1, height: 1)
-//        }
-//
-//        let t: Double = Double(total)
-//        let i: Double = Double(index)
-//        let scale = (i+1) / t
-//        
-//        print("index \(index)/\(total): \(scale)")
-//        
-//        return CGSize(width: scale, height: scale)
-//    }
     
     private func calcScale(deep: Int, total: Int) -> CGSize {
         let scale: Double = 1.0 - 0.05 * (Double(total) - (Double(deep) + 1.0))

@@ -62,11 +62,13 @@ import SwiftUI
     
     public func dismiss(_ id: UUID, nextDismissAnimation: Animation?) {
         let presentedIndex = stack.firstIndex { $0.id == id }
+        guard let presentedIndex else {
+            dprint(isVerbose, "⚠️ id \(id) is not found in stack - skip")
+            return
+        }
         
-        if let presentedIndex {
-            if stack[presentedIndex].id == topEntryTimer?.entryId { topEntryTimer = nil }
-
-            stack.remove(at: presentedIndex)
+        if id == stack.last?.id {
+            stack.removeLast()
             dprint(isVerbose, "🙈 dismissed \(id)")
             
             if let newTopEntry = stack.last {
@@ -83,7 +85,9 @@ import SwiftUI
 
             }
         } else {
-            dprint(isVerbose, "⚠️ id \(id) is not found in hierarchy - skip")
+            stack.remove(at: presentedIndex)
+            stack = stack.reindexDeep(from: presentedIndex)
+            dprint(isVerbose, "🙈 dismissed \(id)")
         }
     }
     
@@ -92,15 +96,8 @@ import SwiftUI
     }
     
     public func popToRoot() {
+        topEntryTimer = nil
         stack.removeAll()
-    }
-    
-    public func popFirst() {
-        stack.removeFirst()
-    }
-    
-    public func popLast() {
-        stack.removeLast()
     }
     
     private func makeTimer(forId id: UUID, interval: TimeInterval, dismissAnimation: Animation?) -> EntryTimer {
@@ -155,6 +152,21 @@ public extension NotificationPresenter {
 extension Array where Element == NotificationPresenter.StackEntry {
     func find(_ entryId: UUID) -> NotificationPresenter.StackEntry? {
         first { $0.id == entryId }
+    }
+    
+    func reindexDeep(from: Index = 0) -> Self {
+        self
+            .enumerated()
+            .map { index, entry in
+                guard index >= from else { return entry }
+                
+                return Element(
+                    id: entry.id,
+                    deep: index,
+                    expiration: entry.expiration,
+                    view: entry.view
+                )
+            }
     }
 }
 
