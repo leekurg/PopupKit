@@ -14,7 +14,48 @@ struct ContentView: View {
 //        MyRootView()
 //        OverlayTest()
         NotificationTest()
-//        IdealTest()
+//        ScrollAwayTest()
+    }
+}
+
+struct ScrollAwayTest: View {
+    @GestureState private var dragState: CGFloat
+    @State var isShow = true
+    @State var isThreshold = false
+    
+    init() {
+        self._dragState = GestureState(
+            initialValue: .zero,
+            resetTransaction: .init(animation: .bouncy)
+        )
+    }
+    
+    var body: some View {
+        ZStack {
+            if isShow {
+                RoundedRectangle(cornerRadius: 25)
+                    .fill(.orange)
+                    .frame(width: 300, height: 130)
+                    .padding(.bottom, 100)
+                    .offset(y: dragState)
+                    .gesture(
+                        DragGesture(minimumDistance: 0)
+                            .updating($dragState) { value, state, _ in
+                                withAnimation(.spring) {
+                                    state = value.translation.height > 0 ? value.translation.height : value.translation.height / 3
+                                }
+                            }
+                            .onChanged { gestureValue in
+//                                print("\(gestureValue.velocity.height)")
+                                if isShow, gestureValue.predictedEndTranslation.height > 300 {
+                                    withAnimation(.spring) { isShow.toggle() }
+                                }
+                            }
+                    )
+                    .transition(.move(edge: .bottom))
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
     }
 }
 
@@ -33,7 +74,7 @@ struct NotificationTest: View {
     
     var body: some View {
         NavigationStack(path: $path) {
-            VStack {
+            ScrollView {
                 Button("Continuous notification 1") {
                     n1.toggle()
                 }
@@ -111,7 +152,8 @@ struct NotificationTest: View {
                 }
                 .padding(.horizontal)
                 
-                Spacer()
+                Divider()
+                    .padding(.bottom, 100)
                 
                 Color.red.frame(height: 30)
                 Color.indigo.frame(height: 30)

@@ -100,6 +100,13 @@ import SwiftUI
         stack.removeAll()
     }
     
+    public func popLast(_ nextDismissAnimation: Animation?) {
+        if let lastId = stack.last?.id {
+            topEntryTimer = nil
+            dismiss(lastId, nextDismissAnimation: nextDismissAnimation)
+        }
+    }
+    
     private func makeTimer(forId id: UUID, interval: TimeInterval, dismissAnimation: Animation?) -> EntryTimer {
         EntryTimer(
             entryId: id,
