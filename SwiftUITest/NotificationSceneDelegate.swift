@@ -18,7 +18,7 @@ class NotificationSceneDelegate: NSObject, UIWindowSceneDelegate, ObservableObje
 
             let notificationViewController = UIHostingController(
                 rootView: Color.clear
-                    .notificationRoot(alignment: .bottom, transition: .notification)
+                    .notificationRoot()
                     .ignoresSafeArea(.all, edges: [.horizontal, .bottom])
                     .environment(notificationPresenter)
             )

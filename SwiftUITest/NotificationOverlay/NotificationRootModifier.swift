@@ -21,30 +21,24 @@ public extension View {
     }
 }
 
-public extension AnyTransition {
-    static let notification: AnyTransition = .asymmetric(
-        insertion: .move(edge: .bottom),
-        removal: .move(edge: .bottom).combined(with: .opacity)
-    )
-}
-
 struct NotificationRootModifier: ViewModifier {
     @Environment(NotificationPresenter.self) private var presenter
-//    @State private var orientation = DeviceOrientation()
     @GestureState private var dragHeight: CGFloat
     @State private var topEntryDraggedAway = false
     
     let alignment: Alignment
     let transition: AnyTransition
 
-    private let closeButtonSize = 20.0
-    private let closeButtonPadding = 15.0
+    private let dismissDirection: DismissDirection
+
     private let maxNotificationWidth = 500.0
     private let minNotificationHeight = 100.0
+    private let dragThreshold = 300.0
     
     init(alignment: Alignment, transition: AnyTransition) {
         self.alignment = alignment
         self.transition = transition
+        self.dismissDirection = .init(alignment: alignment)
         
         self._dragHeight = GestureState(
             initialValue: .zero,
@@ -107,14 +101,13 @@ struct NotificationRootModifier: ViewModifier {
                 }
             }
             .onChanged { gesture in
-                if 
+                if
                     !topEntryDraggedAway,
-                    gesture.predictedEndTranslation.height > 300
+                    abs(gesture.predictedEndTranslation.height) > dragThreshold,
+                    dismissDirection.isForward(gesture.predictedEndTranslation.height) == true
                 {
                     topEntryDraggedAway = true
-                    withAnimation(presenter.removalAnimation) {
-                        presenter.popLast()
-                    }
+                    presenter.popLast()
                 }
             }
             .onEnded { _ in topEntryDraggedAway = false }
@@ -126,18 +119,18 @@ struct NotificationRootModifier: ViewModifier {
         dragHeight: CGFloat,
         alignment: Alignment
     ) -> CGSize {
-        let modulatedDragHeight: CGFloat = switch alignment.direction.isOpposite(dragHeight) {
+        let modulatedDragHeight: CGFloat = switch dismissDirection.isForward(dragHeight) {
         case .some(true):
-            dragHeight / 10.0 * (CGFloat(deep) + 1.0)
-        case .some(false):
             deep == stackCount - 1 ? dragHeight : 0
+        case .some(false):
+            dragHeight / 10.0 * (CGFloat(deep) + 1.0)
         case .none:
             .zero
         }
         
-        let offset = CGFloat(deep) * 10.0 - modulatedDragHeight * alignment.direction.sign
+        let offset = CGFloat(deep) * 10.0 - modulatedDragHeight * dismissDirection.sign
         
-        return switch alignment.direction {
+        return switch dismissDirection {
         case .topToBottom: CGSize(width: 0, height: -offset)
         case .bottomToTop: CGSize(width: 0, height: offset)
         case .unknown: .zero
@@ -152,36 +145,6 @@ struct NotificationRootModifier: ViewModifier {
     
     private func calcBlur(deep: Int, total: Int) -> CGFloat {
         Double(total) - Double(deep) - 1.0
-    }
-}
-
-extension Alignment {
-    enum Direction {
-        case topToBottom, bottomToTop, unknown
-        
-        func isOpposite(_ scrollValue: CGFloat) -> Bool? {
-            switch self {
-            case .topToBottom: scrollValue < 0
-            case .bottomToTop: scrollValue > 0
-            case .unknown: nil
-            }
-        }
-        
-        var sign: CGFloat {
-            switch self {
-            case .topToBottom: 1.0
-            case .bottomToTop: -1.0
-            case .unknown: 0.0
-            }
-        }
-    }
-    
-    var direction: Direction {
-        switch self {
-        case .top, .topLeading, .topTrailing, .leading, .trailing: .bottomToTop
-        case .bottom, .bottomLeading, .bottomTrailing: .topToBottom
-        default: .unknown
-        }
     }
 }
 
