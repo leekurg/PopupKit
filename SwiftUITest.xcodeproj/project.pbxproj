@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		1E5F033D2C59A48600034347 /* XMarkButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E5F033C2C59A48600034347 /* XMarkButton.swift */; };
+		1E6243582C6FFE4A00259AF6 /* NotificationAppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E6243572C6FFE4A00259AF6 /* NotificationAppDelegate.swift */; };
+		1E62435A2C6FFE8100259AF6 /* NotificationSceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E6243592C6FFE8100259AF6 /* NotificationSceneDelegate.swift */; };
+		1E62435C2C700C4700259AF6 /* MainSceneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E62435B2C700C4700259AF6 /* MainSceneView.swift */; };
 		1E870B872C5EAA5500C2486A /* NotificationPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E870B862C5EAA5500C2486A /* NotificationPresenter.swift */; };
 		1E870B8A2C5EAB0E00C2486A /* NotificationRootModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E870B892C5EAB0E00C2486A /* NotificationRootModifier.swift */; };
 		1E870B8C2C5EABE200C2486A /* NotificationModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E870B8B2C5EABE200C2486A /* NotificationModifier.swift */; };
@@ -22,6 +25,9 @@
 
 /* Begin PBXFileReference section */
 		1E5F033C2C59A48600034347 /* XMarkButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XMarkButton.swift; sourceTree = "<group>"; };
+		1E6243572C6FFE4A00259AF6 /* NotificationAppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationAppDelegate.swift; sourceTree = "<group>"; };
+		1E6243592C6FFE8100259AF6 /* NotificationSceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationSceneDelegate.swift; sourceTree = "<group>"; };
+		1E62435B2C700C4700259AF6 /* MainSceneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainSceneView.swift; sourceTree = "<group>"; };
 		1E870B862C5EAA5500C2486A /* NotificationPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationPresenter.swift; sourceTree = "<group>"; };
 		1E870B892C5EAB0E00C2486A /* NotificationRootModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationRootModifier.swift; sourceTree = "<group>"; };
 		1E870B8B2C5EABE200C2486A /* NotificationModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationModifier.swift; sourceTree = "<group>"; };
@@ -87,6 +93,9 @@
 				1EAB81A22C56B986007AFC52 /* Assets.xcassets */,
 				1EAB81A42C56B986007AFC52 /* SwiftUITest.entitlements */,
 				1EAB81A52C56B986007AFC52 /* Preview Content */,
+				1E6243572C6FFE4A00259AF6 /* NotificationAppDelegate.swift */,
+				1E6243592C6FFE8100259AF6 /* NotificationSceneDelegate.swift */,
+				1E62435B2C700C4700259AF6 /* MainSceneView.swift */,
 			);
 			path = SwiftUITest;
 			sourceTree = "<group>";
@@ -193,9 +202,12 @@
 				1E870B8C2C5EABE200C2486A /* NotificationModifier.swift in Sources */,
 				1E870B8E2C5EB88D00C2486A /* Environment.swift in Sources */,
 				1E5F033D2C59A48600034347 /* XMarkButton.swift in Sources */,
+				1E6243582C6FFE4A00259AF6 /* NotificationAppDelegate.swift in Sources */,
 				1EF4695E2C58F0FB0046C136 /* FullscreenOverlay.swift in Sources */,
+				1E62435A2C6FFE8100259AF6 /* NotificationSceneDelegate.swift in Sources */,
 				1E870B872C5EAA5500C2486A /* NotificationPresenter.swift in Sources */,
 				1EAB81A12C56B985007AFC52 /* ContentView.swift in Sources */,
+				1E62435C2C700C4700259AF6 /* MainSceneView.swift in Sources */,
 				1EAB819F2C56B985007AFC52 /* SwiftUITestApp.swift in Sources */,
 				1E870B8A2C5EAB0E00C2486A /* NotificationRootModifier.swift in Sources */,
 			);

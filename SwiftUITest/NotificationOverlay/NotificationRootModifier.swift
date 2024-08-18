@@ -156,36 +156,6 @@ struct NotificationRootModifier: ViewModifier {
     }
 }
 
-extension Alignment {
-    enum Direction {
-        case topToBottom, bottomToTop, unknown
-        
-        func isOpposite(_ scrollValue: CGFloat) -> Bool? {
-            switch self {
-            case .topToBottom: scrollValue < 0
-            case .bottomToTop: scrollValue > 0
-            case .unknown: nil
-            }
-        }
-        
-        var sign: CGFloat {
-            switch self {
-            case .topToBottom: 1.0
-            case .bottomToTop: -1.0
-            case .unknown: 0.0
-            }
-        }
-    }
-    
-    var direction: Direction {
-        switch self {
-        case .top, .topLeading, .topTrailing, .leading, .trailing: .bottomToTop
-        case .bottom, .bottomLeading, .bottomTrailing: .topToBottom
-        default: .unknown
-        }
-    }
-}
-
 #Preview {
     ContentView()
 }

@@ -9,9 +9,11 @@ import SwiftUI
 
 @main
 struct SwiftUITestApp: App {
+    @UIApplicationDelegateAdaptor var adaptor: NotificationAppDelegate
+
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            MainSceneView()
         }
     }
 }
