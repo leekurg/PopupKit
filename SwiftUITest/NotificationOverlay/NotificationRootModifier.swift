@@ -30,7 +30,6 @@ public extension AnyTransition {
 
 struct NotificationRootModifier: ViewModifier {
     @Environment(NotificationPresenter.self) private var presenter
-    @Environment(\.notificationTransitionAnimation) var transitionAnimation
 //    @State private var orientation = DeviceOrientation()
     @GestureState private var dragHeight: CGFloat
     @State private var topEntryDraggedAway = false
@@ -113,8 +112,8 @@ struct NotificationRootModifier: ViewModifier {
                     gesture.predictedEndTranslation.height > 300
                 {
                     topEntryDraggedAway = true
-                    withAnimation(transitionAnimation.removal) {
-                        presenter.popLast(transitionAnimation.removal)
+                    withAnimation(presenter.removalAnimation) {
+                        presenter.popLast()
                     }
                 }
             }
@@ -153,6 +152,36 @@ struct NotificationRootModifier: ViewModifier {
     
     private func calcBlur(deep: Int, total: Int) -> CGFloat {
         Double(total) - Double(deep) - 1.0
+    }
+}
+
+extension Alignment {
+    enum Direction {
+        case topToBottom, bottomToTop, unknown
+        
+        func isOpposite(_ scrollValue: CGFloat) -> Bool? {
+            switch self {
+            case .topToBottom: scrollValue < 0
+            case .bottomToTop: scrollValue > 0
+            case .unknown: nil
+            }
+        }
+        
+        var sign: CGFloat {
+            switch self {
+            case .topToBottom: 1.0
+            case .bottomToTop: -1.0
+            case .unknown: 0.0
+            }
+        }
+    }
+    
+    var direction: Direction {
+        switch self {
+        case .top, .topLeading, .topTrailing, .leading, .trailing: .bottomToTop
+        case .bottom, .bottomLeading, .bottomTrailing: .topToBottom
+        default: .unknown
+        }
     }
 }
 

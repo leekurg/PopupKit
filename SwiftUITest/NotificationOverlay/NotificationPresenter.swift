@@ -13,20 +13,30 @@ import SwiftUI
 
     public private(set) var stack: [StackEntry] = []
     
+    public let insertionAnimation: Animation
+    public let removalAnimation: Animation
+    
     private var topEntryTimer: EntryTimer?
     
-    public init(verbose: Bool = false) {
+    public init(
+        verbose: Bool = false,
+        insertAnimation: Animation = .spring(duration: 0.5),
+        removeAnimation: Animation = .spring(duration: 0.5)
+    ) {
         self.isVerbose = verbose
+        self.insertionAnimation = insertAnimation
+        self.removalAnimation = removeAnimation
     }
     
-    /// Present a *content* with given **id**.
+    /// Present a notification with given **id** and **content**. Notification's dismiss behavour is defined by
+    /// **expiration** policy.
     ///
     /// - Returns: Returns presenting 'Destination' or **nil** when **id** is in stack already.
     ///
     public func present<Content: View>(
         id: UUID,
         expiration: Expiration,
-        removalAnimation: Animation,
+        animated: Bool = true,
         content: @escaping () -> Content
     ) -> UUID? {
         if let _ = stack.find(id) {
@@ -36,23 +46,21 @@ import SwiftUI
         
         topEntryTimer = nil
         
-        stack.append(
-            StackEntry(
-                id: id,
-                deep: (stack.last?.deep ?? -1) + 1,
-                expiration: expiration,
-                view: AnyView(content())
+        withAnimation(animated ? insertionAnimation : nil) {
+            stack.append(
+                StackEntry(
+                    id: id,
+                    deep: (stack.last?.deep ?? -1) + 1,
+                    expiration: expiration,
+                    view: AnyView(content())
+                )
             )
-        )
+        }
         
         switch expiration {
         case .never: break
         case .timeout(let stride):
-            topEntryTimer = makeTimer(
-                forId: id,
-                interval: stride.timeInterval,
-                dismissAnimation: removalAnimation
-            )
+            topEntryTimer = makeTimer(forId: id, interval: stride.timeInterval)
             dprint(isVerbose, "⏱️ sheduled \(id) in \(stride.timeInterval)s")
         }
 
@@ -60,34 +68,32 @@ import SwiftUI
         return id
     }
     
-    public func dismiss(_ id: UUID, nextDismissAnimation: Animation?) {
+    public func dismiss(_ id: UUID, animated: Bool = true) {
         let presentedIndex = stack.firstIndex { $0.id == id }
         guard let presentedIndex else {
             dprint(isVerbose, "⚠️ id \(id) is not found in stack - skip")
             return
         }
         
-        if id == stack.last?.id {
-            stack.removeLast()
-            dprint(isVerbose, "🙈 dismissed \(id)")
-            
-            if let newTopEntry = stack.last {
-                switch newTopEntry.expiration {
-                case .timeout(let stride):
-                    topEntryTimer = makeTimer(
-                        forId: newTopEntry.id,
-                        interval: stride.timeInterval,
-                        dismissAnimation: nextDismissAnimation
-                    )
-                    dprint(isVerbose, "⏱️ sheduled new top entry \(newTopEntry.id) in \(stride.timeInterval)s")
-                case .never: break
+        withAnimation(animated ? removalAnimation : nil) {
+            if id == stack.last?.id {
+                stack.removeLast()
+                dprint(isVerbose, "🙈 dismissed \(id)")
+                
+                if let newTopEntry = stack.last {
+                    switch newTopEntry.expiration {
+                    case .timeout(let stride):
+                        topEntryTimer = makeTimer(forId: newTopEntry.id, interval: stride.timeInterval)
+                        dprint(isVerbose, "⏱️ sheduled new top entry \(newTopEntry.id) in \(stride.timeInterval)s")
+                    case .never: break
+                    }
+                    
                 }
-
+            } else {
+                stack.remove(at: presentedIndex)
+                stack = stack.reindexDeep(from: presentedIndex)
+                dprint(isVerbose, "🙈 dismissed \(id)")
             }
-        } else {
-            stack.remove(at: presentedIndex)
-            stack = stack.reindexDeep(from: presentedIndex)
-            dprint(isVerbose, "🙈 dismissed \(id)")
         }
     }
     
@@ -95,19 +101,19 @@ import SwiftUI
         stack.find(id) != nil
     }
     
-    public func popToRoot() {
+    public func popToRoot(animated: Bool = true) {
         topEntryTimer = nil
-        stack.removeAll()
+        withAnimation(animated ? removalAnimation : nil) { stack.removeAll() }
     }
     
-    public func popLast(_ nextDismissAnimation: Animation?) {
+    public func popLast(animated: Bool = true) {
         if let lastId = stack.last?.id {
             topEntryTimer = nil
-            dismiss(lastId, nextDismissAnimation: nextDismissAnimation)
+            dismiss(lastId, animated: animated)
         }
     }
     
-    private func makeTimer(forId id: UUID, interval: TimeInterval, dismissAnimation: Animation?) -> EntryTimer {
+    private func makeTimer(forId id: UUID, interval: TimeInterval) -> EntryTimer {
         EntryTimer(
             entryId: id,
             timerCancellable: Timer
@@ -121,7 +127,7 @@ import SwiftUI
                 .first()
                 .sink { [weak self] _ in
                     dprint(self?.isVerbose, "⏱️ timeout for id \(id)")
-                    withAnimation(dismissAnimation) {self?.dismiss(id, nextDismissAnimation: dismissAnimation) }
+                    self?.dismiss(id, animated: true)
                 }
         )
     }

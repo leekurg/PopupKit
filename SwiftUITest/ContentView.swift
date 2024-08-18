@@ -22,6 +22,7 @@ struct ContentView: View {
 //            }
 
 //        ScrollAwayTest()
+        
     }
 }
 
@@ -94,7 +95,6 @@ struct SheetA: View {
 }
 
 struct NotificationTest: View {
-    @Environment(\.notificationTransitionAnimation) var transitionAnimation
     @Environment(NotificationPresenter.self) var notificationPresenter
     
     @State var path = NavigationPath()
@@ -130,9 +130,12 @@ struct NotificationTest: View {
                 .buttonStyle(.borderedProminent)
                 
                 Button("Pop to root") {
-                    withAnimation(transitionAnimation.removal) {
-                        notificationPresenter.popToRoot()
-                    }
+                    notificationPresenter.popToRoot()
+                }
+                .buttonStyle(.bordered)
+                
+                Button("Pop last") {
+                    notificationPresenter.popLast()
                 }
                 .buttonStyle(.bordered)
                 
@@ -331,6 +334,6 @@ struct SearchView: View {
     }
 }
 
-#Preview {
-    ContentView()
-}
+//#Preview {
+//    ContentView()
+//}

@@ -25,7 +25,6 @@ public extension View {
 
 struct NotificationModifier<Overlay: View>: ViewModifier {
     @Environment(NotificationPresenter.self) private var presenter
-    @Environment(\.notificationTransitionAnimation) private var transitionAnimation
     
     @Binding var isPresented: Bool
     let expiration: NotificationPresenter.Expiration
@@ -39,11 +38,10 @@ struct NotificationModifier<Overlay: View>: ViewModifier {
                 if isPresented {
                     dprint(presenter.isVerbose, "notification [\(notificationId)]: present me 🤲")
                     var presentedId: UUID?
-                    withAnimation(transitionAnimation.insertion) {
+                    withAnimation(presenter.insertionAnimation) {
                         presentedId = presenter.present(
                             id: notificationId,
                             expiration: expiration,
-                            removalAnimation: transitionAnimation.removal,
                             content: notification
                         )
                     }
@@ -51,15 +49,13 @@ struct NotificationModifier<Overlay: View>: ViewModifier {
                 } else {
                     if presenter.isStacked(notificationId) {
                         dprint(presenter.isVerbose, "notification [\(notificationId)]: dismiss me 🫠")
-                        withAnimation(transitionAnimation.removal) {
-                            presenter.dismiss(notificationId, nextDismissAnimation: transitionAnimation.removal)
-                        }
+                        presenter.dismiss(notificationId)
                     }
                 }
             }
             .onChange(of: presenter.stack) {
                 if presenter.stack.find(notificationId) == nil {
-                    withAnimation(transitionAnimation.removal) { isPresented = false }
+                    withAnimation(presenter.removalAnimation) { isPresented = false }
                 }
             }
     }
