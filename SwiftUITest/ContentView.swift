@@ -14,8 +14,8 @@ struct ContentView: View {
 //        RootView()
 //        MyRootView()
 //        OverlayTest()
-        NotificationTest()
-//        NotificationOnlyTest()
+//        NotificationTest()
+        StandaloneNotificationTest()
         
 //        Color.purple
 //            .onAppear {
@@ -25,17 +25,10 @@ struct ContentView: View {
     }
 }
 
-struct NotificationOnlyTest: View {
-    @State var n1 = false
-
+struct StandaloneNotificationTest: View {
     var body: some View {
-        Button("Notification 1") {
-            n1.toggle()
-        }
-        .buttonStyle(.borderedProminent)
-        .notification(isPresented: $n1, expiration: .never) {
-            Text("Continuous notification 1")
-        }
+        NotificationTest()
+//            .debugPreviewNotificationEnv()
     }
 }
 
@@ -59,12 +52,12 @@ struct NotificationTest: View {
                 }
                 .buttonStyle(.borderedProminent)
                 
-                Button("Show notification 2") {
+                Button("Continuous notification 2") {
                     n2.toggle()
                 }
                 .buttonStyle(.borderedProminent)
                 
-                Button("Show notification 3") {
+                Button("Continuous notification 3") {
                     n3.toggle()
                 }
                 .buttonStyle(.borderedProminent)
@@ -151,14 +144,25 @@ struct NotificationTest: View {
             .sheet(isPresented: $isSheet) {
                 NotificationViewB(isPresented: $isSheet)
             }
-            .notification(isPresented: $n1, expiration: .never) {
+            .notification(isPresented: $n1, expiration: .never, background: .default) {
                 Text("Continuous notification 1")
             }
-            .notification(isPresented: $n2) {
-                Text("Notification 2")
+            .notification(isPresented: $n2, expiration: .never) {
+                Rectangle()
+                    .fill(.thinMaterial)
+                    .overlay {
+                        Text("Continuous Notification 2")
+                    }
+                    .frame(height: 300)
             }
-            .notification(isPresented: $n3) {
-                Text("Notification 3")
+            .notification(isPresented: $n3, expiration: .never) {
+                Rectangle()
+                    .fill(.thinMaterial)
+                    .overlay {
+                        Text("Continuous Notification 3")
+                    }
+                    .frame(height: 300)
+                    .frame(maxHeight: .infinity)
             }
             .notification(isPresented: $n4) {
                 Text("Notification 4")
@@ -281,5 +285,5 @@ struct SearchView: View {
 
 #Preview {
     ContentView()
-        .environmentObject(NotificationPresenter())
+        .debugPreviewNotificationEnv(ignoresSafeAreaEdges: [])
 }

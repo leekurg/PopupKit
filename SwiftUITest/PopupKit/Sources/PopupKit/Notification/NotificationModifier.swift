@@ -12,30 +12,44 @@ public extension View {
     func notification<Content: View>(
         isPresented: Binding<Bool>,
         expiration: NotificationPresenter.Expiration = .timeout(.seconds(3)),
+        background: NotificationBackground = .none,
         content: @escaping () -> Content
     ) -> some View {
-        if ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] != nil {
-            self
-        } else {
+//        if ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] != nil {
+//            self
+//        } else {
             modifier(
                 NotificationModifier(
                     isPresented: isPresented,
                     expiration: expiration,
+                    background: background,
                     notification: content
                 )
             )
-        }
+//        }
     }
 }
 
-struct NotificationModifier<Overlay: View>: ViewModifier {
+struct NotificationModifier<T: View>: ViewModifier {
     @EnvironmentObject private var presenter: NotificationPresenter
+    @State private var notificationId = UUID()
     
     @Binding var isPresented: Bool
     let expiration: NotificationPresenter.Expiration
-    let notification: () -> Overlay
+    let background: NotificationBackground
+    let notification: () -> T
     
-    @State private var notificationId = UUID()
+    init(
+        isPresented: Binding<Bool>,
+        expiration: NotificationPresenter.Expiration,
+        background: NotificationBackground,
+        notification: @escaping () -> T
+    ) {
+        self._isPresented = isPresented
+        self.expiration = expiration
+        self.background = background
+        self.notification = notification
+    }
     
     func body(content: Content) -> some View {
         content
@@ -47,7 +61,10 @@ struct NotificationModifier<Overlay: View>: ViewModifier {
                         presentedId = presenter.present(
                             id: notificationId,
                             expiration: expiration,
-                            content: notification
+                            content: {
+                                notification()
+                                    .modifier(DefaultNotificationBackground(variant: background))
+                            }
                         )
                     }
                     if presentedId == nil { isPresented = false }

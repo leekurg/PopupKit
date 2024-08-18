@@ -10,12 +10,18 @@ import SwiftUI
 public extension View {
     func notificationRoot(
         alignment: Alignment = .bottom,
-        transition: AnyTransition = .notification
+        transition: AnyTransition = .notification,
+        maxNotificationWidth: CGFloat = 500.0,
+        minNotificationHeight: CGFloat = 100.0,
+        dragThreshold: CGFloat = 300.0
     ) -> some View {
         modifier(
             NotificationRootModifier(
                 alignment: alignment,
-                transition: transition
+                transition: transition,
+                maxNotificationWidth: maxNotificationWidth,
+                minNotificationHeight: minNotificationHeight,
+                dragThreshold: dragThreshold
             )
         )
     }
@@ -30,15 +36,24 @@ struct NotificationRootModifier: ViewModifier {
     let transition: AnyTransition
 
     private let dismissDirection: DismissDirection
-
-    private let maxNotificationWidth = 500.0
-    private let minNotificationHeight = 100.0
-    private let dragThreshold = 300.0
+    private let maxNotificationWidth: CGFloat
+    private let minNotificationHeight: CGFloat
+    private let dragThreshold: CGFloat
     
-    init(alignment: Alignment, transition: AnyTransition) {
+    init(
+        alignment: Alignment,
+        transition: AnyTransition,
+        maxNotificationWidth: CGFloat,
+        minNotificationHeight: CGFloat,
+        dragThreshold: CGFloat
+    ) {
         self.alignment = alignment
         self.transition = transition
         self.dismissDirection = .init(alignment: alignment)
+        
+        self.maxNotificationWidth = maxNotificationWidth
+        self.minNotificationHeight = minNotificationHeight
+        self.dragThreshold = dragThreshold
         
         self._dragHeight = GestureState(
             initialValue: .zero,
@@ -55,17 +70,6 @@ struct NotificationRootModifier: ViewModifier {
                                 entry.view
                             }
                             .frame(maxWidth: maxNotificationWidth, minHeight: minNotificationHeight)
-                            .background {
-                                RoundedRectangle(cornerRadius: 30)
-                                    .fill(.thinMaterial)
-                                    .overlay {
-                                        ContainerRelativeShape()
-                                            .stroke(.blue, lineWidth: 0.5)
-                                            .padding(5)
-                                    }
-                            }
-                            .containerShape(RoundedRectangle(cornerRadius: 30))
-                            .padding()
                             .zIndex(Double(entry.deep))
                             .offset(
                                 calcOffset(
