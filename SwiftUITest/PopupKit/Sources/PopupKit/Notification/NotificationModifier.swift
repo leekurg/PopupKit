@@ -1,6 +1,6 @@
 //
 //  NotificationModifier.swift
-//  SwiftUITest
+//  PopupKit
 //
 //  Created by Илья Аникин on 03.08.2024.
 //
@@ -29,7 +29,7 @@ public extension View {
 }
 
 struct NotificationModifier<Overlay: View>: ViewModifier {
-    @Environment(NotificationPresenter.self) private var presenter
+    @EnvironmentObject private var presenter: NotificationPresenter
     
     @Binding var isPresented: Bool
     let expiration: NotificationPresenter.Expiration
@@ -39,8 +39,8 @@ struct NotificationModifier<Overlay: View>: ViewModifier {
     
     func body(content: Content) -> some View {
         content
-            .onChange(of: isPresented) {
-                if isPresented {
+            .onChange(of: isPresented) { presented in
+                if presented {
                     dprint(presenter.isVerbose, "notification [\(notificationId)]: present me 🤲")
                     var presentedId: UUID?
                     withAnimation(presenter.insertionAnimation) {
@@ -58,8 +58,8 @@ struct NotificationModifier<Overlay: View>: ViewModifier {
                     }
                 }
             }
-            .onChange(of: presenter.stack) {
-                if presenter.stack.find(notificationId) == nil {
+            .onChange(of: presenter.stack) { stack in
+                if stack.find(notificationId) == nil {
                     withAnimation(presenter.removalAnimation) { isPresented = false }
                 }
             }

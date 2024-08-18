@@ -12,6 +12,6 @@ struct MainSceneView: View {
 
     var body: some View {
         ContentView()
-            .environment(sceneDelegate.notificationPresenter)
+            .environmentObject(sceneDelegate.notificationPresenter)
     }
 }

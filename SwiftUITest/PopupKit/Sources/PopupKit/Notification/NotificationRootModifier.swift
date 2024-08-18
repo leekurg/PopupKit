@@ -1,6 +1,6 @@
 //
 //  NotificationRootModifier.swift
-//  SwiftUITest
+//  PopupKit
 //
 //  Created by Илья Аникин on 03.08.2024.
 //
@@ -22,7 +22,7 @@ public extension View {
 }
 
 struct NotificationRootModifier: ViewModifier {
-    @Environment(NotificationPresenter.self) private var presenter
+    @EnvironmentObject private var presenter: NotificationPresenter
     @GestureState private var dragHeight: CGFloat
     @State private var topEntryDraggedAway = false
     
@@ -146,8 +146,4 @@ struct NotificationRootModifier: ViewModifier {
     private func calcBlur(deep: Int, total: Int) -> CGFloat {
         Double(total) - Double(deep) - 1.0
     }
-}
-
-#Preview {
-    ContentView()
 }

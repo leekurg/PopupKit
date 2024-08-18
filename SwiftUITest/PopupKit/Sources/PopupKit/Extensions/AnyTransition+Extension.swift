@@ -1,6 +1,6 @@
 //
 //  AnyTransition+Extension.swift
-//  SwiftUITest
+//  PopupKit
 //
 //  Created by Илья Аникин on 18.08.2024.
 //

@@ -7,6 +7,7 @@
 
 import SwiftUI
 import FullscreenOverlay
+import PopupKit
 
 struct ContentView: View {
     var body: some View {
@@ -39,7 +40,7 @@ struct NotificationOnlyTest: View {
 }
 
 struct NotificationTest: View {
-    @Environment(NotificationPresenter.self) var notificationPresenter
+    @EnvironmentObject var notificationPresenter: NotificationPresenter
     
     @State var path = NavigationPath()
     @State var isFullscreen = false
@@ -197,7 +198,7 @@ struct NotificationViewA: View {
 }
 
 struct NotificationViewB: View {
-    @Environment(NotificationPresenter.self) var presenter
+    @EnvironmentObject var presenter: NotificationPresenter
     @State private var isNotified = false
     
     @Binding var isPresented: Bool
@@ -280,5 +281,5 @@ struct SearchView: View {
 
 #Preview {
     ContentView()
-        .environment(NotificationPresenter())
+        .environmentObject(NotificationPresenter())
 }

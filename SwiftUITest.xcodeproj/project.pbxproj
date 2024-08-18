@@ -7,15 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1E4CC9762C724568002FAC7A /* DismissDirection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E4CC9752C724568002FAC7A /* DismissDirection.swift */; };
-		1E4CC9782C724701002FAC7A /* AnyTransition+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E4CC9772C724701002FAC7A /* AnyTransition+Extension.swift */; };
+		1E4CC97B2C72494C002FAC7A /* PopupKit in Frameworks */ = {isa = PBXBuildFile; productRef = 1E4CC97A2C72494C002FAC7A /* PopupKit */; };
 		1E5F033D2C59A48600034347 /* XMarkButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E5F033C2C59A48600034347 /* XMarkButton.swift */; };
 		1E6243582C6FFE4A00259AF6 /* NotificationAppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E6243572C6FFE4A00259AF6 /* NotificationAppDelegate.swift */; };
 		1E62435A2C6FFE8100259AF6 /* NotificationSceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E6243592C6FFE8100259AF6 /* NotificationSceneDelegate.swift */; };
 		1E62435C2C700C4700259AF6 /* MainSceneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E62435B2C700C4700259AF6 /* MainSceneView.swift */; };
-		1E870B872C5EAA5500C2486A /* NotificationPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E870B862C5EAA5500C2486A /* NotificationPresenter.swift */; };
-		1E870B8A2C5EAB0E00C2486A /* NotificationRootModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E870B892C5EAB0E00C2486A /* NotificationRootModifier.swift */; };
-		1E870B8C2C5EABE200C2486A /* NotificationModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E870B8B2C5EABE200C2486A /* NotificationModifier.swift */; };
 		1EAB819F2C56B985007AFC52 /* SwiftUITestApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EAB819E2C56B985007AFC52 /* SwiftUITestApp.swift */; };
 		1EAB81A12C56B985007AFC52 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EAB81A02C56B985007AFC52 /* ContentView.swift */; };
 		1EAB81A32C56B986007AFC52 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1EAB81A22C56B986007AFC52 /* Assets.xcassets */; };
@@ -25,15 +21,11 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		1E4CC9752C724568002FAC7A /* DismissDirection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DismissDirection.swift; sourceTree = "<group>"; };
-		1E4CC9772C724701002FAC7A /* AnyTransition+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AnyTransition+Extension.swift"; sourceTree = "<group>"; };
+		1E4CC9792C72480F002FAC7A /* PopupKit */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = PopupKit; sourceTree = "<group>"; };
 		1E5F033C2C59A48600034347 /* XMarkButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XMarkButton.swift; sourceTree = "<group>"; };
 		1E6243572C6FFE4A00259AF6 /* NotificationAppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationAppDelegate.swift; sourceTree = "<group>"; };
 		1E6243592C6FFE8100259AF6 /* NotificationSceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationSceneDelegate.swift; sourceTree = "<group>"; };
 		1E62435B2C700C4700259AF6 /* MainSceneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainSceneView.swift; sourceTree = "<group>"; };
-		1E870B862C5EAA5500C2486A /* NotificationPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationPresenter.swift; sourceTree = "<group>"; };
-		1E870B892C5EAB0E00C2486A /* NotificationRootModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationRootModifier.swift; sourceTree = "<group>"; };
-		1E870B8B2C5EABE200C2486A /* NotificationModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationModifier.swift; sourceTree = "<group>"; };
 		1EAB819B2C56B985007AFC52 /* SwiftUITest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftUITest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1EAB819E2C56B985007AFC52 /* SwiftUITestApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftUITestApp.swift; sourceTree = "<group>"; };
 		1EAB81A02C56B985007AFC52 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -49,6 +41,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1E4CC97B2C72494C002FAC7A /* PopupKit in Frameworks */,
 				1EECD9952C5E3210007401DD /* FullscreenOverlay in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -56,18 +49,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		1E870B882C5EAADE00C2486A /* NotificationOverlay */ = {
-			isa = PBXGroup;
-			children = (
-				1E870B862C5EAA5500C2486A /* NotificationPresenter.swift */,
-				1E870B892C5EAB0E00C2486A /* NotificationRootModifier.swift */,
-				1E870B8B2C5EABE200C2486A /* NotificationModifier.swift */,
-				1E4CC9752C724568002FAC7A /* DismissDirection.swift */,
-				1E4CC9772C724701002FAC7A /* AnyTransition+Extension.swift */,
-			);
-			path = NotificationOverlay;
-			sourceTree = "<group>";
-		};
 		1EAB81922C56B985007AFC52 = {
 			isa = PBXGroup;
 			children = (
@@ -88,7 +69,7 @@
 		1EAB819D2C56B985007AFC52 /* SwiftUITest */ = {
 			isa = PBXGroup;
 			children = (
-				1E870B882C5EAADE00C2486A /* NotificationOverlay */,
+				1E4CC9792C72480F002FAC7A /* PopupKit */,
 				1EECD9922C5E31D3007401DD /* FullscreenOverlay */,
 				1EF4695A2C58F07D0046C136 /* Components */,
 				1EAB819E2C56B985007AFC52 /* SwiftUITestApp.swift */,
@@ -145,6 +126,7 @@
 			name = SwiftUITest;
 			packageProductDependencies = (
 				1EECD9942C5E3210007401DD /* FullscreenOverlay */,
+				1E4CC97A2C72494C002FAC7A /* PopupKit */,
 			);
 			productName = SwiftUITest;
 			productReference = 1EAB819B2C56B985007AFC52 /* SwiftUITest.app */;
@@ -202,18 +184,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1E870B8C2C5EABE200C2486A /* NotificationModifier.swift in Sources */,
 				1E5F033D2C59A48600034347 /* XMarkButton.swift in Sources */,
-				1E4CC9762C724568002FAC7A /* DismissDirection.swift in Sources */,
 				1E6243582C6FFE4A00259AF6 /* NotificationAppDelegate.swift in Sources */,
 				1EF4695E2C58F0FB0046C136 /* FullscreenOverlay.swift in Sources */,
 				1E62435A2C6FFE8100259AF6 /* NotificationSceneDelegate.swift in Sources */,
-				1E870B872C5EAA5500C2486A /* NotificationPresenter.swift in Sources */,
-				1E4CC9782C724701002FAC7A /* AnyTransition+Extension.swift in Sources */,
 				1EAB81A12C56B985007AFC52 /* ContentView.swift in Sources */,
 				1E62435C2C700C4700259AF6 /* MainSceneView.swift in Sources */,
 				1EAB819F2C56B985007AFC52 /* SwiftUITestApp.swift in Sources */,
-				1E870B8A2C5EAB0E00C2486A /* NotificationRootModifier.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -436,6 +413,10 @@
 /* End XCConfigurationList section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		1E4CC97A2C72494C002FAC7A /* PopupKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = PopupKit;
+		};
 		1EECD9942C5E3210007401DD /* FullscreenOverlay */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = FullscreenOverlay;

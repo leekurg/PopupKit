@@ -7,6 +7,7 @@
 
 import SwiftUI
 import UIKit
+import PopupKit
 
 class NotificationSceneDelegate: NSObject, UIWindowSceneDelegate, ObservableObject {
     private var notificationWindow: UIWindow?
@@ -20,7 +21,7 @@ class NotificationSceneDelegate: NSObject, UIWindowSceneDelegate, ObservableObje
                 rootView: Color.clear
                     .notificationRoot()
                     .ignoresSafeArea(.all, edges: [.horizontal, .bottom])
-                    .environment(notificationPresenter)
+                    .environmentObject(notificationPresenter)
             )
             notificationViewController.view.backgroundColor = .clear
             notificationWindow.rootViewController = notificationViewController

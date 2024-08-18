@@ -1,6 +1,6 @@
 //
 //  NotificationPresenter.swift
-//  SwiftUITest
+//  PopupKit
 //
 //  Created by Илья Аникин on 03.08.2024.
 //
@@ -8,10 +8,10 @@
 import Combine
 import SwiftUI
 
-@Observable public class NotificationPresenter {
+public class NotificationPresenter: ObservableObject {
     let isVerbose: Bool
 
-    public private(set) var stack: [StackEntry] = []
+    @Published public private(set) var stack: [StackEntry] = []
     
     public let insertionAnimation: Animation
     public let removalAnimation: Animation
@@ -181,12 +181,4 @@ extension Array where Element == NotificationPresenter.StackEntry {
                 )
             }
     }
-}
-
-func dprint(_ verbose: Bool?, _ items: Any..., separator: String = " ", terminator: String = "\n") {
-    #if DEBUG
-    if verbose != false {
-        print(items, separator: separator, terminator: terminator)
-    }
-    #endif
 }
