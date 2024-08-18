@@ -8,18 +8,23 @@
 import SwiftUI
 
 public extension View {
+    @ViewBuilder
     func notification<Content: View>(
         isPresented: Binding<Bool>,
         expiration: NotificationPresenter.Expiration = .timeout(.seconds(3)),
         content: @escaping () -> Content
     ) -> some View {
-        modifier(
-            NotificationModifier(
-                isPresented: isPresented,
-                expiration: expiration,
-                notification: content
+        if ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] != nil {
+            self
+        } else {
+            modifier(
+                NotificationModifier(
+                    isPresented: isPresented,
+                    expiration: expiration,
+                    notification: content
+                )
             )
-        )
+        }
     }
 }
 

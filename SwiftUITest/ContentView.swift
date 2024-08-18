@@ -9,88 +9,32 @@ import SwiftUI
 import FullscreenOverlay
 
 struct ContentView: View {
-    @EnvironmentObject var sceneDelegate: NotificationSceneDelegate
-    
     var body: some View {
 //        RootView()
 //        MyRootView()
 //        OverlayTest()
         NotificationTest()
-//        WindowedNotificationTest()
-//            .onAppear {
-//                print("✅ scene delegate found, stack: \(sceneDelegate.notificationPresenter.stack.count)")
-//            }
-
-//        ScrollAwayTest()
+//        NotificationOnlyTest()
         
+//        Color.purple
+//            .onAppear {
+//                let isPreview = ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"]
+//                print(isPreview)
+//            }
     }
 }
 
-struct WindowedNotificationTest: View {
-    @State var isOne = false
-    
-    @State var isSheet = false
-    @State var isFullscreen = false
-    
-    var body: some View {
-        VStack {
-            Circle()
-                .fill(isOne ? .green : .red)
-                .frame(width: 50)
-            
-            Button("Notification 1") {
-                isOne.toggle()
-            }
-            .buttonStyle(.borderedProminent)
-            
-            HStack {
-                Button("Sheet") {
-                    isSheet.toggle()
-                }
-                .buttonStyle(.bordered)
-                
-                Button("Fullscreen") {
-                    isFullscreen.toggle()
-                }
-                .buttonStyle(.bordered)
-            }
-        }
-        .notification(isPresented: $isOne, expiration: .never) {
-            Text("My notification description")
-        }
-        .sheet(isPresented: $isSheet) {
-            SheetA()
-        }
-        .fullScreenCover(isPresented: $isFullscreen) {
-            SheetA()
-        }
-    }
-}
-
-struct SheetA: View {
-    @State var isTwo = false
+struct NotificationOnlyTest: View {
+    @State var n1 = false
 
     var body: some View {
-        Color.orange
-            .overlay {
-                VStack {
-                    Circle()
-                        .fill(isTwo ? .green : .red)
-                        .frame(width: 50)
-                    
-                    Button("Notification 2") {
-                        isTwo.toggle()
-                    }
-                    .buttonStyle(.borderedProminent)
-                }
-            }
-            .notification(isPresented: $isTwo, expiration: .never) {
-                HStack {
-                    Image(systemName: "gear")
-                    
-                    Text("Notification 2 desc")
-                }
-            }
+        Button("Notification 1") {
+            n1.toggle()
+        }
+        .buttonStyle(.borderedProminent)
+        .notification(isPresented: $n1, expiration: .never) {
+            Text("Continuous notification 1")
+        }
     }
 }
 
@@ -334,6 +278,7 @@ struct SearchView: View {
     }
 }
 
-//#Preview {
-//    ContentView()
-//}
+#Preview {
+    ContentView()
+        .environment(NotificationPresenter())
+}

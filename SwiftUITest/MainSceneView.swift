@@ -15,7 +15,3 @@ struct MainSceneView: View {
             .environment(sceneDelegate.notificationPresenter)
     }
 }
-//
-//#Preview {
-//    MainSceneView()
-//}
