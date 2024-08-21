@@ -68,6 +68,7 @@ public class NotificationPresenter: ObservableObject {
         return id
     }
     
+    /// Dismiss a notification with given **id**.
     public func dismiss(_ id: UUID, animated: Bool = true) {
         let presentedIndex = stack.firstIndex { $0.id == id }
         guard let presentedIndex else {
@@ -97,15 +98,18 @@ public class NotificationPresenter: ObservableObject {
         }
     }
     
+    /// Returns **true** if notification with given **id** is present in the stack.
     public func isStacked(_ id: UUID) -> Bool {
         stack.find(id) != nil
     }
     
+    /// Dismisses all notifications within the stack.
     public func popToRoot(animated: Bool = true) {
         topEntryTimer = nil
         withAnimation(animated ? removalAnimation : nil) { stack.removeAll() }
     }
     
+    /// Dismisses a notification which is currently on top of the stack.
     public func popLast(animated: Bool = true) {
         if let lastId = stack.last?.id {
             topEntryTimer = nil
@@ -115,7 +119,7 @@ public class NotificationPresenter: ObservableObject {
     
     private func makeTimer(forId id: UUID, interval: TimeInterval) -> EntryTimer {
         EntryTimer(
-            entryId: id,
+            notificationId: id,
             timerCancellable: Timer
                 .publish(
                     every: interval,
@@ -133,11 +137,17 @@ public class NotificationPresenter: ObservableObject {
     }
 }
 
+// MARK: - Entities
 public extension NotificationPresenter {
+    /// Represents a notification entry in notifications stack.
     struct StackEntry: Identifiable, Equatable {
+        /// id of the notification
         public let id: UUID
+        /// Deep level of the notification in stack
         public let deep: Int
+        /// Expiration policy for notification
         public let expiration: Expiration
+        /// Content on notification's view
         public let view: AnyView
         
         public static func == (lhs: StackEntry, rhs: StackEntry) -> Bool {
@@ -145,20 +155,21 @@ public extension NotificationPresenter {
         }
     }
     
+    /// Expiration timer entry, related to a specific notification by **id**.
     struct EntryTimer {
-        let entryId: UUID
+        let notificationId: UUID
         let timerCancellable: AnyCancellable
     }
     
+    /// Expiration policy for notification.
     enum Expiration {
-        case never, timeout(RunLoop.SchedulerTimeType.Stride)
-        
-        var isTimeout: Bool {
-            switch self {
-            case .never: false
-            case .timeout: true
-            }
-        }
+        /// Notification is considered as non-expiring and requires user's action for dismissing.
+        case never
+        /// Notification is considered as expired after it's have been stayed on top
+        /// of the stack for defined time interval.
+        ///
+        /// Expired notification will be auto-dissmissed.
+        case timeout(RunLoop.SchedulerTimeType.Stride)
     }
 }
 

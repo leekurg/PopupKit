@@ -8,6 +8,17 @@
 import SwiftUI
 
 public extension View {
+    /// Presents a notification with PopupKit.
+    ///
+    /// - Parameters:
+    ///    - isPresented: A binding to a Boolean value that determines whether
+    ///  to present the notification that you create in the modifier's `content` closure.
+    ///    - expiration: Notification's expiration policy.
+    ///    - background: Background variant.
+    ///    - content: A closure that returns the content of the notification.
+    ///
+    /// - Note: Requires a ``View/notificationRoot(:_)`` been installed higher up the view hierarchy.
+    ///
     @ViewBuilder func notification<Content: View>(
         isPresented: Binding<Bool>,
         expiration: NotificationPresenter.Expiration = .timeout(.seconds(3)),

@@ -64,36 +64,36 @@ struct NotificationRootModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
             .overlay {
-                    ZStack {
-                        ForEach(presenter.stack) { entry in
-                            VStack {
-                                entry.view
-                            }
-                            .frame(maxWidth: maxNotificationWidth, minHeight: minNotificationHeight)
-                            .zIndex(Double(entry.deep))
-                            .offset(
-                                calcOffset(
-                                    deep: entry.deep,
-                                    stackCount: presenter.stack.count,
-                                    dragHeight: dragHeight,
-                                    alignment: alignment
-                                )
-                            )
-                            .scaleEffect(
-                                calcScale(deep: entry.deep, total: presenter.stack.count)
-                            )
-                            .blur(
-                                radius: calcBlur(deep: entry.deep, total: presenter.stack.count)
-                            )
-                            .transition(transition)
+                ZStack {
+                    ForEach(presenter.stack) { entry in
+                        VStack {
+                            entry.view
                         }
+                        .frame(maxWidth: maxNotificationWidth, minHeight: minNotificationHeight)
+                        .zIndex(Double(entry.deep))
+                        .offset(
+                            calcOffset(
+                                deep: entry.deep,
+                                stackCount: presenter.stack.count,
+                                dragHeight: dragHeight,
+                                alignment: alignment
+                            )
+                        )
+                        .scaleEffect(
+                            calcScale(deep: entry.deep, total: presenter.stack.count)
+                        )
+                        .blur(
+                            radius: calcBlur(deep: entry.deep, total: presenter.stack.count)
+                        )
+                        .transition(transition)
                     }
-                    .overlay {
-                        Color.clear
-                            .contentShape(Rectangle())
-                            .gesture(makeDragGesture())
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: alignment)
+                }
+                .overlay {
+                    Color.clear
+                        .contentShape(Rectangle())
+                        .gesture(makeDragGesture())
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: alignment)
             }
     }
     
