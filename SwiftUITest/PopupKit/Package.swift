@@ -15,7 +15,13 @@ let package = Package(
     targets: [
         .target(
             name: "PopupKit",
-            swiftSettings: [.define("DEBUG", .when(configuration: .debug))]
+            swiftSettings: [
+                .define("DEBUG", .when(configuration: .debug)),
+                /// Uncomment if you want PopupKit work withing SwiftUI Previews context.
+                /// In this case It is required to define an aprropriate **root** modifier to setup
+                /// **preseter** and a root view. This can be achieved by using ``View/debugPreviewNotificationEnv(:_)``.
+//                .define("DISABLE_POPUPKIT_IN_PREVIEWS")
+            ]
         )
     ]
 )

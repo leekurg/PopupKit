@@ -8,16 +8,16 @@
 import SwiftUI
 
 public extension View {
-    @ViewBuilder
-    func notification<Content: View>(
+    @ViewBuilder func notification<Content: View>(
         isPresented: Binding<Bool>,
         expiration: NotificationPresenter.Expiration = .timeout(.seconds(3)),
         background: NotificationBackground = .none,
         content: @escaping () -> Content
     ) -> some View {
-//        if ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] != nil {
-//            self
-//        } else {
+        #if DISABLE_POPUPKIT_IN_PREVIEWS
+        if ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] != nil {
+            self
+        } else {
             modifier(
                 NotificationModifier(
                     isPresented: isPresented,
@@ -26,7 +26,17 @@ public extension View {
                     notification: content
                 )
             )
-//        }
+        }
+        #else
+        modifier(
+            NotificationModifier(
+                isPresented: isPresented,
+                expiration: expiration,
+                background: background,
+                notification: content
+            )
+        )
+        #endif
     }
 }
 
