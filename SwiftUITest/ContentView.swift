@@ -10,25 +10,29 @@ import FullscreenOverlay
 import PopupKit
 
 struct ContentView: View {
+    @State var selectedTab: Tab = .notification
+    
     var body: some View {
-//        RootView()
-//        MyRootView()
-//        OverlayTest()
-//        NotificationTest()
-        StandaloneNotificationTest()
-        
-//        Color.purple
-//            .onAppear {
-//                let isPreview = ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"]
-//                print(isPreview)
-//            }
+        TabView(selection: $selectedTab) {
+            NotificationTest()
+                .tabItem {
+                    Label("Notification", systemImage: "bell")
+                }
+                .tag(Tab.notification)
+            
+            MyRootView()
+                .tabItem {
+                    Label("Fullscreen", systemImage: "rectangle.portrait.inset.filled")
+                }
+                .tag(Tab.fullscreen)
+        }
     }
 }
 
-struct StandaloneNotificationTest: View {
-    var body: some View {
-        NotificationTest()
-//            .debugPreviewNotificationEnv()
+extension ContentView {
+    enum Tab {
+        case notification
+        case fullscreen
     }
 }
 
@@ -237,27 +241,6 @@ struct NotificationViewB: View {
     }
 }
 
-struct OverlayTest: View {
-    @State private var isShow: Bool = false
-    @State private var overlayPresenter = FullscreenOverlayPresenter()
-
-    var body: some View {
-        ZStack {
-            Button("Show overlay") {
-                isShow.toggle()
-            }
-            .buttonStyle(.borderedProminent)
-            .fullscreenOverlay(isPresented: $isShow) {
-                SearchView()
-            }
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .border(.red)
-        .fullscreenOverlayRoot(.move(edge: .bottom))
-        .environment(overlayPresenter)
-    }
-}
-
 struct SearchView: View {
     var body: some View {
 //        NavigationStack {
@@ -285,5 +268,5 @@ struct SearchView: View {
 
 #Preview {
     ContentView()
-        .debugPreviewNotificationEnv(ignoresSafeAreaEdges: [])
+        .debugPreviewNotificationEnv(ignoresSafeAreaEdges: [.bottom])
 }

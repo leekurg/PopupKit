@@ -140,7 +140,7 @@ public class NotificationPresenter: ObservableObject {
 // MARK: - Entities
 public extension NotificationPresenter {
     /// Represents a notification entry in notifications stack.
-    struct StackEntry: Identifiable, Equatable {
+    struct StackEntry: Stackable {
         /// id of the notification
         public let id: UUID
         /// Deep level of the notification in stack
@@ -149,10 +149,6 @@ public extension NotificationPresenter {
         public let expiration: Expiration
         /// Content on notification's view
         public let view: AnyView
-        
-        public static func == (lhs: StackEntry, rhs: StackEntry) -> Bool {
-            lhs.id == rhs.id
-        }
     }
     
     /// Expiration timer entry, related to a specific notification by **id**.
@@ -174,10 +170,6 @@ public extension NotificationPresenter {
 }
 
 extension Array where Element == NotificationPresenter.StackEntry {
-    func find(_ entryId: UUID) -> NotificationPresenter.StackEntry? {
-        first { $0.id == entryId }
-    }
-    
     func reindexDeep(from: Index = 0) -> Self {
         self
             .enumerated()
