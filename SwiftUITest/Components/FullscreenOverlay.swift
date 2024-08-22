@@ -9,7 +9,7 @@ import SwiftUI
 import FullscreenOverlay
 
 struct MyRootView: View {
-    @State private var presenter = FullscreenOverlayPresenter()
+    @State private var presenter = FullscreenPresenter()
     @State private var isA = false
     @State private var isB = false
 
@@ -46,7 +46,7 @@ struct MyRootView: View {
         .fullscreenOverlay(isPresented: $isB) {
             ViewB()
         }
-        .environment(presenter)
+        .environmentObject(presenter)
     }
 }
 
@@ -95,7 +95,7 @@ struct ViewB: View {
 
 struct ViewC: View {
     @State var isB = false
-    @Environment(FullscreenOverlayPresenter.self) var presenter
+    @EnvironmentObject var presenter: FullscreenPresenter
     @Environment(\.overlayTransitionAnimation) var overlayTransitionAnimation
 
     var body: some View {
