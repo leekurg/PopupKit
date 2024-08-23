@@ -8,9 +8,9 @@
 import Foundation
 import SwiftUI
 
-public protocol Stackable: Identifiable, Equatable {
+public protocol Stackable: Identifiable, Equatable where ID: Hashable {
     /// id of the presentable entity
-    var id: UUID { get }
+    var id: ID { get }
     /// Deep level of the presentable entity within the stack
     var deep: Int { get }
     /// Content of the presentable entity

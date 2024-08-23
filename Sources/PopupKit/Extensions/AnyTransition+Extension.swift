@@ -12,4 +12,6 @@ public extension AnyTransition {
         insertion: .move(edge: .bottom),
         removal: .move(edge: .bottom).combined(with: .opacity)
     )
+    
+    static let fullscreen: AnyTransition = .scale(scale: 1.5).combined(with: .opacity)
 }
