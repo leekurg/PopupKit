@@ -1,13 +1,13 @@
 //
-//  DefaultNotificationBackground.swift
-//  PopupKit
+//  DefaultCoverBackground.swift
 //
-//  Created by Илья Аникин on 18.08.2024.
+//
+//  Created by Илья Аникин on 25.08.2024.
 //
 
 import SwiftUI
 
-struct DefaultNotificationBackground: ViewModifier {
+struct DefaultCoverBackground: ViewModifier {
     let variant: NotificationBackground
     
     func body(content: Content) -> some View {

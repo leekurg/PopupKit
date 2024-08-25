@@ -30,24 +30,26 @@ struct FullscreenModifier<T: View>: ViewModifier {
     @Binding var isPresented: Bool
     let fullscreen: () -> T
     
-    @State private var overlayId = UUID()
+    @State private var fullscreenId = UUID()
     
     func body(content: Content) -> some View {
         content
             .onChange(of: isPresented) { presented in
                 if presented {
-                    dprint(presenter.isVerbose, "overlay [\(overlayId)]: present me 🤲")
-                    let presentedId = presenter.present(id: overlayId, content: fullscreen)
+                    dprint(presenter.isVerbose, "overlay [\(fullscreenId)]: present me 🤲")
+                    let presentedId = presenter.present(id: fullscreenId, content: fullscreen)
                     if presentedId == nil { isPresented = false }
                 } else {
-                    if presenter.isStacked(overlayId) {
-                        dprint(presenter.isVerbose, "overlay[\(overlayId)]: dismiss me 🫠")
-                        presenter.dismiss(overlayId)
+                    if presenter.isStacked(fullscreenId) {
+                        dprint(presenter.isVerbose, "overlay[\(fullscreenId)]: dismiss me 🫠")
+                        presenter.dismiss(fullscreenId)
                     }
                 }
             }
             .onChange(of: presenter.stack) { stack in
-                if stack.find(overlayId) == nil { isPresented = false }
+                Task {
+                    if stack.find(fullscreenId) == nil { isPresented = false }
+                }
             }
     }
 }
