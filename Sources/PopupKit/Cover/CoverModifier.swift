@@ -1,8 +1,8 @@
 //
-//  NotificationModifier.swift
-//  PopupKit
+//  CoverModifier.swift
 //
-//  Created by Илья Аникин on 03.08.2024.
+//
+//  Created by Илья Аникин on 25.08.2024.
 //
 
 import SwiftUI
@@ -19,9 +19,8 @@ public extension View {
     ///
     /// - Note: Requires a ``View/notificationRoot(:_)`` been installed higher up the view hierarchy.
     ///
-    @ViewBuilder func notification<Content: View>(
+    @ViewBuilder func cover<Content: View>(
         isPresented: Binding<Bool>,
-        expiration: ExpirationPolicy = .timeout(.seconds(3)),
         background: NotificationBackground = .none,
         content: @escaping () -> Content
     ) -> some View {
@@ -30,74 +29,71 @@ public extension View {
             self
         } else {
             modifier(
-                NotificationModifier(
+                CoverModifier(
                     isPresented: isPresented,
-                    expiration: expiration,
-                    background: background,
-                    notification: content
+                    background: .ultraThinMaterial,
+                    content: content
                 )
             )
         }
         #else
         modifier(
-            NotificationModifier(
+            CoverModifier(
                 isPresented: isPresented,
-                expiration: expiration,
-                background: background,
-                notification: content
+                background: .ultraThinMaterial,
+                content: content
             )
         )
         #endif
     }
 }
 
-struct NotificationModifier<T: View>: ViewModifier {
-    @EnvironmentObject private var presenter: NotificationPresenter
-    @State private var notificationId = UUID()
+struct CoverModifier<T: View, S: ShapeStyle>: ViewModifier {
+    @EnvironmentObject private var presenter: CoverPresenter
+    @State private var coverId = UUID()
     
     @Binding var isPresented: Bool
-    let expiration: ExpirationPolicy
-    let background: NotificationBackground
-    let notification: () -> T
+//    let expiration: ExpirationPolicy
+//    let background: NotificationBackground  // TODO: rename?
+    let backround: S
+    let foreground: () -> T
     
     init(
         isPresented: Binding<Bool>,
-        expiration: ExpirationPolicy,
-        background: NotificationBackground,
-        notification: @escaping () -> T
+        background: S = .ultraThinMaterial,
+        content: @escaping () -> T
     ) {
         self._isPresented = isPresented
-        self.expiration = expiration
         self.background = background
-        self.notification = notification
+        self.foreground = content
     }
     
     func body(content: Content) -> some View {
         content
             .onChange(of: isPresented) { presented in
                 if presented {
-                    dprint(presenter.isVerbose, "notification [\(notificationId)]: present me 🤲")
+                    dprint(presenter.isVerbose, "notification [\(coverId)]: present me 🤲")
                     var presentedId: UUID?
                     withAnimation(presenter.insertionAnimation) {
                         presentedId = presenter.present(
-                            id: notificationId,
-                            expiration: expiration,
+                            id: coverId,
+//                            expiration: expiration,
                             content: {
-                                notification()
-                                    .modifier(DefaultNotificationBackground(variant: background))
+                                foreground()
+//                                    .modifier(DefaultNotificationBackground(variant: background))
                             }
                         )
                     }
                     if presentedId == nil { isPresented = false }
                 } else {
-                    if presenter.isStacked(notificationId) {
-                        dprint(presenter.isVerbose, "notification [\(notificationId)]: dismiss me 🫠")
-                        presenter.dismiss(notificationId)
+                    if presenter.isStacked(coverId) {
+                        dprint(presenter.isVerbose, "notification [\(coverId)]: dismiss me 🫠")
+                        presenter.dismiss(coverId)
                     }
                 }
             }
             .onChange(of: presenter.stack) { stack in
-                if stack.find(notificationId) == nil {
+                if stack.find(coverId) == nil {
                     withAnimation(presenter.removalAnimation) { isPresented = false }
                 }
             }

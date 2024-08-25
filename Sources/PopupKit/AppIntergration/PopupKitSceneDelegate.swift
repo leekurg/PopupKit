@@ -21,8 +21,9 @@ import UIKit
 open class PopupKitSceneDelegate: NSObject, UIWindowSceneDelegate, ObservableObject {
     private var notificationWindow: UIWindow?
 
-    public lazy var notificationPresenter = NotificationPresenter()
+    public lazy var coverPresenter = CoverPresenter()
     public lazy var fullscreenPresenter = FullscreenPresenter()
+    public lazy var notificationPresenter = NotificationPresenter()
     
     open func scene(
         _ scene: UIScene,
@@ -34,12 +35,15 @@ open class PopupKitSceneDelegate: NSObject, UIWindowSceneDelegate, ObservableObj
 
             let notificationViewController = UIHostingController(
                 rootView: Color.clear
+                    .coverRoot()
                     .fullscreenRoot()
                     .notificationRoot()
                     .ignoresSafeArea(.all, edges: [.horizontal, .bottom])
+                    .environmentObject(coverPresenter)
                     .environmentObject(fullscreenPresenter)
                     .environmentObject(notificationPresenter)
             )
+
             notificationViewController.view.backgroundColor = .clear
             notificationWindow.rootViewController = notificationViewController
             notificationWindow.isHidden = false
