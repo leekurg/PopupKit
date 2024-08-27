@@ -19,9 +19,9 @@ public extension View {
     ///
     /// - Note: Requires a ``View/notificationRoot(:_)`` been installed higher up the view hierarchy.
     ///
-    @ViewBuilder func cover<Content: View>(
+    @ViewBuilder func cover<Content: View, Style: ShapeStyle>(
         isPresented: Binding<Bool>,
-        background: NotificationBackground = .none,
+        background: Style = .ultraThinMaterial,
         content: @escaping () -> Content
     ) -> some View {
         #if DISABLE_POPUPKIT_IN_PREVIEWS
@@ -40,7 +40,7 @@ public extension View {
         modifier(
             CoverModifier(
                 isPresented: isPresented,
-                background: .ultraThinMaterial,
+                background: background,
                 content: content
             )
         )
@@ -55,12 +55,12 @@ struct CoverModifier<T: View, S: ShapeStyle>: ViewModifier {
     @Binding var isPresented: Bool
 //    let expiration: ExpirationPolicy
 //    let background: NotificationBackground  // TODO: rename?
-    let backround: S
+    let background: S
     let foreground: () -> T
     
     init(
         isPresented: Binding<Bool>,
-        background: S = .ultraThinMaterial,
+        background: S,
         content: @escaping () -> T
     ) {
         self._isPresented = isPresented
@@ -80,7 +80,8 @@ struct CoverModifier<T: View, S: ShapeStyle>: ViewModifier {
 //                            expiration: expiration,
                             content: {
                                 foreground()
-//                                    .modifier(DefaultNotificationBackground(variant: background))
+                                    .frame(maxWidth: .infinity)
+                                    .background(background, in: Rectangle())
                             }
                         )
                     }

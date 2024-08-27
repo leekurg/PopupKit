@@ -154,6 +154,10 @@ public class CoverPresenter: ObservableObject {
         stack.find(id) != nil
     }
     
+    public func isTop(_ id: UUID) -> Bool {
+        id == stack.last?.id
+    }
+    
     /// Dismisses all notifications within the stack.
     public func popToRoot(animated: Bool = true) {
         withAnimation(animated ? removalAnimation : nil) { stack.removeAll() }
