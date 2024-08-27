@@ -10,7 +10,7 @@ import SwiftUI
 public extension AnyTransition {
     static let cover: AnyTransition = .asymmetric(
         insertion: .move(edge: .bottom),
-        removal: .move(edge: .bottom).combined(with: .opacity)
+        removal: .move(edge: .bottom)
     )
     
     static let notification: AnyTransition = .asymmetric(

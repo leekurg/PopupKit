@@ -54,13 +54,14 @@ struct CoverRootModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
             .overlay {
-                ZStack {
+                ZStack(alignment: alignment) {
                     ForEach(presenter.stack) { entry in
                         VStack {
                             entry.view
                         }
 //                        .frame(maxWidth: maxNotificationWidth, minHeight: minNotificationHeight)
                         .zIndex(Double(entry.deep))
+                        .cornerRadius(presenter.isTop(entry.id) ? 0 : 16)
                         .offset(
                             calcOffset(
                                 deep: entry.deep,
@@ -69,12 +70,16 @@ struct CoverRootModifier: ViewModifier {
                                 alignment: alignment
                             )
                         )
+                        .blur(radius: calcBlur(deep: entry.deep, total: presenter.stack.count))
                         .scaleEffect(
-                            calcScale(deep: entry.deep, total: presenter.stack.count)
+                            calcScale(
+                                deep: entry.deep,
+                                stackCount: presenter.stack.count,
+                                dragHeight: dragHeight
+                            ),
+                            anchor: alignment.toUnitPoint()
                         )
-                        .blur(
-                            radius: calcBlur(deep: entry.deep, total: presenter.stack.count)
-                        )
+//                        .cornerRadius(16)
                         .transition(transition)
                     }
                 }
@@ -107,6 +112,30 @@ struct CoverRootModifier: ViewModifier {
             .onEnded { _ in topEntryDraggedAway = false }
     }
     
+//    private func calcOffset(
+//        deep: Int,
+//        stackCount: Int,
+//        dragHeight: CGFloat,
+//        alignment: Alignment
+//    ) -> CGSize {
+//        let modulatedDragHeight: CGFloat = switch dismissDirection.isForward(dragHeight) {
+//        case .some(true):
+//            deep == stackCount - 1 ? dragHeight : 0
+//        case .some(false):
+//            dragHeight / 10.0 * (CGFloat(deep) + 1.0)
+//        case .none:
+//            .zero
+//        }
+//        
+//        let offset = CGFloat(deep) * 10.0 - modulatedDragHeight * dismissDirection.sign
+//        
+//        return switch dismissDirection {
+//        case .topToBottom: CGSize(width: 0, height: -offset)
+//        case .bottomToTop: CGSize(width: 0, height: offset)
+//        case .unknown: .zero
+//        }
+//    }
+    
     private func calcOffset(
         deep: Int,
         stackCount: Int,
@@ -117,12 +146,13 @@ struct CoverRootModifier: ViewModifier {
         case .some(true):
             deep == stackCount - 1 ? dragHeight : 0
         case .some(false):
-            dragHeight / 10.0 * (CGFloat(deep) + 1.0)
+//            deep == stackCount - 1 ? dragHeight / 10.0 : .zero
+                .zero
         case .none:
             .zero
         }
         
-        let offset = CGFloat(deep) * 10.0 - modulatedDragHeight * dismissDirection.sign
+        let offset = -modulatedDragHeight * dismissDirection.sign
         
         return switch dismissDirection {
         case .topToBottom: CGSize(width: 0, height: -offset)
@@ -131,13 +161,50 @@ struct CoverRootModifier: ViewModifier {
         }
     }
     
-    private func calcScale(deep: Int, total: Int) -> CGSize {
-        let scale: Double = 1.0 - 0.05 * (Double(total) - (Double(deep) + 1.0))
+    private func calcScale(
+        deep: Int,
+        stackCount: Int,
+        dragHeight: CGFloat
+    ) -> CGSize {
+//        let scale: Double = 1.0 - 0.05 * (Double(total) - (Double(deep) + 1.0))
+        let scaleX: Double
+        let scaleY: Double
+
+        if deep == stackCount - 1 {
+            scaleX = 1
+            scaleY = switch dismissDirection.isForward(dragHeight) {
+            case .none: 1.0
+            case .some(true): 1.0
+            case .some(false):
+                1.0 - dismissDirection.sign * dragHeight / 10000.0
+            }
+            
+            print("scaleY: \(scaleY)")
+        } else {
+            scaleX = 1.0 - 0.05 * (Double(stackCount) - (Double(deep) + 1.0))
+            scaleY = scaleX
+        }
         
-        return CGSize(width: scale, height: scale)
+        return CGSize(width: scaleX, height: scaleY)
     }
     
     private func calcBlur(deep: Int, total: Int) -> CGFloat {
         Double(total) - Double(deep) - 1.0
+    }
+}
+
+fileprivate extension Alignment {
+    func toUnitPoint() -> UnitPoint {
+        switch self {
+        case .bottom: .bottom
+        case .bottomLeading: .bottomLeading
+        case .bottomTrailing: .bottomTrailing
+        case .top: .top
+        case .topLeading: .topLeading
+        case .topTrailing: .topTrailing
+        case .leading: .leading
+        case .trailing: .trailing
+        default: .zero
+        }
     }
 }
