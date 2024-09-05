@@ -107,6 +107,7 @@ public class CoverPresenter: ObservableObject {
     ///
     public func present<Content: View>(
         id: UUID,
+        modal: Modality,
         animated: Bool = true,
         content: @escaping () -> Content
     ) -> UUID? {
@@ -120,6 +121,7 @@ public class CoverPresenter: ObservableObject {
                 StackEntry(
                     id: id,
                     deep: (stack.last?.deep ?? -1) + 1,
+                    modal: modal,
                     view: AnyView(content())
                 )
             )
@@ -179,6 +181,8 @@ public extension CoverPresenter {
         public let id: UUID
         /// Deep level of the notification in stack
         public let deep: Int
+        /// Modality of presentation entry
+        public let modal: Modality
         /// Content on notification's view
         public let view: AnyView
     }
@@ -194,6 +198,7 @@ extension Array where Element == CoverPresenter.StackEntry {
                 return Element(
                     id: entry.id,
                     deep: index,
+                    modal: entry.modal,
                     view: entry.view
                 )
             }
