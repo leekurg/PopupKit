@@ -8,7 +8,7 @@
 import SwiftUI
 
 public extension View {
-    /// Presents a notification with PopupKit.
+    /// Presents a cover with PopupKit.
     ///
     /// - Parameters:
     ///    - isPresented: A binding to a Boolean value that determines whether

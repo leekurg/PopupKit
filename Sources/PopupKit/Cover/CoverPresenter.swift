@@ -8,80 +8,6 @@
 import Combine
 import SwiftUI
 
-//open class BasicPresenter<Entry: Stackable>: ObservableObject {
-//    @Published var stack: [Entry] = []
-//    
-//    let insertionAnimation: Animation
-//    let removalAnimation: Animation
-//    
-//    let isVerbose: Bool
-//    
-//    public init(
-//        verbose: Bool = false,
-//        insertAnimation: Animation = .spring(duration: 0.5),
-//        removeAnimation: Animation = .spring(duration: 0.5)
-//    ) {
-//        self.isVerbose = verbose
-//        self.insertionAnimation = insertAnimation
-//        self.removalAnimation = removeAnimation
-//    }
-//    
-//    /// Present a *content* with given **id**.
-//    ///
-//    /// - Returns: Returns presenting 'Destination' or **nil** when **id** is in stack already.
-//    ///
-//    open func present<Content: View>(
-//        id: Entry.ID,
-//        animated: Bool = true,
-//        content: @escaping () -> Content
-//    ) -> Entry.ID? {
-//        if let _ = stack.find(id) {
-//            dprint(isVerbose, "⚠️ id \(id) is already in stack - skip")
-//            return nil
-//        }
-//
-////        // makeNewEntry() method, that must be impleneted by clients
-////        withAnimation(animated ? insertionAnimation : nil) {
-////            stack.append(Entry(id: id, deep: (stack.last?.deep ?? -1) + 1, view: AnyView(content())))
-////        }
-//
-//        dprint(isVerbose, "✅ presenting \(id)")
-//        return id
-//    }
-//    
-////    open func makeNewEntry()
-//    
-////    public func dismiss(_ id: UUID, animated: Bool = true) {
-////        let presentedIndex = stack.firstIndex { $0.id == id }
-////        guard let presentedIndex else {
-////            dprint(isVerbose, "⚠️ id \(id) is not found in stack - skip")
-////            return
-////        }
-////        
-////        withAnimation(animated ? removalAnimation : nil) {
-////            let _ = stack.remove(at: presentedIndex)
-////        }
-////
-////        dprint(isVerbose, "🙈 dismiss \(id)")
-////    }
-////    
-////    public func isStacked(_ id: UUID) -> Bool {
-////        stack.find(id) != nil
-////    }
-////    
-////    public func popToRoot() {
-////        stack.removeAll()
-////    }
-////    
-////    public func popFirst() {
-////        stack.removeFirst()
-////    }
-////    
-////    public func popLast() {
-////        stack.removeLast()
-////    }
-//}
-
 public class CoverPresenter: ObservableObject {
     let isVerbose: Bool
 
@@ -100,10 +26,9 @@ public class CoverPresenter: ObservableObject {
         self.removalAnimation = removeAnimation
     }
     
-    /// Present a notification with given **id** and **content**. Notification's dismiss behavour is defined by
-    /// **expiration** policy.
+    /// Present a presentable entry with given **id** and **content**.
     ///
-    /// - Returns: Returns presenting 'Destination' or **nil** when **id** is in stack already.
+    /// - Returns: Returns presenting **id** or **nil** when entry is in stack already.
     ///
     public func present<Content: View>(
         id: UUID,
@@ -131,7 +56,7 @@ public class CoverPresenter: ObservableObject {
         return id
     }
     
-    /// Dismiss a notification with given **id**.
+    /// Dismiss a presentable entry with given **id**.
     public func dismiss(_ id: UUID, animated: Bool = true) {
         let presentedIndex = stack.firstIndex { $0.id == id }
         guard let presentedIndex else {
@@ -151,7 +76,7 @@ public class CoverPresenter: ObservableObject {
         }
     }
     
-    /// Returns **true** if notification with given **id** is present in the stack.
+    /// Returns **true** if presentable entry with given **id** is present in the stack.
     public func isStacked(_ id: UUID) -> Bool {
         stack.find(id) != nil
     }
@@ -160,12 +85,12 @@ public class CoverPresenter: ObservableObject {
         id == stack.last?.id
     }
     
-    /// Dismisses all notifications within the stack.
+    /// Dismisses all enties within the stack.
     public func popToRoot(animated: Bool = true) {
         withAnimation(animated ? removalAnimation : nil) { stack.removeAll() }
     }
     
-    /// Dismisses a notification which is currently on top of the stack.
+    /// Dismisses a presentable entry which is currently on top of the stack.
     public func popLast(animated: Bool = true) {
         if let lastId = stack.last?.id {
             dismiss(lastId, animated: animated)
@@ -175,15 +100,15 @@ public class CoverPresenter: ObservableObject {
 
 // MARK: - Entities
 public extension CoverPresenter {
-    /// Represents a notification entry in notifications stack.
+    /// Represents a presentable entry in stack.
     struct StackEntry: Stackable {
-        /// id of the notification
+        /// id of the entry
         public let id: UUID
-        /// Deep level of the notification in stack
+        /// Deep level of the entry in stack
         public let deep: Int
-        /// Modality of presentation entry
+        /// Modality of the entry
         public let modal: Modality
-        /// Content on notification's view
+        /// Entry's content
         public let view: AnyView
     }
 }

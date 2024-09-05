@@ -138,21 +138,14 @@ struct CoverRootModifier: ViewModifier {
         dragHeight: CGFloat,
         alignment: Alignment
     ) -> CGSize {
-        let modulatedDragHeight: CGFloat = if dismissDirection.isForward(dragHeight) == true {
-            if deep == stackCount - 1 {
-                switch modality {
-                case .none: dragHeight
-                case .modal(let interactivity):
-                    switch interactivity {
-                    case .interactive: dragHeight
-                    case .noninteractive: .zero
-                    }
-                }
-            } else {
-                .zero
-            }
+        let modulatedDragHeight: CGFloat
+        if
+            dismissDirection.isForward(dragHeight) == true,
+            deep == stackCount - 1,
+            modality.isInteractive {
+            modulatedDragHeight = dragHeight
         } else {
-            .zero
+            modulatedDragHeight = .zero
         }
         
         let offset = -modulatedDragHeight * dismissDirection.sign
@@ -170,22 +163,19 @@ struct CoverRootModifier: ViewModifier {
         modality: Modality,
         dragHeight: CGFloat
     ) -> CGSize {
-        let scaleY: Double
-
-        if deep == stackCount - 1 {
-            scaleY = switch dismissDirection.isForward(dragHeight) {
-            case .some(true):
-                if !modality.isInteractive {
-                    1.0 - dismissDirection.sign * dragHeight / 10000.0
-                } else {
-                    1.0
-                }
-            case .some(false):
-                1.0 - dismissDirection.sign * dragHeight / 10000.0
-            case .none: 1.0
-            }
-        } else {
-            scaleY = 1.0 + 0.05 * (Double(stackCount) - (Double(deep) + 1.0))
+        guard deep == stackCount - 1 else {
+            return CGSize(
+                width: 1.0,
+                height: 1.0 + 0.05 * (Double(stackCount) - (Double(deep) + 1.0))
+            )
+        }
+        
+        let scaleY: Double = switch dismissDirection.isForward(dragHeight) {
+        case .some(true):
+            modality.isInteractive ? 1.0 : 1.0 - dismissDirection.sign * dragHeight / 10000.0
+        case .some(false):
+            1.0 - dismissDirection.sign * dragHeight / 10000.0
+        case .none: 1.0
         }
         
         return CGSize(width: 1.0, height: scaleY)
