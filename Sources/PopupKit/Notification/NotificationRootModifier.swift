@@ -101,7 +101,7 @@ struct NotificationRootModifier: ViewModifier {
         DragGesture(minimumDistance: 0)
             .updating($dragHeight) { value, state, _ in
                 withAnimation(.spring) {
-                    if !topEntryDraggedAway { state = value.translation.height }
+                    state = topEntryDraggedAway ? 0.0 : value.translation.height
                 }
             }
             .onChanged { gesture in
