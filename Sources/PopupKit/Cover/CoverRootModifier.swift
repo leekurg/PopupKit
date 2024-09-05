@@ -70,7 +70,6 @@ struct CoverRootModifier: ViewModifier {
                                 alignment: alignment
                             )
                         )
-                        .blur(radius: calcBlur(deep: entry.deep, total: presenter.stack.count))
                         .scaleEffect(
                             calcScale(
                                 deep: entry.deep,
@@ -79,7 +78,7 @@ struct CoverRootModifier: ViewModifier {
                             ),
                             anchor: alignment.toUnitPoint()
                         )
-//                        .cornerRadius(16)
+                        .shadow(color: .black.opacity(0.2), radius: 10, x: 0, y: 0)
                         .transition(transition)
                     }
                 }
@@ -96,7 +95,7 @@ struct CoverRootModifier: ViewModifier {
         DragGesture(minimumDistance: 0)
             .updating($dragHeight) { value, state, _ in
                 withAnimation(.spring) {
-                    if !topEntryDraggedAway { state = value.translation.height }
+                    state = topEntryDraggedAway ? 0.0 : value.translation.height
                 }
             }
             .onChanged { gesture in
@@ -111,31 +110,7 @@ struct CoverRootModifier: ViewModifier {
             }
             .onEnded { _ in topEntryDraggedAway = false }
     }
-    
-//    private func calcOffset(
-//        deep: Int,
-//        stackCount: Int,
-//        dragHeight: CGFloat,
-//        alignment: Alignment
-//    ) -> CGSize {
-//        let modulatedDragHeight: CGFloat = switch dismissDirection.isForward(dragHeight) {
-//        case .some(true):
-//            deep == stackCount - 1 ? dragHeight : 0
-//        case .some(false):
-//            dragHeight / 10.0 * (CGFloat(deep) + 1.0)
-//        case .none:
-//            .zero
-//        }
-//        
-//        let offset = CGFloat(deep) * 10.0 - modulatedDragHeight * dismissDirection.sign
-//        
-//        return switch dismissDirection {
-//        case .topToBottom: CGSize(width: 0, height: -offset)
-//        case .bottomToTop: CGSize(width: 0, height: offset)
-//        case .unknown: .zero
-//        }
-//    }
-    
+
     private func calcOffset(
         deep: Int,
         stackCount: Int,
@@ -145,10 +120,7 @@ struct CoverRootModifier: ViewModifier {
         let modulatedDragHeight: CGFloat = switch dismissDirection.isForward(dragHeight) {
         case .some(true):
             deep == stackCount - 1 ? dragHeight : 0
-        case .some(false):
-//            deep == stackCount - 1 ? dragHeight / 10.0 : .zero
-                .zero
-        case .none:
+        case .some(false), .none:
             .zero
         }
         
@@ -166,30 +138,19 @@ struct CoverRootModifier: ViewModifier {
         stackCount: Int,
         dragHeight: CGFloat
     ) -> CGSize {
-//        let scale: Double = 1.0 - 0.05 * (Double(total) - (Double(deep) + 1.0))
-        let scaleX: Double
         let scaleY: Double
 
         if deep == stackCount - 1 {
-            scaleX = 1
             scaleY = switch dismissDirection.isForward(dragHeight) {
-            case .none: 1.0
-            case .some(true): 1.0
+            case .some(true), .none: 1.0
             case .some(false):
                 1.0 - dismissDirection.sign * dragHeight / 10000.0
             }
-            
-            print("scaleY: \(scaleY)")
         } else {
-            scaleX = 1.0 - 0.05 * (Double(stackCount) - (Double(deep) + 1.0))
-            scaleY = scaleX
+            scaleY = 1.0 + 0.05 * (Double(stackCount) - (Double(deep) + 1.0))
         }
         
-        return CGSize(width: scaleX, height: scaleY)
-    }
-    
-    private func calcBlur(deep: Int, total: Int) -> CGFloat {
-        Double(total) - Double(deep) - 1.0
+        return CGSize(width: 1.0, height: scaleY)
     }
 }
 
