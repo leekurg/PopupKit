@@ -59,13 +59,13 @@ struct CoverRootModifier: ViewModifier {
                         VStack {
                             entry.view
                         }
-//                        .frame(maxWidth: maxNotificationWidth, minHeight: minNotificationHeight)
                         .zIndex(Double(entry.deep))
                         .cornerRadius(presenter.isTop(entry.id) ? 0 : 16)
                         .offset(
                             calcOffset(
                                 deep: entry.deep,
                                 stackCount: presenter.stack.count,
+                                modality: entry.modal,
                                 dragHeight: dragHeight,
                                 alignment: alignment
                             )
@@ -74,18 +74,37 @@ struct CoverRootModifier: ViewModifier {
                             calcScale(
                                 deep: entry.deep,
                                 stackCount: presenter.stack.count,
+                                modality: entry.modal,
                                 dragHeight: dragHeight
                             ),
                             anchor: alignment.toUnitPoint()
                         )
                         .shadow(color: .black.opacity(0.2), radius: 10, x: 0, y: 0)
+                        .gesture(makeDragGesture())
                         .transition(transition)
                     }
-                }
-                .overlay {
-                    Color.clear
-                        .contentShape(Rectangle())
-                        .gesture(makeDragGesture())
+                    
+                    // Modal cover
+                    if let last = presenter.stack.last {
+                        switch last.modal {
+                        case .modal(let interactivity):
+                            Color.black.opacity(0.3)
+                                .contentShape(Rectangle())
+                                .onTapGesture {
+                                    switch interactivity {
+                                    case .interactive:
+                                        presenter.dismiss(last.id)
+                                    case .noninteractive:
+                                        break
+                                    }
+                                    
+                                }
+                                .zIndex(Double(presenter.stack.last?.deep ?? 0) - 0.5)
+                        case .none:
+                            EmptyView()
+                        }
+                    }
+                    
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: alignment)
             }
@@ -101,6 +120,7 @@ struct CoverRootModifier: ViewModifier {
             .onChanged { gesture in
                 if
                     !topEntryDraggedAway,
+                    presenter.stack.last?.modal.isInteractive == true,
                     abs(gesture.predictedEndTranslation.height) > dragThreshold,
                     dismissDirection.isForward(gesture.predictedEndTranslation.height) == true
                 {
@@ -114,13 +134,24 @@ struct CoverRootModifier: ViewModifier {
     private func calcOffset(
         deep: Int,
         stackCount: Int,
+        modality: Modality,
         dragHeight: CGFloat,
         alignment: Alignment
     ) -> CGSize {
-        let modulatedDragHeight: CGFloat = switch dismissDirection.isForward(dragHeight) {
-        case .some(true):
-            deep == stackCount - 1 ? dragHeight : 0
-        case .some(false), .none:
+        let modulatedDragHeight: CGFloat = if dismissDirection.isForward(dragHeight) == true {
+            if deep == stackCount - 1 {
+                switch modality {
+                case .none: dragHeight
+                case .modal(let interactivity):
+                    switch interactivity {
+                    case .interactive: dragHeight
+                    case .noninteractive: .zero
+                    }
+                }
+            } else {
+                .zero
+            }
+        } else {
             .zero
         }
         
@@ -136,15 +167,22 @@ struct CoverRootModifier: ViewModifier {
     private func calcScale(
         deep: Int,
         stackCount: Int,
+        modality: Modality,
         dragHeight: CGFloat
     ) -> CGSize {
         let scaleY: Double
 
         if deep == stackCount - 1 {
             scaleY = switch dismissDirection.isForward(dragHeight) {
-            case .some(true), .none: 1.0
+            case .some(true):
+                if !modality.isInteractive {
+                    1.0 - dismissDirection.sign * dragHeight / 10000.0
+                } else {
+                    1.0
+                }
             case .some(false):
                 1.0 - dismissDirection.sign * dragHeight / 10000.0
+            case .none: 1.0
             }
         } else {
             scaleY = 1.0 + 0.05 * (Double(stackCount) - (Double(deep) + 1.0))
