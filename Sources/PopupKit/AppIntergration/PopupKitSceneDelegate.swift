@@ -36,9 +36,10 @@ open class PopupKitSceneDelegate: NSObject, UIWindowSceneDelegate, ObservableObj
             let notificationViewController = UIHostingController(
                 rootView: Color.clear
                     .coverRoot()
+                    .ignoresSafeArea(.all, edges: [.all])
                     .fullscreenRoot()
-                    .notificationRoot()
                     .ignoresSafeArea(.all, edges: [.horizontal, .bottom])
+                    .notificationRoot()
                     .environmentObject(coverPresenter)
                     .environmentObject(fullscreenPresenter)
                     .environmentObject(notificationPresenter)
