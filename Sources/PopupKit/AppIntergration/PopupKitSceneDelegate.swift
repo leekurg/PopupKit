@@ -38,7 +38,6 @@ open class PopupKitSceneDelegate: NSObject, UIWindowSceneDelegate, ObservableObj
                     .coverRoot()
                     .ignoresSafeArea(.all, edges: [.all])
                     .fullscreenRoot()
-                    .ignoresSafeArea(.all, edges: [.horizontal, .bottom])
                     .notificationRoot()
                     .environmentObject(coverPresenter)
                     .environmentObject(fullscreenPresenter)

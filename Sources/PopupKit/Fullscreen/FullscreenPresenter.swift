@@ -30,9 +30,11 @@ public final class FullscreenPresenter: ObservableObject {
     ///
     /// - Returns: Returns presenting 'Destination' or **nil** when **id** is in stack already.
     ///
-    public func present<Content: View>(
+    public func present<Content: View, S: ShapeStyle>(
         id: UUID,
         animated: Bool = true,
+        background: S,
+        ignoresEdges: Edge.Set,
         content: @escaping () -> Content
     ) -> UUID? {
         if let _ = stack.find(id) {
@@ -41,7 +43,18 @@ public final class FullscreenPresenter: ObservableObject {
         }
         
         withAnimation(animated ? insertionAnimation : nil) {
-            stack.append(StackEntry(id: id, deep: (stack.last?.deep ?? -1) + 1, view: AnyView(content())))
+            stack.append(
+                StackEntry(
+                    id: id,
+                    deep: (stack.last?.deep ?? -1) + 1,
+                    view: AnyView(
+                        content()
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            .background(background, ignoresSafeAreaEdges: .all)
+                            .ignoresSafeArea(.all, edges: ignoresEdges)
+                    )
+                )
+            )
         }
 
         dprint(isVerbose, "✅ presenting \(id)")

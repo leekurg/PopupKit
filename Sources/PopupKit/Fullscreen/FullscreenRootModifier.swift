@@ -25,9 +25,7 @@ struct FullscreenRootModifier: ViewModifier {
                     ZStack {
                         ForEach(presenter.stack) { entry in
                             entry.view
-                                .frame(maxWidth: .infinity, maxHeight: .infinity)
                                 .zIndex(Double(entry.deep))
-                                .background(.ultraThinMaterial, ignoresSafeAreaEdges: .all)
                                 .transition(transition)
                         }
                     }
