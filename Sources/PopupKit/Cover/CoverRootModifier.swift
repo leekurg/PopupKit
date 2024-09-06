@@ -50,10 +50,10 @@ struct CoverRootModifier: ViewModifier {
             resetTransaction: .init(animation: .bouncy)
         )
     }
-
+    
     func body(content: Content) -> some View {
         content
-            .overlay {
+            .overlay(alignment: alignment.opposite) {
                 ZStack(alignment: alignment) {
                     ForEach(presenter.stack) { entry in
                         VStack {
@@ -104,9 +104,9 @@ struct CoverRootModifier: ViewModifier {
                             EmptyView()
                         }
                     }
-                    
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: alignment)
+                .clipped()
             }
     }
     
@@ -179,21 +179,5 @@ struct CoverRootModifier: ViewModifier {
         }
         
         return CGSize(width: 1.0, height: scaleY)
-    }
-}
-
-fileprivate extension Alignment {
-    func toUnitPoint() -> UnitPoint {
-        switch self {
-        case .bottom: .bottom
-        case .bottomLeading: .bottomLeading
-        case .bottomTrailing: .bottomTrailing
-        case .top: .top
-        case .topLeading: .topLeading
-        case .topTrailing: .topTrailing
-        case .leading: .leading
-        case .trailing: .trailing
-        default: .zero
-        }
     }
 }
