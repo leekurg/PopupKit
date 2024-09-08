@@ -8,7 +8,7 @@
 import SwiftUI
 
 public extension View {
-    /// Presents a cover with PopupKit.
+    /// Presents a cover with **PopupKit**.
     ///
     /// Cover is similar to system sheet. Cover is screen-wide view with configurable height, attached to top or bottom edge of the screen.
     /// Anchor screen edge is provided by calling ``View/coverRoot(:_)``.

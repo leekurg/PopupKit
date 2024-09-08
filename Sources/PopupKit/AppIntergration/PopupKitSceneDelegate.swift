@@ -33,7 +33,7 @@ open class PopupKitSceneDelegate: NSObject, UIWindowSceneDelegate, ObservableObj
         if let scene = scene as? UIWindowScene {
             let notificationWindow = PassThroughUIWindow(windowScene: scene)
 
-            let notificationViewController = UIHostingController(
+            let notificationViewController = PopupKitHostingController(
                 rootView: Color.clear
                     .coverRoot()
                     .ignoresSafeArea(.all, edges: [.all])

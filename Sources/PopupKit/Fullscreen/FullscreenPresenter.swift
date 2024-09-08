@@ -35,6 +35,7 @@ public final class FullscreenPresenter: ObservableObject {
         animated: Bool = true,
         background: S,
         ignoresEdges: Edge.Set,
+        dismissalScroll: DismissalScroll,
         content: @escaping () -> Content
     ) -> UUID? {
         if let _ = stack.find(id) {
@@ -47,12 +48,10 @@ public final class FullscreenPresenter: ObservableObject {
                 StackEntry(
                     id: id,
                     deep: (stack.last?.deep ?? -1) + 1,
-                    view: AnyView(
-                        content()
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                            .background(background, ignoresSafeAreaEdges: .all)
-                            .ignoresSafeArea(.all, edges: ignoresEdges)
-                    )
+                    view: AnyView(content()),
+                    background: AnyShapeStyle(background),
+                    ignoresEdges: ignoresEdges,
+                    dismissalScroll: dismissalScroll
                 )
             )
         }
@@ -80,6 +79,10 @@ public final class FullscreenPresenter: ObservableObject {
         stack.find(id) != nil
     }
     
+    public func isTop(_ id: UUID) -> Bool {
+        id == stack.last?.id
+    }
+    
     /// Dismisses all presentable entries within the stack.
     public func popToRoot(animated: Bool = true) {
         withAnimation(animated ? removalAnimation : nil) { stack.removeAll() }
@@ -98,5 +101,8 @@ public extension FullscreenPresenter {
         public let id: UUID
         public let deep: Int
         public let view: AnyView
+        public let background: AnyShapeStyle
+        public let ignoresEdges: Edge.Set
+        public let dismissalScroll: DismissalScroll
     }
 }
