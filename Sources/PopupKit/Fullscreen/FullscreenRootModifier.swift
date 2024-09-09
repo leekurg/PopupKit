@@ -96,7 +96,11 @@ struct FullscreenRootModifier: ViewModifier {
     }
     
     private static func initInsets() -> EdgeInsets {
-        UIApplication.shared.popupKitWindow?.safeAreaInsets.toSwiftUIInsets ?? EdgeInsets()
+        if ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] != nil {
+            UIApplication.shared.keyWindow?.safeAreaInsets.toSwiftUIInsets ?? EdgeInsets()
+        } else {
+            UIApplication.shared.popupKitWindow?.safeAreaInsets.toSwiftUIInsets ?? EdgeInsets()
+        }
     }
 }
 

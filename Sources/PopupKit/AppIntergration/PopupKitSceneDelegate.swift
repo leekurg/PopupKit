@@ -19,7 +19,7 @@ import UIKit
 /// from ``PopupKit/PopupKitSceneDelegate`` or doing it's job that needs to be done.
 ///
 open class PopupKitSceneDelegate: NSObject, UIWindowSceneDelegate, ObservableObject {
-    private var notificationWindow: UIWindow?
+    private var popupKitWindow: UIWindow?
 
     public lazy var coverPresenter = CoverPresenter()
     public lazy var fullscreenPresenter = FullscreenPresenter()
@@ -31,9 +31,9 @@ open class PopupKitSceneDelegate: NSObject, UIWindowSceneDelegate, ObservableObj
         options connectionOptions: UIScene.ConnectionOptions
     ) {
         if let scene = scene as? UIWindowScene {
-            let notificationWindow = PassThroughUIWindow(windowScene: scene)
+            let popupKitWindow = PassThroughUIWindow(windowScene: scene)
 
-            let notificationViewController = PopupKitHostingController(
+            let popupKitViewController = PopupKitHostingController(
                 rootView: Color.clear
                     .coverRoot()
                     .ignoresSafeArea(.all, edges: [.all])
@@ -44,10 +44,10 @@ open class PopupKitSceneDelegate: NSObject, UIWindowSceneDelegate, ObservableObj
                     .environmentObject(notificationPresenter)
             )
 
-            notificationViewController.view.backgroundColor = .clear
-            notificationWindow.rootViewController = notificationViewController
-            notificationWindow.isHidden = false
-            self.notificationWindow = notificationWindow
+            popupKitViewController.view.backgroundColor = .clear
+            popupKitWindow.rootViewController = popupKitViewController
+            popupKitWindow.isHidden = false
+            self.popupKitWindow = popupKitWindow
         }
     }
 }

@@ -16,4 +16,12 @@ extension UIApplication {
             .compactMap { $0 as? PassThroughUIWindow }
             .first
     }
+    
+    /// Returns an app's key windiw if exists.
+    var keyWindow: UIWindow? {
+        connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .flatMap { $0.windows }
+            .first
+    }
 }
