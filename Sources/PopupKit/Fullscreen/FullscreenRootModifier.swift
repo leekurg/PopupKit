@@ -46,18 +46,17 @@ struct FullscreenRootModifier: ViewModifier {
                                 entry.view
                                     .padding(safeAreaInsets.resolvingInSet(entry.ignoresEdges))
                             }
+                            .clipShape(RoundedRectangle(cornerRadius: safeAreaInsets.bottom))
                             .offset(presenter.isTop(entry.id) ? calcOffset(dragHeight) : .zero)
-                            .gesture(
+                            .gesture(if: entry.dismissalScroll.predictedThreshold > 0) {
                                 makeDragGesture(threshold: entry.dismissalScroll.predictedThreshold)
-                            )
+                            }
                             .zIndex(Double(entry.deep))
                             .transition(transition)
                         }
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .onReceive(
-                        NotificationCenter.default.publisher(for: .popupKitSafeAreaChangedNotification)
-                    ) { msg in
+                    .onReceive(NotificationCenter.default.publisher(for: .popupKitSafeAreaChangedNotification)) { msg in
                         if let newInsets = msg.object as? EdgeInsets {
                             safeAreaInsets = newInsets
                         }
@@ -71,14 +70,11 @@ struct FullscreenRootModifier: ViewModifier {
     private func makeDragGesture(threshold: CGFloat) -> some Gesture {
         DragGesture(minimumDistance: 0)
             .updating($dragHeight) { value, state, _ in
-                if threshold == 0 { return }
                 withAnimation(.spring) {
                     state = topEntryDraggedAway ? 0.0 : value.translation.height
                 }
             }
             .onChanged { gesture in
-                if threshold == 0 { return }
-
                 if
                     !topEntryDraggedAway,
                     abs(gesture.predictedEndTranslation.height) > threshold,
@@ -88,10 +84,7 @@ struct FullscreenRootModifier: ViewModifier {
                     presenter.popLast()
                 }
             }
-            .onEnded { _ in
-                if threshold == 0 { return }
-                topEntryDraggedAway = false
-            }
+            .onEnded { _ in topEntryDraggedAway = false }
     }
     
     private func calcOffset(_ dragHeight: CGFloat) -> CGSize {
@@ -104,6 +97,20 @@ struct FullscreenRootModifier: ViewModifier {
     
     private static func initInsets() -> EdgeInsets {
         UIApplication.shared.popupKitWindow?.safeAreaInsets.toSwiftUIInsets ?? EdgeInsets()
+    }
+}
+
+fileprivate extension View {
+    @ViewBuilder func gesture<G: Gesture>(
+        if condition: Bool,
+        gestureMask: GestureMask = .all,
+        gesture: () -> G
+    ) -> some View {
+        if condition {
+            self.gesture(gesture(), including: gestureMask)
+        } else {
+            self
+        }
     }
 }
 
