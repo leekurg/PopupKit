@@ -14,7 +14,6 @@ public extension View {
     ///    - isPresented: A binding to a Boolean value that determines whether
     ///  to present the notification that you create in the modifier's `content` closure.
     ///    - expiration: Notification's expiration policy.
-    ///    - background: Background variant.
     ///    - content: A closure that returns the content of the notification.
     ///
     /// - Note: Requires a ``View/notificationRoot(:_)`` been installed higher up the view hierarchy.
@@ -22,7 +21,6 @@ public extension View {
     @ViewBuilder func notification<Content: View>(
         isPresented: Binding<Bool>,
         expiration: ExpirationPolicy = .timeout(.seconds(3)),
-        background: NotificationBackground = .none,
         content: @escaping () -> Content
     ) -> some View {
         #if DISABLE_POPUPKIT_IN_PREVIEWS
@@ -33,7 +31,6 @@ public extension View {
                 NotificationModifier(
                     isPresented: isPresented,
                     expiration: expiration,
-                    background: background,
                     notification: content
                 )
             )
@@ -43,7 +40,6 @@ public extension View {
             NotificationModifier(
                 isPresented: isPresented,
                 expiration: expiration,
-                background: background,
                 notification: content
             )
         )
@@ -57,20 +53,7 @@ struct NotificationModifier<T: View>: ViewModifier {
     
     @Binding var isPresented: Bool
     let expiration: ExpirationPolicy
-    let background: NotificationBackground
     let notification: () -> T
-    
-    init(
-        isPresented: Binding<Bool>,
-        expiration: ExpirationPolicy,
-        background: NotificationBackground,
-        notification: @escaping () -> T
-    ) {
-        self._isPresented = isPresented
-        self.expiration = expiration
-        self.background = background
-        self.notification = notification
-    }
     
     func body(content: Content) -> some View {
         content
@@ -82,10 +65,7 @@ struct NotificationModifier<T: View>: ViewModifier {
                         presentedId = presenter.present(
                             id: notificationId,
                             expiration: expiration,
-                            content: {
-                                notification()
-                                    .modifier(DefaultNotificationBackground(variant: background))
-                            }
+                            content: notification
                         )
                     }
                     if presentedId == nil { isPresented = false }
