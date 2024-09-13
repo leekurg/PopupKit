@@ -33,7 +33,7 @@ public class NotificationPresenter: ObservableObject {
     ///
     /// - Returns: Returns presenting 'Destination' or **nil** when **id** is in stack already.
     ///
-    public func present<Content: View>(
+    @discardableResult public func present<Content: View>(
         id: UUID,
         expiration: ExpirationPolicy,
         animated: Bool = true,

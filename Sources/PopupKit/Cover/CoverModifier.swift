@@ -97,12 +97,9 @@ struct CoverModifier<T: View, S: ShapeStyle>: ViewModifier {
                         presentedId = presenter.present(
                             id: coverId,
                             modal: modal,
-                            content: {
-                                foreground()
-                                    .frame(maxWidth: .infinity)
-                                    .background(background, in: Rectangle())
-                                    .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
-                            }
+                            background: background,
+                            cornerRadius: cornerRadius,
+                            content: foreground
                         )
                     }
                     if presentedId == nil { isPresented = false }

@@ -30,10 +30,12 @@ public class CoverPresenter: ObservableObject {
     ///
     /// - Returns: Returns presenting **id** or **nil** when entry is in stack already.
     ///
-    public func present<Content: View>(
+    @discardableResult public func present<Content: View, S: ShapeStyle>(
         id: UUID,
-        modal: Modality,
         animated: Bool = true,
+        modal: Modality,
+        background: S,
+        cornerRadius: Double = 20.0,
         content: @escaping () -> Content
     ) -> UUID? {
         if let _ = stack.find(id) {
@@ -47,7 +49,12 @@ public class CoverPresenter: ObservableObject {
                     id: id,
                     deep: (stack.last?.deep ?? -1) + 1,
                     modal: modal,
-                    view: AnyView(content())
+                    view: AnyView(
+                        content()
+                            .frame(maxWidth: .infinity)
+                            .background(background, in: Rectangle())
+                            .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+                    )
                 )
             )
         }

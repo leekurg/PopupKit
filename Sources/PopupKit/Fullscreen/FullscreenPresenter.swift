@@ -30,7 +30,7 @@ public final class FullscreenPresenter: ObservableObject {
     ///
     /// - Returns: Returns presenting 'Destination' or **nil** when **id** is in stack already.
     ///
-    public func present<Content: View, S: ShapeStyle>(
+    @discardableResult public func present<Content: View, S: ShapeStyle>(
         id: UUID,
         animated: Bool = true,
         background: S,
