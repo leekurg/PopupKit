@@ -61,6 +61,11 @@ it's necessary to integrate it into the app's lifecycle.
 his article, [How to layer multiple windows in SwiftUI](https://www.fivestars.blog/articles/swiftui-windows). `PopupKit` 
 leverages the ideas presented in this article, and I would like to extend my thanks to the author for his research.
 
+> [!TIP]
+> Before diving into the integration steps and usage tips, I’d like to highlight that I’ve created an
+> [example project](https://github.com/leekurg/PopupKitExample) showcasing the complete integration
+> of `PopupKit`. This example project includes working demonstrations of all the
+> available features, allowing you to explore and better understand how to implement `PopupKit`'s tools in your project.
 
 ### Integration into the app
 
