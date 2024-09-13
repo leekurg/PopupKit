@@ -2,6 +2,9 @@
 
 `PopupKit` is a tool designed for enhanced view presentation within a `SwiftUI` app.
 
+## Compatibility
+`SwiftUI` application targeted to **iOS 15+**.
+
 ## Motivation
 I have a passion for `SwiftUI` and use it daily for work. While I appreciate its design, 
 some components — especially the presentation APIs — still (**iOS 17**) lack the flexibility developers 
