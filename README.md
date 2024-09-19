@@ -438,10 +438,15 @@ so make sure this root view occupies the full screen — otherwise, the presenta
 `SPM` installation: in Xcode tap **File → Add packages…**, paste is search field the URL of this page and 
 press **Add package**. After that, you should complete the [integration](#integration-into-the-app).
 
+## Known issues
+❌ `NavigationStack` is not working inside a `cover` and `fullscreen`\
+❌ Taps handling withing any `PopupKit`'s presentation layer is completly broken in `iOS 18.0`. Hope this will be fixed in future
+versions of the system. 
 
 ## Roadmap
 - [x] Notification
 - [x] Cover
 - [x] Fullscreen
+- [ ] Fix [known issues](#known-issues)
 - [ ] Popup: customizable analogue to system alert with or without buttons
 - [ ] \(Optional) Push navigation: customizable system-like navigation stack. At least I'm going to give it a try 🙈.
