@@ -61,6 +61,53 @@ public extension View {
         )
         #endif
     }
+    
+    /// Presents a cover with **PopupKit**.
+    ///
+    /// Cover is similar to system sheet. Cover is screen-wide view with configurable height, attached to top or bottom edge of the screen.
+    /// Anchor screen edge is provided by calling ``View/coverRoot(:_)``.
+    ///
+    /// To create a cover you provide a view to display and background style.
+    /// Also you can adjust a radius of cover's corners and set a modality mode to it.
+    /// Modality determines if user is able to interact with views under this cover and with cover itself.
+    /// Learn more about modality at ``Modality``
+    ///
+    /// - Parameters:
+    ///    - item: An `Identifiable?` value that determines whether
+    ///  to present the view that you create in the modifier's `content` closure.
+    ///    - background: Background style of the presentable view.
+    ///    - modal: Modality of the presentable view.
+    ///    - cornerRadius: Radius of all cornrers of the presentable view.
+    ///    - content: A closure that returns the content of the notification.
+    ///
+    /// - Note: Requires a ``View/coverRoot(:_)`` been called higher up the view hierarchy.
+    ///
+    func cover<Content: View, S: ShapeStyle, Item: Identifiable>(
+        item: Binding<Item?>,
+        background: S = .background,
+        modal: Modality = .modal(interactivity: .interactive),
+        cornerRadius: Double = 20.0,
+        content: @escaping (Item) -> Content
+    ) -> some View {
+        cover(
+            isPresented: Binding(
+                get: { item.wrappedValue != nil },
+                set: { if !$0 { item.wrappedValue = nil } }
+            ),
+            background: background,
+            modal: modal,
+            cornerRadius: cornerRadius,
+            content: {
+                Group {
+                    if let wrapped = item.wrappedValue {
+                        content(wrapped)
+                    } else {
+                        EmptyView()
+                    }
+                }
+            }
+        )
+    }
 }
 
 struct CoverModifier<T: View, S: ShapeStyle>: ViewModifier {
