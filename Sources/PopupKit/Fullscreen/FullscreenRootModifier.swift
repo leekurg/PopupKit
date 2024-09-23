@@ -117,14 +117,3 @@ fileprivate extension View {
         }
     }
 }
-
-fileprivate extension EdgeInsets {
-    func resolvingInSet(_ ignoresEdges: Edge.Set) -> Self {
-        EdgeInsets(
-            top: ignoresEdges.contains(.top) ? 0 : self.top,
-            leading: ignoresEdges.contains(.leading) ? 0 : self.leading,
-            bottom: ignoresEdges.contains(.bottom) ? 0 : self.bottom,
-            trailing: ignoresEdges.contains(.trailing) ? 0 : self.trailing
-        )
-    }
-}
