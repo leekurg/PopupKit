@@ -8,31 +8,42 @@
 import SwiftUI
 
 public extension ConfirmPresenter {
+    /// An action to present within **PopupKit**'s confirmation dialog.
+    /// An action holds optional text to present, optional image and closure to perform on tap.
+    ///
+    /// Usage
+    /// ----
+    /// Use static members to init an action with dedicated **role**. There are 3 static initialisers for each of action's role:
+    /// - **cancel**: Action that hides the dialog without any changes or performed operations.
+    /// Cancel actions is listed at the bottom of the dialog actions list.
+    /// - **regular**: Action that performs some non-destructive operation.
+    /// - **destructive**: Action that performs some destructive operation.
+    ///
     struct Action: Identifiable {
         public let id: UUID
-        public let kind: Kind
-        public let text: Text?
-        public let image: Image?
-        public let action: () -> Void
+        let role: Role
+        let text: Text?
+        let image: Image?
+        let action: () -> Void
         
-        init (id: UUID, kind: Kind, text: Text? = nil, image: Image? = nil, action: @escaping () -> Void) {
+        init (id: UUID, role: Role, text: Text? = nil, image: Image? = nil, action: @escaping () -> Void) {
             self.id = id
-            self.kind = kind
+            self.role = role
             self.text = text
             self.image = image
             self.action = action
         }
         
         public static func action(text: Text?, image: Image? = nil, action: @escaping () -> Void) -> Self {
-            .init(id: UUID(), kind: .action, text: text, image: image, action: action)
+            .init(id: UUID(), role: .regular, text: text, image: image, action: action)
         }
         
         public static func destructive(text: Text?, image: Image? = nil, action: @escaping () -> Void) -> Self {
-            .init(id: UUID(), kind: .destructive, text: text, image: image, action: action)
+            .init(id: UUID(), role: .destructive, text: text, image: image, action: action)
         }
         
         public static func cancel(text: Text?, image: Image? = nil, action: (() -> Void)? = nil) -> Self {
-            .init(id: UUID(), kind: .cancel, text: text, image: image, action: action ?? {})
+            .init(id: UUID(), role: .cancel, text: text, image: image, action: action ?? {})
         }
         
         static let `default`: Self = .cancel(text: Text(verbatim: "Cancel"))
@@ -60,10 +71,13 @@ public extension ConfirmPresenter.Action {
             }
         }
     }
-    
-    enum Kind {
+}
+
+extension ConfirmPresenter.Action {
+    /// A role which the action is used for.
+    enum Role {
         /// Regular action
-        case action
+        case regular
         /// Destructive action, mark an action that deletes something permanently
         case destructive
         /// Cancel action, placed at list's bottom.

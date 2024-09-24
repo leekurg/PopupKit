@@ -8,16 +8,34 @@
 import SwiftUI
 
 public extension View {
-    func confirmRoot<S: ShapeStyle>(
+    /// Sets the *root view* for **PopupKit**'s confirmation dialog presentations.
+    ///
+    /// ## Overview
+    /// The *root view* defines the location within the view hierarchy from which confirmation dialogs will be presented.
+    /// Any confirmation dialogs invoked from lower in the hierarchy will be displayed from this root view.
+    /// You can configure various customization options for the dialog’s appearance and behavior.
+    ///
+    /// - Parameters:
+    ///   - transition: Specifies the transition animation for adding or removing a confirmation dialog from the view hierarchy.
+    ///   - background: Defines the background style for the dialog’s header, regular actions, and destructive actions.
+    ///   - cancelBackground: Defines the background style specifically for cancel actions.
+    ///   - cornerRadius: Sets the corner radius for the dialog’s edges.
+    ///   - dragThreshold: Sets the minimum swipe distance required to dismiss the dialog.
+    ///
+    /// - Note: Use the ``View/confirm(_)`` modifier to present a confirmation dialog.
+    ///
+    func confirmRoot<S1: ShapeStyle, S2: ShapeStyle>(
         transition: AnyTransition = .move(edge: .bottom),
-        background: S = .ultraThinMaterial,
-        cornerRadius: Double = 20.0,
+        background: S1 = .thinMaterial,
+        cancelBackground: S2 = .regularMaterial,
+        cornerRadius: Double = 15.0,
         dragThreshold: CGFloat = 200.0
     ) -> some View {
         modifier(
             ConfirmRootModifier(
                 transition: transition,
                 background: background,
+                cancelBackground: cancelBackground,
                 cornerRadius: cornerRadius,
                 dragThreshold: dragThreshold
             )
@@ -26,13 +44,15 @@ public extension View {
     }
 }
 
-struct ConfirmRootModifier<S: ShapeStyle>: ViewModifier {
+struct ConfirmRootModifier<S1: ShapeStyle, S2: ShapeStyle>: ViewModifier {
     @EnvironmentObject private var presenter: ConfirmPresenter
     @GestureState private var dragHeight: CGFloat
+    @State private var isDragging = false
     @State private var safeAreaInsets: EdgeInsets = Self.initInsets()
-    
+
     private let transition: AnyTransition
-    private let background: S
+    private let background: S1
+    private let cancelBackground: S2
     private let cornerRadius: Double
 
     private let alignment: Alignment = .bottom
@@ -41,12 +61,14 @@ struct ConfirmRootModifier<S: ShapeStyle>: ViewModifier {
     
     init(
         transition: AnyTransition,
-        background: S,
+        background: S1,
+        cancelBackground: S2,
         cornerRadius: Double,
         dragThreshold: CGFloat
     ) {
         self.transition = transition
         self.background = background
+        self.cancelBackground = cancelBackground
         self.cornerRadius = cornerRadius
         self.dragThreshold = dragThreshold
         
@@ -67,25 +89,28 @@ struct ConfirmRootModifier<S: ShapeStyle>: ViewModifier {
                                 presenter.dismiss()
                             }
                             .zIndex(1)
-                    
-                        VStack(spacing: 20) {
+
+                        VStack(spacing: 10) {
                             VStack(spacing: 0) {
                                 entry.view.padding()
-                                
+
+                                // Actions
                                 ForEach(entry.actions) { action in
                                     VStack(spacing: 0) {
                                         if entry.actions.count > 0 {
                                             Divider()
                                         }
                                         
-                                        makeActionView(action)
+                                        makeActionView(action, tint: entry.tint)
+                                            .font(entry.fonts.regular)
                                     }
                                     .background(.clear, in: Rectangle())
                                 }
                             }
                             .background(background, in: RoundedRectangle(cornerRadius: cornerRadius))
                             .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
-                            
+
+                            // Cancel actions
                             VStack(spacing: 0) {
                                 ForEach(entry.cancelActions) { action in
                                     VStack(spacing: 0) {
@@ -93,18 +118,22 @@ struct ConfirmRootModifier<S: ShapeStyle>: ViewModifier {
                                             Divider()
                                         }
                                         
-                                        makeActionView(action)
+                                        makeActionView(action, tint: entry.tint)
+                                            .font(entry.fonts.cancel)
                                     }
                                 }
                                 .background(.clear, in: Rectangle())
                             }
-                            .background(background, in: RoundedRectangle(cornerRadius: cornerRadius))
+                            .background(cancelBackground, in: RoundedRectangle(cornerRadius: cornerRadius))
                             .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
                         }
                         .padding(.horizontal, 10)
                         .padding(.bottom, safeAreaInsets.bottom)
-                        .offset(calcOffset(dragHeight: dragHeight))
-                        .scaleEffect(calcScale(dragHeight: dragHeight), anchor: alignment.toUnitPoint())
+                        .offset(calcOffset(dragHeight: isDragging ? dragHeight : 0))
+                        .scaleEffect(
+                            calcScale(dragHeight: isDragging ? dragHeight : 0),
+                            anchor: alignment.toUnitPoint()
+                        )
                         .gesture(makeDragGesture())
                         .transition(transition)
                         .zIndex(2)
@@ -120,24 +149,31 @@ struct ConfirmRootModifier<S: ShapeStyle>: ViewModifier {
             }
     }
     
-    private func makeActionView(_ action: ConfirmPresenter.Action) -> some View {
+    private func makeActionView(_ action: ConfirmPresenter.Action, tint: Color) -> some View {
         Button {
             action.action()
             presenter.dismiss()
         } label: {
             HStack {
                 if let image = action.image?.buildImage() {
-                    image
+                    let img = image
+                        .renderingMode(.template)
                         .resizable()
                         .aspectRatio(1, contentMode: .fit)
                         .frame(height: 20)
+
+                    if action.role == .destructive {
+                        img.foregroundStyle(.red)
+                    } else {
+                        img.foregroundStyle(tint)
+                    }
                 }
                 
                 if let text = action.text {
-                    if action.kind == .destructive {
+                    if action.role == .destructive {
                         text.foregroundStyle(.red)
                     } else {
-                        text
+                        text.foregroundStyle(tint)
                     }
                 }
             }
@@ -162,6 +198,10 @@ struct ConfirmRootModifier<S: ShapeStyle>: ViewModifier {
                 {
                     presenter.dismiss()
                 }
+                isDragging = true
+            }
+            .onEnded { _ in
+                isDragging = false
             }
     }
 

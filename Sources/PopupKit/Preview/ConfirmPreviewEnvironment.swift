@@ -1,30 +1,23 @@
 //
-//  CoverPreviewEnvironment.swift
+//  ConfirmPreviewEnvironment.swift
+//  PopupKit
 //
-//
-//  Created by Илья Аникин on 25.08.2024.
+//  Created by Илья Аникин on 24.09.2024.
 //
 
 import SwiftUI
 
-struct CoverPreviewEnvironment: ViewModifier {
+struct ConfirmPreviewEnvironment: ViewModifier {
     #if DEBUG
-    @StateObject var presenter = CoverPresenter()
+    @StateObject var presenter = ConfirmPresenter()
     #endif
-    
-    let ignoredSafeAreaEdges: Edge.Set
-    
-    init(ignoresSafeAreaEdges: Edge.Set) {
-        ignoredSafeAreaEdges = ignoresSafeAreaEdges
-    }
 
     func body(content: Content) -> some View {
         #if DEBUG
         if ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] != nil {
             content
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .coverRoot()
-                .ignoresSafeArea(.all, edges: ignoredSafeAreaEdges)
+                .confirmRoot()
                 .environmentObject(presenter)
         } else {
             content
