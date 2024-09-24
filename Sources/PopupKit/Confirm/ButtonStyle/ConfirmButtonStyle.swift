@@ -29,7 +29,7 @@ struct ConfirmButtonStyle: ButtonStyle {
     }
     
     var pressedStyle: AnyShapeStyle {
-        AnyShapeStyle(colorScheme == .light ? Color.gray.opacity(0.2) : Color.white.opacity(0.2))
+        AnyShapeStyle(colorScheme == .light ? Color.gray.opacity(0.2) : Color.white.opacity(0.1))
     }
 }
 

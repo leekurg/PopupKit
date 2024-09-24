@@ -24,7 +24,7 @@ open class PopupKitSceneDelegate: NSObject, UIWindowSceneDelegate, ObservableObj
     public lazy var coverPresenter = CoverPresenter()
     public lazy var fullscreenPresenter = FullscreenPresenter()
     public lazy var notificationPresenter = NotificationPresenter()
-    public lazy var confirmPresenter = ConfirmPresenter(verbose: true)
+    public lazy var confirmPresenter = ConfirmPresenter()
     
     open func scene(
         _ scene: UIScene,

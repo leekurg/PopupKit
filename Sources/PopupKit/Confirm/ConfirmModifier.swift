@@ -8,31 +8,34 @@
 import SwiftUI
 
 public extension View {
-    /// Presents a confirmation dialog with **PopupKit**.
+    /// Presents a confirmation dialog using **PopupKit**.
     ///
-    /// Confirmation dialog  is similar to system confirmation dialog. Cover is screen-wide view with configurable height, attached to top or bottom edge of the screen.
-    /// Anchor screen edge is provided by calling ``View/coverRoot(:_)``.
+    /// This confirmation dialog mimics the system confirmation dialog. It can have an optional header ``View``
+    /// and a collection of specified actions.
+    /// The dialog is presented above all other views, which are dimmed out in the background.
+    /// A tap on any action or unoccupied space will dismiss the dialog.
     ///
-    /// To create a cover you provide a view to display and background style.
-    /// Also you can adjust a radius of cover's corners and set a modality mode to it.
-    /// Modality determines if user is able to interact with views under this cover and with cover itself.
-    /// Learn more about modality at ``Modality``
+    /// Actions are displayed as buttons, optionally containing ``Text`` and/or ``Image``.
+    /// Each action has a designated role defined by ``ConfirmPresenter/Action/Role``,
+    /// and its presentation style is determined accordingly.
+    ///
+    /// To create a confirmation dialog, provide an optional `View` for the dialog header and a collection of actions.
     ///
     /// - Parameters:
-    ///    - isPresented: A binding to a Boolean value that determines whether
-    ///  to present the view that you create in the modifier's `content` closure.
-    ///    - background: Background style of the presentable view.
-    ///    - modal: Modality of the presentable view.
-    ///    - cornerRadius: Radius of all cornrers of the presentable view.
-    ///    - content: A closure that returns the content of the notification.
+    ///   - isPresented: A binding to a Boolean value that determines whether the dialog is presented.
+    ///   - header: A closure that returns the content of the header view for the dialog.
+    ///   - actions: A closure used to build a collection of actions for the dialog.
+    ///     Actions are presented in the order they are provided, with **.cancel** actions
+    ///     always placed at the bottom of the dialog (in their original order).
+    ///     If no cancel actions are provided, a default, **non-localized** cancel action will be displayed.
     ///
-    /// - Note: Requires a ``View/coverRoot(:_)`` been called higher up the view hierarchy.
+    /// - Note: Requires a ``View/confirmRoot(:_)`` been called higher up the view hierarchy.
+    /// - Note: Only one confirmation dialog can be displayed at a time.
+    ///   Any attempts to present another dialog while one is already being displayed will be ignored.
     ///
-    @ViewBuilder func confirm<Content: View, S: ShapeStyle>(
+    @ViewBuilder func confirm<Content: View>(
         isPresented: Binding<Bool>,
-        background: S = .ultraThinMaterial,
-        cornerRadius: Double = 20.0,
-        header: @escaping () -> Content,
+        @ViewBuilder header: @escaping () -> Content = { EmptyView() },
         actions: @escaping () -> [ConfirmPresenter.Action]
     ) -> some View {
         #if DISABLE_POPUPKIT_IN_PREVIEWS
@@ -42,9 +45,7 @@ public extension View {
             modifier(
                 ConfirmModifier(
                     isPresented: isPresented,
-                    background: background,
-                    cornerRadius: cornerRadius,
-                    content: header,
+                    header: header,
                     actions: actions
                 )
             )
@@ -53,40 +54,41 @@ public extension View {
         modifier(
             ConfirmModifier(
                 isPresented: isPresented,
-                background: background,
-                cornerRadius: cornerRadius,
-                content: header,
+                header: header,
                 actions: actions
             )
         )
         #endif
     }
-    
-    /// Presents a cover with **PopupKit**.
+
+    /// Presents a confirmation dialog using **PopupKit**.
     ///
-    /// Cover is similar to system sheet. Cover is screen-wide view with configurable height, attached to top or bottom edge of the screen.
-    /// Anchor screen edge is provided by calling ``View/coverRoot(:_)``.
+    /// This confirmation dialog mimics the system confirmation dialog. It can have an optional header ``View``
+    /// and a collection of specified actions.
+    /// The dialog is presented above all other views, which are dimmed out in the background.
+    /// A tap on any action or unoccupied space will dismiss the dialog.
     ///
-    /// To create a cover you provide a view to display and background style.
-    /// Also you can adjust a radius of cover's corners and set a modality mode to it.
-    /// Modality determines if user is able to interact with views under this cover and with cover itself.
-    /// Learn more about modality at ``Modality``
+    /// Actions are displayed as buttons, optionally containing ``Text`` and/or ``Image``.
+    /// Each action has a designated role defined by ``ConfirmPresenter/Action/Role``,
+    /// and its presentation style is determined accordingly.
+    ///
+    /// To create a confirmation dialog, provide an optional `View` for the dialog header and a collection of actions.
     ///
     /// - Parameters:
-    ///    - item: An `Identifiable?` value that determines whether
-    ///  to present the view that you create in the modifier's `content` closure.
-    ///    - background: Background style of the presentable view.
-    ///    - modal: Modality of the presentable view.
-    ///    - cornerRadius: Radius of all cornrers of the presentable view.
-    ///    - content: A closure that returns the content of the notification.
+    ///   - item: An `Identifiable?` value that determines whether the dialog is presented.
+    ///   - header: A closure that returns the content of the header view for the dialog.
+    ///   - actions: A closure used to build a collection of actions for the dialog.
+    ///     Actions are presented in the order they are provided, with **.cancel** actions
+    ///     always placed at the bottom of the dialog (in their original order).
+    ///     If no cancel actions are provided, a default, **non-localized** cancel action will be displayed.
     ///
-    /// - Note: Requires a ``View/coverRoot(:_)`` been called higher up the view hierarchy.
+    /// - Note: Requires a ``View/confirmRoot(:_)`` been called higher up the view hierarchy.
+    /// - Note: Only one confirmation dialog can be displayed at a time.
+    ///   Any attempts to present another dialog while one is already being displayed will be ignored.
     ///
-    func confirm<Content: View, S: ShapeStyle, Item: Identifiable>(
+    func confirm<Content: View, Item: Identifiable>(
         item: Binding<Item?>,
-        background: S = .ultraThinMaterial,
-        cornerRadius: Double = 20.0,
-        header: @escaping () -> Content,
+        @ViewBuilder header: @escaping () -> Content = { EmptyView() },
         actions: @escaping () -> [ConfirmPresenter.Action]
     ) -> some View {
         confirm(
@@ -94,35 +96,30 @@ public extension View {
                 get: { item.wrappedValue != nil },
                 set: { if !$0 { item.wrappedValue = nil } }
             ),
-            background: background,
-            cornerRadius: cornerRadius,
             header: header,
             actions: actions
         )
     }
 }
 
-struct ConfirmModifier<V: View, S: ShapeStyle>: ViewModifier {
+struct ConfirmModifier<V: View>: ViewModifier {
     @EnvironmentObject private var presenter: ConfirmPresenter
+    @Environment(\.confirmTint) var tintColor
+    @Environment(\.confirmFonts) var fonts
+
     @State private var coverId = UUID()
     
     @Binding var isPresented: Bool
-    let background: S
-    let cornerRadius: Double
     let header: () -> V
     let actions: () -> [ConfirmPresenter.Action]
 
     init(
         isPresented: Binding<Bool>,
-        background: S,
-        cornerRadius: Double,
-        content: @escaping () -> V,
+        header: @escaping () -> V,
         actions: @escaping () -> [ConfirmPresenter.Action]
     ) {
         self._isPresented = isPresented
-        self.background = background
-        self.cornerRadius = cornerRadius
-        self.header = content
+        self.header = header
         self.actions = actions
     }
     
@@ -134,9 +131,9 @@ struct ConfirmModifier<V: View, S: ShapeStyle>: ViewModifier {
                     var successed: Bool = false
                     withAnimation(presenter.insertionAnimation) {
                         successed = presenter.present(
-                            background: background,
-                            cornerRadius: cornerRadius,
-                            content: header,
+                            tint: tintColor,
+                            fonts: fonts,
+                            header: header,
                             actions: actions
                         )
                     }

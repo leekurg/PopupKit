@@ -10,7 +10,7 @@ import SwiftUI
 public final class ConfirmPresenter: ObservableObject {
     let isVerbose: Bool
 
-    @Published public private(set) var presented: ConfirmEntry?
+    @Published public private(set) var presented: Entry?
     
     public let insertionAnimation: Animation
     public let removalAnimation: Animation
@@ -25,15 +25,15 @@ public final class ConfirmPresenter: ObservableObject {
         self.removalAnimation = removeAnimation
     }
     
-    /// Present a presentable entry with given **id** and **content**.
+    /// Present an entry if possible.
     ///
-    /// - Returns: Returns **true** is this dialog was presented, otherwise returns **false**.
+    /// - Returns: Returns **true** when presenting was successful, otherwise returns **false**.
     ///
-    @discardableResult func present<Content: View, S: ShapeStyle>(
+    @discardableResult func present<Content: View>(
         animated: Bool = true,
-        background: S,
-        cornerRadius: Double = 20.0,
-        content: @escaping () -> Content,
+        tint: Color,
+        fonts: ConfirmPresenter.Entry.Fonts,
+        header: @escaping () -> Content,
         actions: () -> [Action]
     ) -> Bool {
         guard presented == nil else {
@@ -41,12 +41,13 @@ public final class ConfirmPresenter: ObservableObject {
             return false
         }
 
-        presented = .init(view: AnyView(content()), actions: actions())
+        presented = .init(view: AnyView(header()), tint: tint, fonts: fonts, actions: actions())
 
         return true
     }
     
     /// Dismiss a currently presented entry.
+    ///
     public func dismiss(animated: Bool = true) {
         guard let _ = presented else {
             dprint(isVerbose, "⚠️ no confirm dialogs is presented - skip")
@@ -59,7 +60,7 @@ public final class ConfirmPresenter: ObservableObject {
         }
     }
     
-    /// Returns **true** if confirm entry is currently presented.
+    /// Returns **true** if there is a presented entry.
     public func isPresented() -> Bool {
         presented != nil
     }
@@ -67,41 +68,38 @@ public final class ConfirmPresenter: ObservableObject {
 
 public extension ConfirmPresenter {
     /// Represents a presentable entry.
-    struct ConfirmEntry: Equatable {
+    struct Entry: Equatable {
         let id: UUID
         /// Entry's content
         public let view: AnyView
+        /// Tint color for actions
+        public let tint: Color
+        /// Actions fonts
+        public let fonts: Fonts
         /// Regular actions
         public let actions: [Action]
         /// Cancel actions
         public let cancelActions: [Action]
-        
+
         public init(
             view: AnyView,
-            actions: [Action],
-            cancelActions: [Action]
-        ) {
-            self.id = UUID()
-            self.view = view
-            self.actions = actions
-            self.cancelActions = cancelActions
-        }
-        
-        public init(
-            view: AnyView,
+            tint: Color,
+            fonts: Fonts,
             actions: [Action]
         ) {
             self.id = UUID()
             self.view = view
-            
+            self.tint = tint
+            self.fonts = fonts
+
             let preprocessed = Self.preprocess(actions)
             self.actions = preprocessed.regular
             self.cancelActions = preprocessed.cancel
         }
         
         static func preprocess(_ actions: [Action]) -> (regular: [Action], cancel: [Action]) {
-            let regular = actions.filter { $0.kind != .cancel }
-            let cancel = actions.filter { $0.kind == .cancel }
+            let regular = actions.filter { $0.role != .cancel }
+            let cancel = actions.filter { $0.role == .cancel }
             
             return (regular, cancel.isEmpty ? [.default] : cancel)
         }
