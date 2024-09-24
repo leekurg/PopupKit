@@ -2,6 +2,14 @@
 
 `PopupKit` is a tool designed for enhanced view presentation within a `SwiftUI` app.
 
+> [!CAUTION]
+> With the public release of `iOS 18.0`, Apple modified the internal behavior of `UIView.hitTest()`, which has
+> affected the `UIWindow-layering` pattern that `PopupKit` relies on. 
+> As a result, some `PopupKit` presentation methods, specifically those that allow interaction
+> with underlying content (such as *notifications* and *interactive covers*), no longer function as expected. 
+> Currently, they block all user interactions with the content underneath while they are presented.
+> I'm working on the solution.
+
 ## Compatibility
 `SwiftUI` application targeted to **iOS 15+**.
 
@@ -439,14 +447,16 @@ so make sure this root view occupies the full screen — otherwise, the presenta
 press **Add package**. After that, you should complete the [integration](#integration-into-the-app).
 
 ## Known issues
-❌ `NavigationStack` is not working inside a `cover` and `fullscreen`\
-❌ Taps handling withing any `PopupKit`'s presentation layer is completly broken in `iOS 18.0`. Hope this will be fixed in future
-versions of the system. 
+❌ `NavigationStack` is not working inside a `cover`\
+❌ `NavigationStack` is not working inside a dismissable `fullscreen`. Fullscreen with `DismissalScroll.none` is fine.\
+❌ User interactions with the underneath content is blocked during any `PopupKit`'s presentation. thanks to `iOS 18` hit\
+testing breaking changes.
 
 ## Roadmap
 - [x] Notification
 - [x] Cover
 - [x] Fullscreen
+- [ ] Confirmation dialog
 - [ ] Fix [known issues](#known-issues)
 - [ ] Popup: customizable analogue to system alert with or without buttons
 - [ ] \(Optional) Push navigation: customizable system-like navigation stack. At least I'm going to give it a try 🙈.
