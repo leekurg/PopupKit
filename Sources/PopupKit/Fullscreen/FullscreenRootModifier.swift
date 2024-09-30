@@ -10,7 +10,7 @@ import SwiftUI
 public extension View {
     func fullscreenRoot(_ transition: AnyTransition = .fullscreen) -> some View {
         modifier(FullscreenRootModifier(transition: transition))
-            .ignoresSafeArea(.all)
+            .ignoresSafeArea(.container, edges: .all)
     }
 }
 
