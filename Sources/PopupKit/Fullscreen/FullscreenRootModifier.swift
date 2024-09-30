@@ -19,7 +19,7 @@ struct FullscreenRootModifier: ViewModifier {
 
     @GestureState private var dragHeight: CGFloat
     @State private var topEntryDraggedAway = false
-    @State private var safeAreaInsets: EdgeInsets = Self.initInsets()
+    @State private var safeAreaInsets: EdgeInsets = Self.fetchInsets()
     
     let transition: AnyTransition
     let dismissDirection: DismissDirection = .topToBottom
@@ -56,10 +56,14 @@ struct FullscreenRootModifier: ViewModifier {
                         }
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .onReceive(NotificationCenter.default.publisher(for: .popupKitSafeAreaChangedNotification)) { msg in
-                        if let newInsets = msg.object as? EdgeInsets {
-                            safeAreaInsets = newInsets
-                        }
+                    .onReceive(
+                        NotificationCenter.default
+                            .publisher(for: UIDevice.orientationDidChangeNotification)
+                            .delay(for: .milliseconds(1), scheduler: RunLoop.main)
+                            .map { _ in Self.fetchInsets() }
+                            .removeDuplicates()
+                    ) { newInsets in
+                        safeAreaInsets = newInsets
                     }
                     .transition(transition)
                 }
@@ -95,12 +99,8 @@ struct FullscreenRootModifier: ViewModifier {
         }
     }
     
-    private static func initInsets() -> EdgeInsets {
-        if ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] != nil {
-            UIApplication.shared.keyWindow?.safeAreaInsets.toSwiftUIInsets ?? EdgeInsets()
-        } else {
-            UIApplication.shared.popupKitWindow?.safeAreaInsets.toSwiftUIInsets ?? EdgeInsets()
-        }
+    private static func fetchInsets() -> EdgeInsets {
+        UIApplication.shared.keyWindow?.safeAreaInsets.toSwiftUIInsets ?? EdgeInsets()
     }
 }
 
