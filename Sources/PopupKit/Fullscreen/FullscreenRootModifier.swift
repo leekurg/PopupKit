@@ -20,7 +20,7 @@ struct FullscreenRootModifier: ViewModifier {
     @GestureState private var dragHeight: CGFloat
     @State private var topEntryDraggedAway = false
     @State private var safeAreaInsets: EdgeInsets = Self.fetchInsets()
-    
+
     let transition: AnyTransition
     let dismissDirection: DismissDirection = .topToBottom
     
@@ -46,7 +46,7 @@ struct FullscreenRootModifier: ViewModifier {
                                 entry.view
                                     .padding(safeAreaInsets.resolvingInSet(entry.ignoresEdges))
                             }
-                            .clipShape(RoundedRectangle(cornerRadius: safeAreaInsets.bottom))
+                            .cornerRadius(safeAreaInsets.bottom, corners: [.topLeft, .topRight])
                             .offset(presenter.isTop(entry.id) ? calcOffset(dragHeight) : .zero)
                             .gesture(if: entry.dismissalScroll.predictedThreshold > 0) {
                                 makeDragGesture(threshold: entry.dismissalScroll.predictedThreshold)
@@ -72,7 +72,7 @@ struct FullscreenRootModifier: ViewModifier {
     }
 
     private func makeDragGesture(threshold: CGFloat) -> some Gesture {
-        DragGesture(minimumDistance: 0)
+        DragGesture(minimumDistance: 1)
             .updating($dragHeight) { value, state, _ in
                 withAnimation(.spring) {
                     state = topEntryDraggedAway ? 0.0 : value.translation.height
@@ -81,8 +81,8 @@ struct FullscreenRootModifier: ViewModifier {
             .onChanged { gesture in
                 if
                     !topEntryDraggedAway,
-                    abs(gesture.predictedEndTranslation.height) > threshold,
-                    dismissDirection.isForward(gesture.predictedEndTranslation.height) == true
+                    dismissDirection.isForward(gesture.predictedEndTranslation.height) == true,
+                    abs(gesture.predictedEndTranslation.height) > threshold
                 {
                     topEntryDraggedAway = true
                     presenter.popLast()
