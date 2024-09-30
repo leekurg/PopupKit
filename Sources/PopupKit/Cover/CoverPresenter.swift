@@ -53,7 +53,7 @@ public class CoverPresenter: ObservableObject {
                         content()
                             .frame(maxWidth: .infinity)
                             .background(background, in: Rectangle())
-                            .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+                            .cornerRadius(cornerRadius, corners: [.topLeft, .topRight])
                     )
                 )
             )
@@ -74,6 +74,7 @@ public class CoverPresenter: ObservableObject {
         withAnimation(animated ? removalAnimation : nil) {
             if id == stack.last?.id {
                 stack.removeLast()
+                UIApplication.hideKeyboard()
                 dprint(isVerbose, "🙈 dismissed \(id)")
             } else {
                 stack.remove(at: presentedIndex)
