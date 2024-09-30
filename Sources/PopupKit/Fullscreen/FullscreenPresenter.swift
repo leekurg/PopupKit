@@ -68,6 +68,7 @@ public final class FullscreenPresenter: ObservableObject {
         }
         
         withAnimation(animated ? removalAnimation : nil) {
+            UIApplication.hideKeyboard()
             let _ = stack.remove(at: presentedIndex)
         }
 
