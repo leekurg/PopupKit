@@ -77,7 +77,7 @@ struct ConfirmRootModifier<S1: ShapeStyle, S2: ShapeStyle>: ViewModifier {
             resetTransaction: .init(animation: .bouncy)
         )
     }
-    
+
     func body(content: Content) -> some View {
         content
             .overlay(alignment: alignment.opposite) {
@@ -136,6 +136,7 @@ struct ConfirmRootModifier<S1: ShapeStyle, S2: ShapeStyle>: ViewModifier {
                         )
                         .gesture(makeDragGesture())
                         .transition(transition)
+                        .id(entry.id)
                         .zIndex(2)
                     }
                 }
@@ -148,11 +149,11 @@ struct ConfirmRootModifier<S1: ShapeStyle, S2: ShapeStyle>: ViewModifier {
                 }
             }
     }
-    
+
     private func makeActionView(_ action: ConfirmPresenter.Action, tint: Color) -> some View {
         Button {
             action.action()
-            presenter.dismiss()
+            presenter.dismiss(haptic: true)
         } label: {
             HStack {
                 if let image = action.image?.buildImage() {
@@ -181,7 +182,7 @@ struct ConfirmRootModifier<S1: ShapeStyle, S2: ShapeStyle>: ViewModifier {
             .frame(maxWidth: .infinity)
             .contentShape(Rectangle())
         }
-        .buttonStyle(.confirm(scale: 0.95))
+        .buttonStyle(.confirm)
     }
     
     private func makeDragGesture() -> some Gesture {

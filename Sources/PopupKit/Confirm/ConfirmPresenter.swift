@@ -11,10 +11,11 @@ public final class ConfirmPresenter: ObservableObject {
     let isVerbose: Bool
 
     @Published public private(set) var presented: Entry?
-    
+
     public let insertionAnimation: Animation
     public let removalAnimation: Animation
-    
+    public let feedback: UIImpactFeedbackGenerator
+
     public init(
         verbose: Bool = false,
         insertAnimation: Animation = .spring(duration: 0.3),
@@ -23,8 +24,10 @@ public final class ConfirmPresenter: ObservableObject {
         self.isVerbose = verbose
         self.insertionAnimation = insertAnimation
         self.removalAnimation = removeAnimation
+
+        self.feedback = UIImpactFeedbackGenerator(style: .medium)
     }
-    
+
     /// Present an entry if possible.
     ///
     /// - Returns: Returns **true** when presenting was successful, otherwise returns **false**.
@@ -42,24 +45,26 @@ public final class ConfirmPresenter: ObservableObject {
         }
 
         presented = .init(view: AnyView(header()), tint: tint, fonts: fonts, actions: actions())
+        feedback.prepare()
 
         return true
     }
-    
+
     /// Dismiss a currently presented entry.
     ///
-    public func dismiss(animated: Bool = true) {
+    public func dismiss(animated: Bool = true, haptic: Bool = false) {
         guard let _ = presented else {
             dprint(isVerbose, "⚠️ no confirm dialogs is presented - skip")
             return
         }
-        
+
         withAnimation(animated ? removalAnimation : nil) {
             presented = nil
+            if haptic { feedback.impactOccurred(intensity: 0.5) }
             dprint(isVerbose, "🙈 dismissed")
         }
     }
-    
+
     /// Returns **true** if there is a presented entry.
     public func isPresented() -> Bool {
         presented != nil
