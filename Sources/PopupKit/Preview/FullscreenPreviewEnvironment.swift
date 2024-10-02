@@ -16,6 +16,7 @@ struct FullscreenPreviewEnvironment: ViewModifier {
         #if DEBUG
         if ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] != nil {
             content
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .fullscreenRoot()
                 .environmentObject(presenter)
         } else {
