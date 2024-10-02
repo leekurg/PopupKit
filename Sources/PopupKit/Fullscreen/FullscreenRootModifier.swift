@@ -20,6 +20,7 @@ struct FullscreenRootModifier: ViewModifier {
     @GestureState private var dragHeight: CGFloat
     @State private var topEntryDraggedAway = false
     @State private var safeAreaInsets: EdgeInsets = Self.fetchInsets()
+    @State private var isKeyboardPresent: Bool = false
 
     let transition: AnyTransition
     let dismissDirection: DismissDirection = .topToBottom
@@ -45,6 +46,7 @@ struct FullscreenRootModifier: ViewModifier {
                                 
                                 entry.view
                                     .padding(safeAreaInsets.resolvingInSet(entry.ignoresEdges))
+                                    .padding(.bottom, isKeyboardPresent ? 0 : safeAreaInsets.bottom)
                             }
                             .cornerRadius(safeAreaInsets.bottom, corners: [.topLeft, .topRight])
                             .offset(presenter.isTop(entry.id) ? calcOffset(dragHeight) : .zero)
@@ -64,6 +66,11 @@ struct FullscreenRootModifier: ViewModifier {
                             .removeDuplicates()
                     ) { newInsets in
                         safeAreaInsets = newInsets
+                    }
+                    .onKeyboardAppear { appeared in
+                        if !presenter.stack.isEmpty {
+                            withAnimation(.spring) { isKeyboardPresent = appeared }
+                        }
                     }
                     .transition(transition)
                 }
@@ -123,7 +130,7 @@ fileprivate extension EdgeInsets {
         EdgeInsets(
             top: ignoresEdges.contains(.top) ? 0 : self.top,
             leading: ignoresEdges.contains(.leading) ? 0 : self.leading,
-            bottom: ignoresEdges.contains(.bottom) ? 0 : self.bottom,
+            bottom: 0,
             trailing: ignoresEdges.contains(.trailing) ? 0 : self.trailing
         )
     }
