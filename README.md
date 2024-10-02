@@ -411,34 +411,38 @@ struct YourView: View {
             Button("Show PopupKit Cover") {
                 isPresented.toggle()
             }
-            .confirm(
-                isPresented: $isPresented,  // 1. Controls the presentation state
-                background: .ultraThinMaterial,  // 2. Defines the background style
-                modal: .modal(interactivity: .interactive),  // 3. Configures modality (interactive/noninteractive or none)
-                cornerRadius: 15  // 4. Sets the corner radius for the cover view
-            ) {
-                Color.red  // 5. Content of the cover view
+            .confirm(isPresented: $c1) {
+                Text("Are you sure?")
+            } actions: {
+                [
+                    .action(
+                        text: Text("Maybe not"),
+                        action: { print("Maybe not was picked") }
+                    ),
+                    .cancel(text: Text("Not this time")),
+                    .destructive(
+                        text: Text("I am sure"),
+                        action: { print("I am sure was picked") }
+                    )
+                ]
             }
         }
     }
 }
 ```
 
-Key elements of `cover()` modifier:
-- **Presentation Control** (isPresented): A `Binding<Bool>` variable controls when the cover view is presented or dismissed. Toggling this binding will trigger the presentation state.
-- **Background Customization** (background): You can choose the cover's background style, such as `.ultraThinMaterial` to add a subtle blur effect, or any other `ShapeStyle`.
-- **Modal behavior** (modal):
-  - **Non-modal**: The cover view does not block interaction with other views on the screen.
-  - **Modal-interactive**: A dimmed background appears around the cover, and the cover can be dismissed by 
-  tapping the dimmed area or scrolling it down.
-  - **Modal-noninteractive**: Similar to the interactive modal, but the cover cannot be dismissed by tapping 
-  outside the cover or scrolling.
-- **Corner Radius** (cornerRadius): You can adjust the corner radius of the cover to create a smooth, rounded edge 
-for the view.
+Key elements of `confirm()` modifier:
+- **Presentation Control** (isPresented): A `Binding<Bool>` variable controls when the dialog is presented or dismissed. Toggling this binding will trigger the presentation state.
+- **Header Customization** (header): You can use any `View` to present as dialog's header.
+- **actions roles**: Each action initializer determines action's role (**action**, **destructive**, **cancel**).
+- **actions sorting**: Order of actions during dialog's presentation is the same as you provides, except the **cancel** actions listed below.
 
-The content inside the cover view is provided as a trailing closure. The height of the cover is determined by the 
-content you provide. If the content’s height exceeds the device’s screen height, the cover will occupy the full 
-screen, and its content will align to the top of the screen.
+You can customize actions font appearence using dedicated `EnvironmentValues` through `View` extension functions - `.confirmTint(_)` and `.confirmFonts(_)`. Also, a number of parameters can be customized with passing parameters to `.confirmRoot()` call:
+- **background** - background of dialog
+- **cancelBackground** - background of section with *cancel* actions.
+- **cornerRadius** - a corner radius of section with header and *regular* actions and section with *cancel* actions.
+> [!NOTE]
+> It is possible to present only one *confirm* at a time, any attempts to present a dialog, while there is presented one, will be ignored.
 
 ### Controlling Presentation with `Presenter`
 In addition to view modifiers, `PopupKit` offers another powerful tool for managing presentations: the `Presenter`. 
@@ -506,16 +510,17 @@ so make sure this root view occupies the full screen — otherwise, the presenta
 press **Add package**. After that, you should complete the [integration](#integration-into-the-app).
 
 ## Known issues
+❌ Keyboard behavoiur within presented views\
 ❌ `NavigationStack` is not working inside a `cover`\
 ❌ `NavigationStack` is not working inside a dismissable `fullscreen`. Fullscreen with `DismissalScroll.none` is fine.\
-❌ User interactions with the underneath content is blocked during any `PopupKit`'s presentation. thanks to `iOS 18` hit\
+❌ User interactions with the underneath content is blocked during any `PopupKit`'s presentation. thanks to `iOS 18` hit 
 testing breaking changes.
 
 ## Roadmap
 - [x] Notification
 - [x] Cover
 - [x] Fullscreen
-- [ ] Confirmation dialog
+- [x] Confirmation dialog
 - [ ] Fix [known issues](#known-issues)
 - [ ] Popup: customizable analogue to system alert with or without buttons
 - [ ] \(Optional) Push navigation: customizable system-like navigation stack. At least I'm going to give it a try 🙈.
