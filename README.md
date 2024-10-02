@@ -29,7 +29,6 @@ in app development:
         <tr>
             <td> <p align="center"> <strong>Notification</strong> </p> </td>
             <td> <p align="center"> <strong>Cover</strong> </p> </td>
-            <td> <p align="center"> <strong>Fullscreen</strong> </p> </td>
         </tr>
         <tr>
             <td>
@@ -37,6 +36,15 @@ in app development:
             </td>
             <td>
               <img src="https://github.com/user-attachments/assets/ed50b67a-6ca6-4f4e-bec2-8a09a221e44c" width="250">
+            </td>
+        </tr>
+        <tr>
+            <td> <p align="center"> <strong>Confirm</strong> </p> </td>
+            <td> <p align="center"> <strong>Fullscreen</strong> </p> </td>
+        </tr>
+        <tr>
+            <td>
+              <img src="https://github.com/user-attachments/assets/6f44e6db-ff56-4b22-826e-4f1e86511ba6" width="250">
             </td>
             <td>
               <img src="https://github.com/user-attachments/assets/1d110614-c162-4431-9bae-4d460932159b" width="250">
@@ -51,17 +59,22 @@ It is displayed above the app's view hierarchy.
   - Notifications can expire after a set time and automatically dismiss.
   - Supports user-initiated dismissal by a scroll-away gesture, just like system notifications.
 
-
-- **Cover**: analogue of the system .sheet presentation style with several enhancements:
+- **Cover**: analogue of the system `.sheet` presentation style with several enhancements:
   - Customizable transition, appearance animations, and background.
   - Configurable height (system .sheet supports this only in iOS 16+).
   - The cover's anchor point can be placed on any screen edge, not just the bottom.
   - Flexible modality: allows you to block user interaction with content beneath the cover or with the cover itself.
 
-- **Fullscreen**: analogue of the system .fullscreenCover presentation style, but with enhanced customizability:
+- **Fullscreen**: analogue of the system `.fullscreenCover` presentation style, but with enhanced customizability:
   - Configurable transition and appearance animations.
   - Customizable background.
   - Optional *scroll-down-to-dismiss* gesture for dismissing the current fullscreen view.
+ 
+- **Confirm**: analogue of the system `.confirmationDialog` with several features.
+  - Customizable transition, appearance animations, and visual style.
+  - Customizable header.
+  - Customizable actions appearence(color, font, image)
+  - Haptic support
 
 ## Usage
 Although in `SwiftUI` it's possible to display views above your app's view hierarchy, system sheets and fullscreen 
@@ -125,6 +138,7 @@ class YourSceneDelegate: NSObject, UIWindowSceneDelegate, ObservableObject {
     public lazy var coverPresenter = CoverPresenter()
     public lazy var fullscreenPresenter = FullscreenPresenter()
     public lazy var notificationPresenter = NotificationPresenter()
+    public lazy var confirmPresenter = ConfirmPresenter()
     
     open func scene(
         _ scene: UIScene,
@@ -140,9 +154,11 @@ class YourSceneDelegate: NSObject, UIWindowSceneDelegate, ObservableObject {
                     .ignoresSafeArea(.all, edges: [.all])
                     .fullscreenRoot()
                     .notificationRoot()
+                    .confirmRoot()
                     .environmentObject(coverPresenter)
                     .environmentObject(fullscreenPresenter)
                     .environmentObject(notificationPresenter)
+                    .environmentObject(confirmPresenter)
             )
 
             popupKitViewController.view.backgroundColor = .clear
@@ -249,6 +265,7 @@ struct MainSceneView: View {
             .environmentObject(sceneDelegate.coverPresenter)   // Injects the cover presenter
             .environmentObject(sceneDelegate.fullscreenPresenter)  // Injects the fullscreen presenter
             .environmentObject(sceneDelegate.notificationPresenter)  // Injects the notification presenter
+            .environmentObject(sceneDelegate.confirmPresenter)  // Injects the confirm presenter
     }
 }
 ```
@@ -380,6 +397,48 @@ the timer expires.
 > If multiple notifications are presented in sequence, the timer resets when a new notification is shown.
 > For example, if Notification A is still active when Notification B appears, A’s timer will restart when B is
 > dismissed.
+
+#### Confirm presentation
+When you need to make user pick one of actions you can use a *confirm* presentation mode, utilizing the `confirm()` modifier provided by `PopupKit`. 
+Here's how you can implement it:
+
+```
+struct YourView: View {
+    @State private var isPresented = false
+
+    var body: some View {
+        VStack {
+            Button("Show PopupKit Cover") {
+                isPresented.toggle()
+            }
+            .confirm(
+                isPresented: $isPresented,  // 1. Controls the presentation state
+                background: .ultraThinMaterial,  // 2. Defines the background style
+                modal: .modal(interactivity: .interactive),  // 3. Configures modality (interactive/noninteractive or none)
+                cornerRadius: 15  // 4. Sets the corner radius for the cover view
+            ) {
+                Color.red  // 5. Content of the cover view
+            }
+        }
+    }
+}
+```
+
+Key elements of `cover()` modifier:
+- **Presentation Control** (isPresented): A `Binding<Bool>` variable controls when the cover view is presented or dismissed. Toggling this binding will trigger the presentation state.
+- **Background Customization** (background): You can choose the cover's background style, such as `.ultraThinMaterial` to add a subtle blur effect, or any other `ShapeStyle`.
+- **Modal behavior** (modal):
+  - **Non-modal**: The cover view does not block interaction with other views on the screen.
+  - **Modal-interactive**: A dimmed background appears around the cover, and the cover can be dismissed by 
+  tapping the dimmed area or scrolling it down.
+  - **Modal-noninteractive**: Similar to the interactive modal, but the cover cannot be dismissed by tapping 
+  outside the cover or scrolling.
+- **Corner Radius** (cornerRadius): You can adjust the corner radius of the cover to create a smooth, rounded edge 
+for the view.
+
+The content inside the cover view is provided as a trailing closure. The height of the cover is determined by the 
+content you provide. If the content’s height exceeds the device’s screen height, the cover will occupy the full 
+screen, and its content will align to the top of the screen.
 
 ### Controlling Presentation with `Presenter`
 In addition to view modifiers, `PopupKit` offers another powerful tool for managing presentations: the `Presenter`. 
