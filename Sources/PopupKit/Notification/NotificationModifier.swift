@@ -45,6 +45,60 @@ public extension View {
         )
         #endif
     }
+
+    /// Presents a notification with PopupKit.
+    ///
+    /// - Parameters:
+    ///    - item: An `Identifiable?` value that determines whether
+    ///  to present the notification that you create in the modifier's `content` closure.
+    ///    - expiration: Notification's expiration policy.
+    ///    - content: A closure that returns the content of the notification.
+    ///
+    /// - Note: Requires a ``View/notificationRoot(:_)`` been installed higher up the view hierarchy.
+    ///
+    @ViewBuilder func notification<Content: View, Item: Identifiable>(
+        item: Binding<Item?>,
+        expiration: ExpirationPolicy = .never,
+        content: @escaping (Item) -> Content
+    ) -> some View {
+        notification(
+            isPresented: Binding(
+                get: { item.wrappedValue != nil },
+                set: { if !$0 { item.wrappedValue = nil } }
+            ),
+            expiration: expiration,
+            content: {
+                Group {
+                    if let wrapped = item.wrappedValue {
+                        content(wrapped)
+                    } else {
+                        EmptyView()
+                    }
+                }
+            }
+        )
+    }
+    
+    /// Presents a default-styled notification with PopupKit.
+    ///
+    /// - Parameters:
+    ///    - item: An `Notification?` value that determines whether
+    ///  to present the notification.
+    ///    - expiration: Notification's expiration policy.
+    ///
+    /// - Note: Requires a ``View/notificationRoot(:_)`` been installed higher up the view hierarchy.
+    ///
+    @ViewBuilder func notification(
+        item: Binding<Notification?>,
+        expiration: ExpirationPolicy = .never
+    ) -> some View {
+        notification(
+            item: item,
+            expiration: expiration
+        ) { item in
+            NotificationView(notification: item)
+        }
+    }
 }
 
 struct NotificationModifier<T: View>: ViewModifier {
