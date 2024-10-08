@@ -25,7 +25,7 @@ struct NotificationView: View {
                 .padding(.leading, inset)
             
             Text(notification.msg)
-                .font(.system(size: 20, weight: .bold, design: .rounded))
+                .font(.system(size: 16, weight: .bold, design: .rounded))
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding([.vertical, .trailing])
         }
