@@ -13,7 +13,12 @@ public extension AnyTransition {
         removal: .move(edge: .bottom)
     )
     
-    static let notification: AnyTransition = .asymmetric(
+    static let notificationTop: AnyTransition = .asymmetric(
+        insertion: .move(edge: .top),
+        removal: .move(edge: .top).combined(with: .opacity)
+    )
+    
+    static let notificationBottom: AnyTransition = .asymmetric(
         insertion: .move(edge: .bottom),
         removal: .move(edge: .bottom).combined(with: .opacity)
     )
