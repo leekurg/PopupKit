@@ -10,7 +10,7 @@ import SwiftUI
 public extension View {
     func notificationRoot(
         alignment: Alignment = .bottom,
-        transition: AnyTransition = .notification,
+        transition: AnyTransition = .notificationBottom,
         maxNotificationWidth: CGFloat = 500.0,
         minNotificationHeight: CGFloat = 100.0,
         dragThreshold: CGFloat = 300.0
