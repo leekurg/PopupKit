@@ -34,7 +34,7 @@ open class PopupKitSceneDelegate: NSObject, UIWindowSceneDelegate, ObservableObj
         if let scene = scene as? UIWindowScene {
             let popupKitWindow = PassThroughUIWindow(windowScene: scene)
 
-            let popupKitViewController = UIHostingController(
+            let popupKitViewController = PopupKitHostingController(
                 rootView: Color.clear
                     .coverRoot()
                     .ignoresSafeArea(.all, edges: [.all])
