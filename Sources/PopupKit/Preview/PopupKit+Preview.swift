@@ -21,6 +21,8 @@ public enum PopupKitPreviewEnvironment {
     case fullscreen
     /// PopupKit environment for confirmation dialog presentation within SwiftUI Preview system.
     case confirm
+    /// PopupKit environment for popup presentation within SwiftUI Preview system.
+    case popup(ignoredSafeAreaEdges: Edge.Set)
 }
 
 public extension View {
@@ -44,6 +46,8 @@ public extension View {
             self.modifier(FullscreenPreviewEnvironment())
         case .confirm:
             self.modifier(ConfirmPreviewEnvironment())
+        case .popup(let ignoredSafeAreaEdges):
+            self.modifier(PopupPreviewEnvironment(ignoresSafeAreaEdges: ignoredSafeAreaEdges))
         }
     }
     
@@ -64,5 +68,6 @@ public extension View {
             .modifier(CoverPreviewEnvironment(ignoresSafeAreaEdges: ignoresSafeAreaEdges))
             .modifier(NotificationPreviewEnvironment(ignoresSafeAreaEdges: ignoresSafeAreaEdges))
             .modifier(ConfirmPreviewEnvironment())
+            .modifier(PopupPreviewEnvironment(ignoresSafeAreaEdges: ignoresSafeAreaEdges))
     }
 }

@@ -23,5 +23,36 @@ public extension AnyTransition {
         removal: .move(edge: .bottom).combined(with: .opacity)
     )
     
-    static let fullscreen: AnyTransition = .scale(scale: 1.5).combined(with: .opacity)
+    static let popup: AnyTransition = .blur.combined(with: .scale(scale: 1.5))
+}
+
+struct BlurTransition: ViewModifier, Animatable {
+    private var radius: Double
+
+    init(radius: Double?) {
+        self.radius = radius ?? 0
+    }
+
+    var animatableData: Double {
+        get { radius }
+        set { radius = newValue }
+    }
+
+    func body(content: Content) -> some View {
+        content.blur(radius: radius)
+    }
+}
+
+extension AnyTransition {
+    static var blur: Self {
+        blur()
+    }
+
+    static func blur(radius: Double? = 20) -> Self {
+        AnyTransition.modifier(
+            active: BlurTransition(radius: radius),
+            identity: BlurTransition(radius: 0)
+        )
+        .combined(with: .opacity)
+    }
 }
