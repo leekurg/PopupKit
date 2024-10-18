@@ -67,7 +67,7 @@ public final class PopupPresenter: ObservableObject {
         }
         
         withAnimation(animated ? removalAnimation : nil) {
-//            UIApplication.hideKeyboard()
+            UIApplication.hideKeyboard()
             let _ = stack.remove(at: presentedIndex)
         }
         stack = stack.reindexDeep(from: presentedIndex)

@@ -45,16 +45,12 @@ struct PopupRootModifier: ViewModifier {
                         }
 
                         ForEach(presenter.stack) { entry in
-                            ZStack {
-                                entry.view
-                                    .padding(safeAreaInsets.resolvingInSet(entry.ignoresEdges))
-                                    .padding(.bottom, isKeyboardPresent ? 0 : safeAreaInsets.bottom)
-                                    .blur(radius: calcBlur(deep: entry.deep, total: presenter.stack.count))
-                                    .scaleEffect(calcScale(deep: entry.deep, total: presenter.stack.count))
-                            }
-                            .zIndex(Double(entry.deep))
-                            .transition(transition)
-                            .border(.orange)
+                            entry.view
+                                .padding(safeAreaInsets.resolvingInSet(entry.ignoresEdges))
+                                .blur(radius: calcBlur(deep: entry.deep, total: presenter.stack.count))
+                                .scaleEffect(calcScale(deep: entry.deep, total: presenter.stack.count))
+                                .zIndex(Double(entry.deep))
+                                .transition(transition)
                         }
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
