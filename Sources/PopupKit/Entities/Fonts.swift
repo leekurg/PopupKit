@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-public extension ConfirmPresenter.Entry {
+public extension Action {
     /// Fonts for an action.
     struct Fonts {
         /// Font for regular action

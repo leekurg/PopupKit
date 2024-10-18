@@ -8,6 +8,18 @@
 import SwiftUI
 
 public extension View {
+    /// Sets the *root view* for **PopupKit**'s popup presentations.
+    ///
+    /// ## Overview
+    /// The *root view* defines the location within the view hierarchy from which popups will be presented.
+    /// Any popups invoked from lower in the hierarchy will be displayed from this root view.
+    /// You can configure various customization options for the popup's appearance and behavior.
+    ///
+    /// - Parameters:
+    ///   - transition: Specifies the transition animation for adding or removing a popup from the view hierarchy.
+    ///
+    /// - Note: Use the ``View/popup(_)`` modifier to present a popup.
+    ///
     func popupRoot(_ transition: AnyTransition = .popup) -> some View {
         modifier(PopupRootModifier(transition: transition))
             .ignoresSafeArea(.container, edges: .all)

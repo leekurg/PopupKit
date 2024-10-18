@@ -36,7 +36,7 @@ public extension View {
     @ViewBuilder func confirm<Content: View>(
         isPresented: Binding<Bool>,
         @ViewBuilder header: @escaping () -> Content = { EmptyView() },
-        actions: @escaping () -> [ConfirmPresenter.Action]
+        actions: @escaping () -> [Action]
     ) -> some View {
         #if DISABLE_POPUPKIT_IN_PREVIEWS
         if ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] != nil {
@@ -89,7 +89,7 @@ public extension View {
     func confirm<Content: View, Item: Identifiable>(
         item: Binding<Item?>,
         @ViewBuilder header: @escaping () -> Content = { EmptyView() },
-        actions: @escaping () -> [ConfirmPresenter.Action]
+        actions: @escaping () -> [Action]
     ) -> some View {
         confirm(
             isPresented: Binding(
@@ -104,19 +104,19 @@ public extension View {
 
 struct ConfirmModifier<V: View>: ViewModifier {
     @EnvironmentObject private var presenter: ConfirmPresenter
-    @Environment(\.confirmTint) var tintColor
-    @Environment(\.confirmFonts) var fonts
+    @Environment(\.popupActionTint) var tintColor
+    @Environment(\.popupActionFonts) var fonts
 
     @State private var coverId = UUID()
     
     @Binding var isPresented: Bool
     let header: () -> V
-    let actions: () -> [ConfirmPresenter.Action]
+    let actions: () -> [Action]
 
     init(
         isPresented: Binding<Bool>,
         header: @escaping () -> V,
-        actions: @escaping () -> [ConfirmPresenter.Action]
+        actions: @escaping () -> [Action]
     ) {
         self._isPresented = isPresented
         self.header = header

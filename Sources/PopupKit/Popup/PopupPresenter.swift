@@ -19,8 +19,8 @@ public final class PopupPresenter: ObservableObject {
     
     public init(
         verbose: Bool = false,
-        insertAnimation: Animation = .spring(duration: 0.5),
-        removeAnimation: Animation = .spring(duration: 0.5)
+        insertAnimation: Animation = .spring(duration: 0.3),
+        removeAnimation: Animation = .easeOut(duration: 0.3)
     ) {
         self.isVerbose = verbose
         self.insertionAnimation = insertAnimation

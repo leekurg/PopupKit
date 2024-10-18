@@ -150,7 +150,7 @@ struct ConfirmRootModifier<S1: ShapeStyle, S2: ShapeStyle>: ViewModifier {
             }
     }
 
-    private func makeActionView(_ action: ConfirmPresenter.Action, tint: Color) -> some View {
+    private func makeActionView(_ action: Action, tint: Color) -> some View {
         Button {
             action.action()
             presenter.dismiss(haptic: true)
