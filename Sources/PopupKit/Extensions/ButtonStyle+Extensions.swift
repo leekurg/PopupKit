@@ -15,6 +15,10 @@ struct AlertButtonStyle: ButtonStyle {
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
+            .lineLimit(1)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 5)
+            .multilineTextAlignment(.center)
             .frame(maxWidth: .infinity)
             .frame(height: context.height)
             .background(configuration.isPressed ? pressedStyle : AnyShapeStyle(Color.clear))

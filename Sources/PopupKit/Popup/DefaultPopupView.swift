@@ -74,28 +74,42 @@ struct ActionsView: View {
     @Environment(\.popupActionFonts) var fonts
     @Environment(\.popupActionTint) var tint
     
-    // TODO: internal
-    public init(actions: @escaping () -> [Action], dismiss: @escaping () -> Void) {
-        self.actions = actions
-        self.dismiss = dismiss
-    }
-    
     @State private var _actions: SegregatedActions = .empty
-    
+
     var body: some View {
-        VStack(spacing: 0) {
-            ForEach(_actions.regular) { action in
-                if !_actions.regular.isEmpty { Divider() }
-                
-                makeActionView(action, tint: tint, dismiss: dismiss)
-                    .font(fonts.cancel)
-            }
-            
-            ForEach(_actions.cancel) { action in
-                if !_actions.cancel.isEmpty { Divider() }
-                
-                makeActionView(action, tint: tint, dismiss: dismiss)
-                    .font(fonts.cancel)
+        Group {
+            if
+                _actions.regular.count == 1 && _actions.cancel.count == 1,
+                let regularAction = _actions.regular.first,
+                let cancelAction = _actions.cancel.first
+            {
+                Divider()
+
+                HStack(spacing: 0) {
+                    makeActionView(regularAction, tint: tint, dismiss: dismiss)
+                        .font(fonts.regular)
+                    
+                    Divider().frame(height: ActionContext.alert.height)
+                    
+                    makeActionView(cancelAction, tint: tint, dismiss: dismiss)
+                        .font(fonts.cancel)
+                }
+            } else {
+                VStack(spacing: 0) {
+                    ForEach(_actions.regular) { action in
+                        if !_actions.regular.isEmpty { Divider() }
+                        
+                        makeActionView(action, tint: tint, dismiss: dismiss)
+                            .font(fonts.regular)
+                    }
+                    
+                    ForEach(_actions.cancel) { action in
+                        if !_actions.cancel.isEmpty { Divider() }
+                        
+                        makeActionView(action, tint: tint, dismiss: dismiss)
+                            .font(fonts.cancel)
+                    }
+                }
             }
         }
         .task {
