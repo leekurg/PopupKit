@@ -9,31 +9,22 @@ import SwiftUI
 
 let actionCornerSize = 20.0
 
-public struct DefaultPopupView: View {
-    let title: String
-    let msg: String
-    let actions: () -> [PopupKit.Action]
+public struct DefaultPopupView<Content: View>: View {
+    let content: () -> Content
+    let actions: () -> [Action]
     
     @State private var feedback = UIImpactFeedbackGenerator(style: .rigid)
     
     @EnvironmentObject var presenter: PopupPresenter
     
-    public init(title: String, msg: String, actions: @escaping () -> [PopupKit.Action]) {
-        self.title = title
-        self.msg = msg
+    public init(content: @escaping () -> Content, actions: @escaping () -> [Action]) {
+        self.content = content
         self.actions = actions
     }
     
     public var body: some View {
-        VStack {
-            VStack {
-                Text(title)
-                    .font(.headline)
-                
-                Text(msg)
-                    .font(.subheadline)
-            }
-            .padding(.vertical, 20)
+        VStack(spacing: 0) {
+            content()
             
             ActionsView(
                 actions: actions,
@@ -50,15 +41,41 @@ public struct DefaultPopupView: View {
     }
 }
 
+public extension DefaultPopupView where Content == _DefaultPopupViewHeader {
+    init(title: String, msg: String, actions: @escaping () -> [Action]) {
+        self.content = { _DefaultPopupViewHeader(title: title, msg: msg) }
+        self.actions = actions
+    }
+}
+
+/// Internal type.
+///
+/// Provides a way to achieve a default generic argument within a View.
+public struct _DefaultPopupViewHeader: View {
+    let title: String
+    let msg: String
+
+    public var body: some View {
+        VStack {
+            Text(title)
+                .font(.headline)
+            
+            Text(msg)
+                .font(.subheadline)
+        }
+        .padding(.vertical, 20)
+    }
+}
+
 struct ActionsView: View {
-    let actions: () -> [PopupKit.Action]
+    let actions: () -> [Action]
     let dismiss: () -> Void
     
     @Environment(\.popupActionFonts) var fonts
     @Environment(\.popupActionTint) var tint
     
     // TODO: internal
-    public init(actions: @escaping () -> [PopupKit.Action], dismiss: @escaping () -> Void) {
+    public init(actions: @escaping () -> [Action], dismiss: @escaping () -> Void) {
         self.actions = actions
         self.dismiss = dismiss
     }
