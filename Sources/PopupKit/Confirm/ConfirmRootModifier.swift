@@ -178,11 +178,10 @@ struct ConfirmRootModifier<S1: ShapeStyle, S2: ShapeStyle>: ViewModifier {
                     }
                 }
             }
-            .frame(height: 60)
             .frame(maxWidth: .infinity)
             .contentShape(Rectangle())
         }
-        .buttonStyle(.confirm)
+        .buttonStyle(.alert(context: .confirm))
     }
     
     private func makeDragGesture() -> some Gesture {

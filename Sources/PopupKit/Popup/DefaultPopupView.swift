@@ -45,7 +45,8 @@ public struct DefaultPopupView: View {
         }
         .background(.thinMaterial)
         .clipShape(RoundedRectangle(cornerRadius: actionCornerSize))
-        .padding(.horizontal)
+        .frame(idealWidth: 300, maxWidth: 500)
+        .padding(.horizontal, 50)
     }
 }
 
@@ -118,11 +119,10 @@ struct ActionsView: View {
                     }
                 }
             }
-            .frame(height: 60)
             .frame(maxWidth: .infinity)
             .contentShape(Rectangle())
         }
-        .buttonStyle(.confirm)
+        .buttonStyle(.alert(context: .alert))
     }
 }
 

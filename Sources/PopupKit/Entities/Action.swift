@@ -92,10 +92,10 @@ struct SegregatedActions {
 
 extension Collection where Element == Action {
     /// Segregate a collection of actions and returns two collections: regular actions and cancel actions.
-    func segregate() -> (regular: [Element], cancel: [Element]){
+    func segregate() -> SegregatedActions {
         let regular = self.filter { $0.role != .cancel }
         let cancel = self.filter { $0.role == .cancel }
         
-        return (regular, cancel.isEmpty ? [.default] : cancel)
+        return .init(regular: regular, cancel: cancel.isEmpty ? [.default] : cancel)
     }
 }

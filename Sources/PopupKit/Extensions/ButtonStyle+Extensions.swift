@@ -1,19 +1,22 @@
 //
-//  ConfirmButtonStyle.swift
+//  ButtonStyle+Extensions.swift
 //  PopupKit
 //
-//  Created by Илья Аникин on 24.09.2024.
+//  Created by Илья Аникин on 20.10.2024.
 //
 
 import SwiftUI
 
-/// Button style for confirmation dialog.
-struct ConfirmButtonStyle: ButtonStyle {
+/// Button style for alerts and confirmation dialogs.
+struct AlertButtonStyle: ButtonStyle {
+    let context: ActionContext
+    
     @Environment(\.colorScheme) var colorScheme
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .frame(maxWidth: .infinity)
+            .frame(height: context.height)
             .background(configuration.isPressed ? pressedStyle : AnyShapeStyle(Color.clear))
     }
 
@@ -22,14 +25,15 @@ struct ConfirmButtonStyle: ButtonStyle {
     }
 }
 
-extension ButtonStyle where Self == ConfirmButtonStyle {
+extension ButtonStyle where Self == AlertButtonStyle {
     /// Button with configurable simple press animation (opacity + scale).
-    static var confirm: Self {
-        ConfirmButtonStyle()
+    static func alert(context: ActionContext) -> Self {
+        AlertButtonStyle(context: context)
     }
 }
 
 #Preview {
     Button("Example") { }
-        .buttonStyle(.confirm)
+        .buttonStyle(.alert(context: .alert))
+        .border(.orange)
 }
