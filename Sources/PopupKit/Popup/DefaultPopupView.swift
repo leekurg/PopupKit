@@ -7,12 +7,13 @@
 
 import SwiftUI
 
-let actionCornerSize = 20.0
+let dividerHeight = 1.0 / 3.0
 
 public struct DefaultPopupView<Content: View>: View {
     let content: () -> Content
     let actions: () -> [Action]
-    
+
+    @State private var size: CGSize = .zero
     @State private var feedback = UIImpactFeedbackGenerator(style: .rigid)
     
     @EnvironmentObject var presenter: PopupPresenter
@@ -25,8 +26,10 @@ public struct DefaultPopupView<Content: View>: View {
     public var body: some View {
         VStack(spacing: 0) {
             content()
-            
+                .sizeReader(size: $size)
+
             ActionsView(
+                contentSize: size,
                 actions: actions,
                 dismiss: {
                     presenter.popLast()
@@ -35,16 +38,21 @@ public struct DefaultPopupView<Content: View>: View {
             )
         }
         .background(.thinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: actionCornerSize))
-        .frame(idealWidth: 300, maxWidth: 500)
+        .clipShape(RoundedRectangle(cornerRadius: 20.0))
+        .frame(width: 300)
         .padding(.horizontal, 50)
+        .onChange(of: size) { value in
+            print("size: \(size)")
+        }
     }
 }
 
 public extension DefaultPopupView where Content == _DefaultPopupViewHeader {
     init(title: String, msg: String, actions: @escaping () -> [Action]) {
-        self.content = { _DefaultPopupViewHeader(title: title, msg: msg) }
-        self.actions = actions
+        self.init(
+            content: { _DefaultPopupViewHeader(title: title, msg: msg) },
+            actions: actions
+        )
     }
 }
 
@@ -68,56 +76,119 @@ public struct _DefaultPopupViewHeader: View {
 }
 
 struct ActionsView: View {
+    let contentSize: CGSize
     let actions: () -> [Action]
     let dismiss: () -> Void
     
     @Environment(\.popupActionFonts) var fonts
     @Environment(\.popupActionTint) var tint
-    
+
+    @State private var safeAreaInsets: EdgeInsets = Self.fetchInsets()
     @State private var _actions: SegregatedActions = .empty
+    @State private var layout: ActionsLayout = .vertical
+    @State private var scrollHeight: CGFloat = .zero
+    @State private var scrollAxis: Axis.Set = []
 
     var body: some View {
         Group {
-            if
-                _actions.regular.count == 1 && _actions.cancel.count == 1,
-                let regularAction = _actions.regular.first,
-                let cancelAction = _actions.cancel.first
-            {
-                Divider()
+            switch layout {
+            case .vertical:
+                ScrollView(scrollAxis) {
+                    VStack(spacing: 0) {
+                        ForEach(_actions.regular) { action in
+                            if !_actions.regular.isEmpty { Divider() }
 
-                HStack(spacing: 0) {
-                    makeActionView(regularAction, tint: tint, dismiss: dismiss)
-                        .font(fonts.regular)
-                    
-                    Divider().frame(height: ActionContext.alert.height)
-                    
-                    makeActionView(cancelAction, tint: tint, dismiss: dismiss)
-                        .font(fonts.cancel)
-                }
-            } else {
-                VStack(spacing: 0) {
-                    ForEach(_actions.regular) { action in
-                        if !_actions.regular.isEmpty { Divider() }
-                        
-                        makeActionView(action, tint: tint, dismiss: dismiss)
-                            .font(fonts.regular)
+                            makeActionView(action, tint: tint, dismiss: dismiss)
+                                .font(fonts.regular)
+                        }
+
+                        ForEach(_actions.cancel) { action in
+                            if !_actions.cancel.isEmpty { Divider() }
+
+                            makeActionView(action, tint: tint, dismiss: dismiss)
+                                .font(fonts.cancel)
+                        }
                     }
-                    
-                    ForEach(_actions.cancel) { action in
-                        if !_actions.cancel.isEmpty { Divider() }
-                        
-                        makeActionView(action, tint: tint, dismiss: dismiss)
+                }
+                .frame(height: scrollHeight)
+            case .horizontal:
+                if let regular = _actions.regular.first, let cancel = _actions.cancel.first {
+                    Divider()
+
+                    HStack(spacing: 0) {
+                        makeActionView(regular, tint: tint, dismiss: dismiss)
+                            .font(fonts.regular)
+
+                        Divider().frame(height: ActionContext.alert.height)
+
+                        makeActionView(cancel, tint: tint, dismiss: dismiss)
                             .font(fonts.cancel)
                     }
                 }
             }
         }
+        .onReceive(
+            NotificationCenter.default
+                .publisher(for: UIDevice.orientationDidChangeNotification)
+                .delay(for: .milliseconds(1), scheduler: RunLoop.main)
+                .map { _ in Self.fetchInsets() }
+                .removeDuplicates()
+        ) { newInsets in
+            print("safeArea update: \(newInsets)")
+            safeAreaInsets = newInsets
+
+            resolveScrollable(
+                contentSize: contentSize,
+                actionsCount: _actions.count,
+                layout: layout,
+                safeAreaInsets: newInsets
+            )
+        }
         .task {
             let segregated = actions().segregate()
             _actions = .init(regular: segregated.regular, cancel: segregated.cancel)
+
+            layout = _actions.count != 2 ? .vertical : .horizontal
+        }
+        .onChange(of: _actions.count) { count in
+            resolveScrollable(
+                contentSize: contentSize,
+                actionsCount: count,
+                layout: layout,
+                safeAreaInsets: safeAreaInsets
+            )
+        }
+        .onChange(of: contentSize) { newSize in
+            resolveScrollable(
+                contentSize: contentSize,
+                actionsCount: _actions.count,
+                layout: layout,
+                safeAreaInsets: safeAreaInsets
+            )
         }
     }
-    
+
+    private func resolveScrollable(contentSize: CGSize, actionsCount: Int, layout: ActionsLayout, safeAreaInsets: EdgeInsets) {
+        // estimated
+        let estimatedActionH = switch layout {
+        case .vertical:
+            CGFloat(actionsCount) * (ActionContext.alert.height + dividerHeight)
+        case .horizontal:
+            (ActionContext.alert.height + dividerHeight)
+        }
+
+        let safeAreaInsets = Self.fetchInsets()
+        let edgePadding = max(safeAreaInsets.top, safeAreaInsets.bottom)
+        let proposedHeight = UIScreen.main.bounds.height - 2 * edgePadding
+        print("proposed height: \(proposedHeight) (\(UIScreen.main.bounds.height) - 2 * \(edgePadding))")
+
+        scrollAxis = (contentSize.height + estimatedActionH) > proposedHeight
+            ? .vertical
+            : []
+
+        scrollHeight = max(min(estimatedActionH, proposedHeight - contentSize.height), 1)
+    }
+
     private func makeActionView(
         _ action: Action,
         tint: Color,
@@ -155,7 +226,19 @@ struct ActionsView: View {
         }
         .buttonStyle(.alert(context: .alert))
     }
+
+    private static func fetchInsets() -> EdgeInsets {
+        UIApplication.shared.keyWindow?.safeAreaInsets.toSwiftUIInsets ?? EdgeInsets()
+    }
 }
+
+private extension ActionsView {
+    enum ActionsLayout {
+        case vertical
+        case horizontal
+    }
+}
+
 
 #Preview {
     DefaultPopupView(
@@ -167,6 +250,15 @@ struct ActionsView: View {
 //                text: Text("Action"),
 //                action: {}
 //            ),
+            .action(
+                text: Text("Action with icon"),
+                image: .systemName("sparkles"),
+                action: {}
+            ),
+            .destructive(
+                text: Text("Destructive action"),
+                action: {}
+            ),
             .action(
                 text: Text("Action with icon"),
                 image: .systemName("sparkles"),

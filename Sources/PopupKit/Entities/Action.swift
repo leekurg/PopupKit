@@ -86,7 +86,9 @@ extension Action {
 struct SegregatedActions {
     let regular: [PopupKit.Action]
     let cancel: [PopupKit.Action]
-    
+
+    var count: Int { regular.count + cancel.count }
+
     static let empty: Self = .init(regular: [], cancel: [])
 }
 
