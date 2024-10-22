@@ -23,7 +23,12 @@ public extension AnyTransition {
         removal: .move(edge: .bottom).combined(with: .opacity)
     )
     
-    static let popup: AnyTransition = .blur.combined(with: .scale(scale: 1.5))
+    static let fullscreen: AnyTransition = .blur.combined(with: .scale(scale: 1.5))
+    
+    static let popup: AnyTransition = .asymmetric(
+        insertion: .scale(scale: 1.5).combined(with: .opacity),
+        removal: .blur.combined(with: .scale(scale: 1.5))
+    )
 }
 
 struct BlurTransition: ViewModifier, Animatable {

@@ -1,5 +1,5 @@
 //
-//  DefaultPopupView.swift
+//  AlertView.swift
 //  PopupKit
 //
 //  Created by Илья Аникин on 18.10.2024.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-public struct DefaultPopupView<Content: View>: View {
+struct AlertView<Content: View>: View {
     let content: () -> Content
     let actions: () -> [Action]
 
@@ -43,36 +43,36 @@ public struct DefaultPopupView<Content: View>: View {
     }
 }
 
-public extension DefaultPopupView where Content == _DefaultPopupViewHeader {
-    init(title: String, msg: String, actions: @escaping () -> [Action]) {
+extension AlertView where Content == _DefaultAlertViewHeader {
+    init(title: String?, msg: String?, actions: @escaping () -> [Action]) {
         self.init(
-            content: { _DefaultPopupViewHeader(title: title, msg: msg) },
+            content: { _DefaultAlertViewHeader(title: title, msg: msg) },
             actions: actions
         )
     }
 }
 
-/// Internal type.
-///
 /// Provides a way to achieve a default generic argument within a View.
-public struct _DefaultPopupViewHeader: View {
-    let title: String
-    let msg: String
+struct _DefaultAlertViewHeader: View {
+    let title: String?
+    let msg: String?
 
     public var body: some View {
         VStack {
-            Text(title)
-                .font(.headline)
+            if let title {
+                Text(title).font(.headline)
+            }
             
-            Text(msg)
-                .font(.subheadline)
+            if let msg {
+                Text(msg).font(.subheadline)
+            }
         }
         .padding(.vertical, 20)
     }
 }
 
 #Preview {
-    DefaultPopupView(
+    AlertView(
         title: "Title",
         msg: "This is a test message"
     ) {
@@ -115,6 +115,7 @@ public struct _DefaultPopupViewHeader: View {
             )
         ]
     }
+    .preferredColorScheme(.dark)
     .previewPopupKit(.popup(ignoredSafeAreaEdges: []))
     .environment(\.popupActionTint, .mint)
 }

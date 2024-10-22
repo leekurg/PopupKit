@@ -8,7 +8,7 @@
 import SwiftUI
 
 public extension View {
-    func fullscreenRoot(_ transition: AnyTransition = .popup) -> some View {
+    func fullscreenRoot(_ transition: AnyTransition = .fullscreen) -> some View {
         modifier(FullscreenRootModifier(transition: transition))
             .ignoresSafeArea(.container, edges: .all)
     }
