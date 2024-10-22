@@ -22,7 +22,7 @@ struct ActionsView: View {
         Group {
             switch vm.layout {
             case .vertical:
-                ScrollView(vm.scrollAxis) {
+                ScrollView(vm.scrollAxis, showsIndicators: false) {
                     VStack(spacing: 0) {
                         ForEach(vm.actions.regular) { action in
                             if !vm.actions.regular.isEmpty { Divider() }
@@ -60,7 +60,6 @@ struct ActionsView: View {
             vm.set(actions: actions, contentHeight: contentSize.height)
         }
         .onChange(of: contentSize) { newSize in
-            print("🔄 content size changed")
             vm.set(contentHeight: newSize.height)
         }
     }
@@ -127,7 +126,7 @@ final class ActionsViewModel: ObservableObject {
             .removeDuplicates()
             // Delayed to allow clients fetch new orientation value directly from UIDevice
             .delay(for: .milliseconds(1), scheduler: RunLoop.main)
-            .sink { _ in self.update() }
+            .sink { [weak self] _ in self?.update() }
             .store(in: &cancellables)
     }
 
@@ -144,6 +143,8 @@ final class ActionsViewModel: ObservableObject {
     }
 
     private func update() {
+        layout = actions.count == 2 ? .horizontal : .vertical
+
         // estimated
         let estimatedActionH = switch layout {
         case .vertical:
@@ -162,9 +163,9 @@ final class ActionsViewModel: ObservableObject {
 
         scrollHeight = max(min(estimatedActionH, proposedHeight - contentHeight), 1)
 
-        print("💫 proposed height: \(proposedHeight) (\(UIScreen.main.bounds.height) - 2 * \(edgePadding))")
-        print("   content h - \(String(format: "%.1f", contentHeight))")
-        print("   scroll: axis - \(scrollAxis),  h - \(String(format: "%.1f", scrollHeight))")
+//        print("💫 proposed height: \(proposedHeight) (\(UIScreen.main.bounds.height) - 2 * \(edgePadding))")
+//        print("   content h - \(String(format: "%.1f", contentHeight))")
+//        print("   scroll: axis - \(scrollAxis),  h - \(String(format: "%.1f", scrollHeight))")
     }
 
     private func fetchInsets() -> EdgeInsets {

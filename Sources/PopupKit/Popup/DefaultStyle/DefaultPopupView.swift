@@ -39,6 +39,7 @@ public struct DefaultPopupView<Content: View>: View {
         .clipShape(RoundedRectangle(cornerRadius: 20.0))
         .frame(width: 300)
         .padding(.horizontal, 50)
+        .padding(.top, 20)
     }
 }
 
