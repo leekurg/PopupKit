@@ -1,5 +1,5 @@
 //
-//  PopupAction.swift
+//  Action.swift
 //  PopupKit
 //
 //  Created by Илья Аникин on 18.10.2024.
