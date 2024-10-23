@@ -5,7 +5,7 @@
 //  Created by Илья Аникин on 23.08.2024.
 //
 
-import UIKit
+import SwiftUI
 
 /// **PopupKit**'s designated **AppDelegate**.
 ///

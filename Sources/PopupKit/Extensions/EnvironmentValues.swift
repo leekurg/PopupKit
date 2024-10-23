@@ -7,24 +7,24 @@
 
 import SwiftUI
 
-extension EnvironmentValues {
-    var confirmTint: Color {
-        get { self[ConfirmTintColorKey.self] }
-        set { self[ConfirmTintColorKey.self] = newValue }
+public extension EnvironmentValues {
+    var popupActionTint: Color {
+        get { self[ActionTintColorKey.self] }
+        set { self[ActionTintColorKey.self] = newValue }
     }
 
-    var confirmFonts: ConfirmPresenter.Entry.Fonts {
-        get { self[ConfirmFontsKey.self] }
-        set { self[ConfirmFontsKey.self] = newValue }
+    var popupActionFonts: ActionFonts {
+        get { self[ActionFontsKey.self] }
+        set { self[ActionFontsKey.self] = newValue }
     }
 }
 
 public extension View {
     /// Overrides text `foregroundColor` for underling **PopoupKit**'s confirmation dialogs.
     @ViewBuilder
-    func confirmTint(_ color: Color?) -> some View {
+    func popupActionTint(_ color: Color?) -> some View {
         if let color {
-            environment(\.confirmTint, color)
+            environment(\.popupActionTint, color)
         } else {
             self
         }
@@ -32,22 +32,22 @@ public extension View {
 
     /// Overrides text `Font` for underling **PopoupKit**'s confirmation dialog actions.
     @ViewBuilder
-    func confirmFonts(regular: Font? = nil, cancel: Font? = nil) -> some View {
-        let fonts: ConfirmPresenter.Entry.Fonts = .init(
-            regular: regular ?? ConfirmFontsKey.defaultValue.regular,
-            cancel: cancel ?? ConfirmFontsKey.defaultValue.cancel
+    func popupActionFonts(regular: Font? = nil, cancel: Font? = nil) -> some View {
+        let fonts: ActionFonts = .init(
+            regular: regular ?? ActionFontsKey.defaultValue.regular,
+            cancel: cancel ?? ActionFontsKey.defaultValue.cancel
         )
 
-        environment(\.confirmFonts, fonts)
+        environment(\.popupActionFonts, fonts)
     }
 }
 
-fileprivate struct ConfirmTintColorKey: EnvironmentKey {
+fileprivate struct ActionTintColorKey: EnvironmentKey {
     static let defaultValue: Color = .primary
 }
 
-fileprivate struct ConfirmFontsKey: EnvironmentKey {
-    static let defaultValue: ConfirmPresenter.Entry.Fonts = .init(
+fileprivate struct ActionFontsKey: EnvironmentKey {
+    static let defaultValue: ActionFonts = .init(
         regular: .system(size: 18, weight: .regular),
         cancel: .system(size: 18, weight: .semibold)
     )

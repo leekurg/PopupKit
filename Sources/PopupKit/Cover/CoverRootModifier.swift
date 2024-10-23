@@ -98,7 +98,6 @@ struct CoverRootModifier: ViewModifier {
                                     case .noninteractive:
                                         break
                                     }
-                                    
                                 }
                                 .zIndex(Double(presenter.stack.last?.deep ?? 0) - 0.5)
                         case .none:

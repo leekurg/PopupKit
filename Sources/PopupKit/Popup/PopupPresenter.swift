@@ -1,14 +1,15 @@
 //
-//  FullscreenPresenter.swift
+//  PopupPresenter.swift
+//  PopupKit
 //
+//  Created by Илья Аникин on 17.10.2024.
 //
-//  Created by Илья Аникин on 23.08.2024.
-//
+
 
 import Foundation
 import SwiftUI
 
-public final class FullscreenPresenter: ObservableObject {
+public final class PopupPresenter: ObservableObject {
     @Published public private(set) var stack: [StackEntry] = []
     
     public let insertionAnimation: Animation
@@ -18,7 +19,7 @@ public final class FullscreenPresenter: ObservableObject {
     
     public init(
         verbose: Bool = false,
-        insertAnimation: Animation = .spring(duration: 0.5),
+        insertAnimation: Animation = .spring(duration: 0.3),
         removeAnimation: Animation = .easeOut(duration: 0.3)
     ) {
         self.isVerbose = verbose
@@ -30,12 +31,11 @@ public final class FullscreenPresenter: ObservableObject {
     ///
     /// - Returns: Returns presenting 'Destination' or **nil** when **id** is in stack already.
     ///
-    @discardableResult public func present<Content: View, S: ShapeStyle>(
+    @discardableResult public func present<Content: View>(
         id: UUID,
         animated: Bool = true,
-        background: S,
         ignoresEdges: Edge.Set,
-        dismissalScroll: DismissalScroll,
+        outTapBehavior: OutTapBehavior,
         content: @escaping () -> Content
     ) -> UUID? {
         if let _ = stack.find(id) {
@@ -49,9 +49,8 @@ public final class FullscreenPresenter: ObservableObject {
                     id: id,
                     deep: (stack.last?.deep ?? -1) + 1,
                     view: AnyView(content()),
-                    background: AnyShapeStyle(background),
-                    ignoresEdges: ignoresEdges,
-                    dismissalScroll: dismissalScroll
+                    outTapBehavior: outTapBehavior,
+                    ignoresEdges: ignoresEdges
                 )
             )
         }
@@ -71,7 +70,7 @@ public final class FullscreenPresenter: ObservableObject {
             UIApplication.hideKeyboard()
             let _ = stack.remove(at: presentedIndex)
         }
-
+        stack = stack.reindexDeep(from: presentedIndex)
         dprint(isVerbose, "🙈 dismiss \(id)")
     }
     
@@ -97,13 +96,35 @@ public final class FullscreenPresenter: ObservableObject {
     }
 }
 
-public extension FullscreenPresenter {
+public extension PopupPresenter {
     struct StackEntry: Stackable {
         public let id: UUID
         public let deep: Int
         public let view: AnyView
-        public let background: AnyShapeStyle
+        public let outTapBehavior: OutTapBehavior
         public let ignoresEdges: Edge.Set
-        public let dismissalScroll: DismissalScroll
+    }
+    
+    enum OutTapBehavior {
+        case none
+        case dismiss
+    }
+}
+
+extension Array where Element == PopupPresenter.StackEntry {
+    func reindexDeep(from: Index = 0) -> Self {
+        self
+            .enumerated()
+            .map { index, entry in
+                guard index >= from else { return entry }
+                
+                return Element(
+                    id: entry.id,
+                    deep: index,
+                    view: entry.view,
+                    outTapBehavior: entry.outTapBehavior,
+                    ignoresEdges: entry.ignoresEdges
+                )
+            }
     }
 }
