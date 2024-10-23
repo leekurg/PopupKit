@@ -34,7 +34,7 @@ public final class ConfirmPresenter: ObservableObject {
     @discardableResult func present<Content: View>(
         animated: Bool = true,
         tint: Color,
-        fonts: Action.Fonts,
+        fonts: ActionFonts,
         header: @escaping () -> Content,
         actions: () -> [Action]
     ) -> Bool {
@@ -43,7 +43,7 @@ public final class ConfirmPresenter: ObservableObject {
             return false
         }
 
-        presented = .init(view: AnyView(header()), tint: tint, fonts: fonts, actions: actions())
+        presented = Entry(view: AnyView(header()), tint: tint, fonts: fonts, actions: actions())
         feedback.prepare()
 
         return true
@@ -79,7 +79,7 @@ public extension ConfirmPresenter {
         /// Tint color for actions
         public let tint: Color
         /// Actions fonts
-        public let fonts: Action.Fonts
+        public let fonts: ActionFonts
         /// Regular actions
         public let actions: [Action]
         /// Cancel actions
@@ -88,7 +88,7 @@ public extension ConfirmPresenter {
         public init(
             view: AnyView,
             tint: Color,
-            fonts: Action.Fonts,
+            fonts: ActionFonts,
             actions: [Action]
         ) {
             self.id = UUID()

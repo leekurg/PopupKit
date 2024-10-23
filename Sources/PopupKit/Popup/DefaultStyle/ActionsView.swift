@@ -24,14 +24,14 @@ struct ActionsView: View {
             case .vertical:
                 ScrollView(vm.scrollAxis, showsIndicators: false) {
                     VStack(spacing: 0) {
-                        ForEach(vm.actions.regular) { action in
+                        ForEach(vm.actions.regular, id: \.id) { action in
                             if !vm.actions.regular.isEmpty { Divider() }
 
                             makeActionView(action, tint: tint, dismiss: dismiss)
                                 .font(fonts.regular)
                         }
 
-                        ForEach(vm.actions.cancel) { action in
+                        ForEach(vm.actions.cancel, id: \.id) { action in
                             if !vm.actions.cancel.isEmpty { Divider() }
 
                             makeActionView(action, tint: tint, dismiss: dismiss)

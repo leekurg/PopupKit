@@ -13,15 +13,15 @@ struct AlertView<Content: View>: View {
 
     @State private var size: CGSize = .zero
     @State private var feedback = UIImpactFeedbackGenerator(style: .rigid)
-    
+
     @EnvironmentObject var presenter: PopupPresenter
-    
-    public init(content: @escaping () -> Content, actions: @escaping () -> [Action]) {
+
+    init(content: @escaping () -> Content, actions: @escaping () -> [Action]) {
         self.content = content
         self.actions = actions
     }
-    
-    public var body: some View {
+
+    var body: some View {
         VStack(spacing: 0) {
             content()
                 .sizeReader(size: $size)
@@ -62,7 +62,7 @@ struct _DefaultAlertViewHeader: View {
             if let title {
                 Text(title).font(.headline)
             }
-            
+
             if let msg {
                 Text(msg).font(.subheadline)
             }
@@ -77,37 +77,33 @@ struct _DefaultAlertViewHeader: View {
         msg: "This is a test message"
     ) {
         [
-//            .action(
-//                text: Text("Action"),
-//                action: {}
-//            ),
-            .action(
+            Regular(
                 text: Text("Action with icon"),
                 image: .systemName("sparkles"),
                 action: {}
             ),
-            .destructive(
+            Destructive(
                 text: Text("Destructive action"),
                 action: {}
             ),
-            .action(
+            Regular(
                 text: Text("Action with icon"),
                 image: .systemName("sparkles"),
                 action: {}
             ),
-            .destructive(
+            Destructive(
                 text: Text("Destructive action"),
                 action: {}
             ),
-            .cancel(text: Text("My cancel 1")),
-            .cancel(text: Text("My cancel 2")),
-            .action(
+            Cancel(text: Text("My cancel 1")),
+            Cancel(text: Text("My cancel 2")),
+            Regular(
                 text: Text("Thin small-sized text action")
                     .font(.system(size: 10, weight: .thin))
                     .foregroundColor(.black),
                 action: {}
             ),
-            .action(
+            Regular(
                 text: Text("Big bold colored text action")
                     .font(.system(size: 20, weight: .bold))
                     .foregroundColor(.indigo),

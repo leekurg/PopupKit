@@ -104,26 +104,26 @@ public extension View {
     
     /// Presents a popup alert with **PopupKit**, with style and behaviour similar to system **alert()**.
     ///
-    /// Popup alert is a modal window, that displaying some message or cutom content and requires a user
+    /// Popup alert is a modal window, that displaying some message or custom content and requires a user
     /// to pick one of given actions.
     ///
-    /// Popup alert wraps its actions in `ScrollView` automatically when its overral height is overlapping
+    /// Popup alert wraps its actions in `ScrollView` automatically when its overall height is overlapping
     /// its preferred frame.
     ///
     /// - Parameters:
     ///    - isPresented: A `Bool` value that determines whether
     ///  to present the view that you create in the modifier's `content` closure.
     ///    - content: A closure that returns the content of the popup.
-    ///    - actions: A closure that returns a set of actions to suggest to the user.
+    ///    - actions: An `@ActionBuilder`  closure that returns a set of actions to suggest to the user.
     ///
     /// - Note: Requires a ``View/popupRoot(:_)`` been called higher up the view hierarchy.
-    /// - Important: Though popup alert supports custom content, it is intended to be used with staticaly sized content
+    /// - Important: Though popup alert supports custom content, it is intended to be used with statically sized content
     /// with height up to 300 pt.
     ///
     func popupAlert<Content: View>(
         isPresented: Binding<Bool>,
         content: @escaping () -> Content,
-        actions: @escaping () -> [Action]
+        @ActionBuilder actions: @escaping () -> [Action]
     ) -> some View {
         popup(
             isPresented: isPresented,
@@ -134,29 +134,29 @@ public extension View {
             }
         )
     }
-    
+
     /// Presents a popup alert with **PopupKit**, with style and behaviour similar to system **alert()**.
     ///
-    /// Popup alert is a modal window, that displaying some message or cutom content and requires a user
+    /// Popup alert is a modal window, that displaying some message or custom content and requires a user
     /// to pick one of given actions.
     ///
-    /// Popup alert wraps its actions in `ScrollView` automatically when its overral height is overlapping
+    /// Popup alert wraps its actions in `ScrollView` automatically when its overall height is overlapping
     /// its preferred frame.
     ///
     /// - Parameters:
     ///    - item: An optional value that determines whether
     ///  to present the view that you create in the modifier's `content` closure.
     ///    - content: A closure that returns the content of the popup.
-    ///    - actions: A closure that returns a set of actions to suggest to the user.
+    ///    - actions: An `@ActionBuilder`  closure that returns a set of actions to suggest to the user.
     ///
     /// - Note: Requires a ``View/popupRoot(:_)`` been called higher up the view hierarchy.
-    /// - Important: Though popup alert supports custom content, it is intended to be used with staticaly sized content
+    /// - Important: Though popup alert supports custom content, it is intended to be used with statically sized content
     /// with height up to 300 pt.
     ///
     func popupAlert<Content: View, Item>(
         item: Binding<Item?>,
         content: @escaping (Item) -> Content,
-        actions: @escaping () -> [Action]
+        @ActionBuilder actions: @escaping () -> [Action]
     ) -> some View {
         popupAlert(
             isPresented: Binding(
@@ -175,13 +175,13 @@ public extension View {
             actions: actions
         )
     }
-    
+
     /// Presents a popup alert with **PopupKit**, with style and behaviour similar to system **alert()**.
     ///
-    /// Popup alert is a modal window, that displaying some message or cutom content and requires a user
+    /// Popup alert is a modal window, that displaying some message or custom content and requires a user
     /// to pick one of given actions.
     ///
-    /// Popup alert wraps its actions in `ScrollView` automatically when its overral height is overlapping
+    /// Popup alert wraps its actions in `ScrollView` automatically when its overall height is overlapping
     /// its preferred frame.
     ///
     /// - Parameters:
@@ -189,7 +189,7 @@ public extension View {
     ///  to present the view that you create in the modifier's `content` closure.
     ///    - title: An optional title for the alert.
     ///    - msg: An optional message for the alert
-    ///    - actions: A closure that returns a set of actions to suggest to the user.
+    ///    - actions: An `@ActionBuilder`  closure that returns a set of actions to suggest to the user.
     ///
     /// - Note: Requires a ``View/popupRoot(:_)`` been called higher up the view hierarchy.
     ///
@@ -197,7 +197,7 @@ public extension View {
         isPresented: Binding<Bool>,
         title: String? = nil,
         msg: String? = nil,
-        actions: @escaping () -> [Action]
+        @ActionBuilder actions: @escaping () -> [Action]
     ) -> some View {
         popup(
             isPresented: isPresented,
@@ -211,10 +211,10 @@ public extension View {
     
     /// Presents a popup alert with **PopupKit**, with style and behaviour similar to system **alert()**.
     ///
-    /// Popup alert is a modal window, that displaying some message or cutom content and requires a user
+    /// Popup alert is a modal window, that displaying some message or custom content and requires a user
     /// to pick one of given actions.
     ///
-    /// Popup alert wraps its actions in `ScrollView` automatically when its overral height is overlapping
+    /// Popup alert wraps its actions in `ScrollView` automatically when its overall height is overlapping
     /// its preferred frame.
     ///
     /// - Parameters:
@@ -230,7 +230,7 @@ public extension View {
         item: Binding<Item?>,
         title: String? = nil,
         msg: String? = nil,
-        actions: @escaping () -> [Action]
+        @ActionBuilder actions: @escaping () -> [Action]
     ) -> some View {
         popupAlert(
             isPresented: Binding(

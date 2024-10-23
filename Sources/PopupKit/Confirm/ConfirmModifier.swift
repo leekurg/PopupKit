@@ -16,7 +16,7 @@ public extension View {
     /// A tap on any action or unoccupied space will dismiss the dialog.
     ///
     /// Actions are displayed as buttons, optionally containing ``Text`` and/or ``Image``.
-    /// Each action has a designated role defined by ``ConfirmPresenter/Action/Role``,
+    /// Each action has a designated role defined by ``ActionRole``,
     /// and its presentation style is determined accordingly.
     ///
     /// To create a confirmation dialog, provide an optional `View` for the dialog header and a collection of actions.
@@ -24,8 +24,8 @@ public extension View {
     /// - Parameters:
     ///   - isPresented: A binding to a Boolean value that determines whether the dialog is presented.
     ///   - header: A closure that returns the content of the header view for the dialog.
-    ///   - actions: A closure used to build a collection of actions for the dialog.
-    ///     Actions are presented in the order they are provided, with **.cancel** actions
+    ///   - actions: An `@ActionBuilder` closure used to build a collection of actions for the dialog.
+    ///     Actions are presented in the order they are provided, with **Cancel** actions
     ///     always placed at the bottom of the dialog (in their original order).
     ///     If no cancel actions are provided, a default, **non-localized** cancel action will be displayed.
     ///
@@ -36,7 +36,7 @@ public extension View {
     @ViewBuilder func confirm<Content: View>(
         isPresented: Binding<Bool>,
         @ViewBuilder header: @escaping () -> Content = { EmptyView() },
-        actions: @escaping () -> [Action]
+        @ActionBuilder actions: @escaping () -> [Action]
     ) -> some View {
         #if DISABLE_POPUPKIT_IN_PREVIEWS
         if ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] != nil {
@@ -69,7 +69,7 @@ public extension View {
     /// A tap on any action or unoccupied space will dismiss the dialog.
     ///
     /// Actions are displayed as buttons, optionally containing ``Text`` and/or ``Image``.
-    /// Each action has a designated role defined by ``ConfirmPresenter/Action/Role``,
+    /// Each action has a designated role defined by ``ActionRole``,
     /// and its presentation style is determined accordingly.
     ///
     /// To create a confirmation dialog, provide an optional `View` for the dialog header and a collection of actions.
@@ -77,7 +77,7 @@ public extension View {
     /// - Parameters:
     ///   - item: An `Identifiable?` value that determines whether the dialog is presented.
     ///   - header: A closure that returns the content of the header view for the dialog.
-    ///   - actions: A closure used to build a collection of actions for the dialog.
+    ///   - actions: An `@ActionBuilder` closure used to build a collection of actions for the dialog.
     ///     Actions are presented in the order they are provided, with **.cancel** actions
     ///     always placed at the bottom of the dialog (in their original order).
     ///     If no cancel actions are provided, a default, **non-localized** cancel action will be displayed.
@@ -89,7 +89,7 @@ public extension View {
     func confirm<Content: View, Item: Identifiable>(
         item: Binding<Item?>,
         @ViewBuilder header: @escaping () -> Content = { EmptyView() },
-        actions: @escaping () -> [Action]
+        @ActionBuilder actions: @escaping () -> [Action]
     ) -> some View {
         confirm(
             isPresented: Binding(

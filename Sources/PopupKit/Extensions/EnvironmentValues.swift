@@ -13,7 +13,7 @@ public extension EnvironmentValues {
         set { self[ActionTintColorKey.self] = newValue }
     }
 
-    var popupActionFonts: Action.Fonts {
+    var popupActionFonts: ActionFonts {
         get { self[ActionFontsKey.self] }
         set { self[ActionFontsKey.self] = newValue }
     }
@@ -33,7 +33,7 @@ public extension View {
     /// Overrides text `Font` for underling **PopoupKit**'s confirmation dialog actions.
     @ViewBuilder
     func popupActionFonts(regular: Font? = nil, cancel: Font? = nil) -> some View {
-        let fonts: Action.Fonts = .init(
+        let fonts: ActionFonts = .init(
             regular: regular ?? ActionFontsKey.defaultValue.regular,
             cancel: cancel ?? ActionFontsKey.defaultValue.cancel
         )
@@ -47,7 +47,7 @@ fileprivate struct ActionTintColorKey: EnvironmentKey {
 }
 
 fileprivate struct ActionFontsKey: EnvironmentKey {
-    static let defaultValue: Action.Fonts = .init(
+    static let defaultValue: ActionFonts = .init(
         regular: .system(size: 18, weight: .regular),
         cancel: .system(size: 18, weight: .semibold)
     )

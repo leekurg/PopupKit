@@ -95,7 +95,7 @@ struct ConfirmRootModifier<S1: ShapeStyle, S2: ShapeStyle>: ViewModifier {
                                 entry.view.padding()
 
                                 // Actions
-                                ForEach(entry.actions) { action in
+                                ForEach(entry.actions, id: \.id) { action in
                                     VStack(spacing: 0) {
                                         if entry.actions.count > 0 {
                                             Divider()
@@ -112,7 +112,7 @@ struct ConfirmRootModifier<S1: ShapeStyle, S2: ShapeStyle>: ViewModifier {
 
                             // Cancel actions
                             VStack(spacing: 0) {
-                                ForEach(entry.cancelActions) { action in
+                                ForEach(entry.cancelActions, id: \.id) { action in
                                     VStack(spacing: 0) {
                                         if entry.cancelActions.count > 1 {
                                             Divider()
