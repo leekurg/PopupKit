@@ -48,6 +48,7 @@ open class PopupKitSceneDelegate: NSObject, UIWindowSceneDelegate, ObservableObj
                     .environmentObject(notificationPresenter)
                     .environmentObject(confirmPresenter)
                     .environmentObject(popupPresenter)
+                    .popupActionTint(.blue)
             )
 
             popupKitViewController.view.backgroundColor = .clear

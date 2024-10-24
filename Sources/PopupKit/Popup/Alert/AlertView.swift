@@ -60,14 +60,17 @@ struct _DefaultAlertViewHeader: View {
     public var body: some View {
         VStack {
             if let title {
-                Text(title).font(.headline)
+                Text(title)
+                    .font(.headline)
+                    .lineLimit(1)
             }
 
             if let msg {
                 Text(msg).font(.subheadline)
             }
         }
-        .padding(.vertical, 20)
+        .multilineTextAlignment(.center)
+        .padding(20)
     }
 }
 
