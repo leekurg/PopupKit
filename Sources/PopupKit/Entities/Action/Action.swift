@@ -103,7 +103,7 @@ extension Collection where Element == Action {
         let cancel = self.filter { $0.role == .cancel }
 
         return .init(
-            regular: regular,
-            cancel: cancel.isEmpty ? [Cancel(text: Text(verbatim: "Cancel"))] : cancel)
+            regular: self.isEmpty ? [Cancel(text: Text(verbatim: "Ok"))] : regular,
+            cancel: cancel)
     }
 }

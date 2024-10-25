@@ -162,10 +162,6 @@ final class ActionsViewModel: ObservableObject {
             : []
 
         scrollHeight = max(min(estimatedActionH, proposedHeight - contentHeight), 1)
-
-//        print("💫 proposed height: \(proposedHeight) (\(UIScreen.main.bounds.height) - 2 * \(edgePadding))")
-//        print("   content h - \(String(format: "%.1f", contentHeight))")
-//        print("   scroll: axis - \(scrollAxis),  h - \(String(format: "%.1f", scrollHeight))")
     }
 
     private func fetchInsets() -> EdgeInsets {
