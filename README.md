@@ -319,7 +319,9 @@ Once the integration process is complete, `PopupKit` enables you to present view
 to how system views are presented. You can easily implement these features by adding a `PopupKit` modifier to your 
 view, passing a `Binding` variable to control its state, and toggling that `Binding` to trigger the presentation.
 
-#### Fullscreen presentation
+<br/>
+
+#### Fullscreen
 To present a view in fullscreen mode, you can use the `fullscreen()` modifier. Here's an example:
 
 <details><summary>Example</summary><p>
@@ -347,17 +349,17 @@ struct YourView: View {
 ```
 </p></details>
 
-Let's break down the key elements of the `fullscreen()` modifier:
-- **Presentation Control** (isPresented): Use a `Binding<Bool>` to manage the presentation state.
-Toggling this variable will show or hide the fullscreen view.
-- **Background Customization** (background): You can define the fullscreen background using a `ShapeStyle` of 
-your choice (e.g., `.ultraThinMaterial` for a blur effect).
-- **Safe Area Ignoring** (ignoresEdges): By default, the content respects the safe areas of the device, 
-but you can specify which edges should be ignored if desired.
-- **Swipe-to-Dismiss Gesture** (dismissalScroll): Enable a *swipe-down-to-dismiss* gesture with a customizable 
+Let's break down the key elements of the `fullscreen()` modifier: \
+✅ **Background Customization** (background): You can define the fullscreen background using a `ShapeStyle` of 
+your choice (e.g., `.ultraThinMaterial` for a blur effect). \
+✅ **Safe Area Ignoring** (ignoresEdges): By default, the content respects the safe areas of the device, 
+but you can specify which edges should be ignored if desired. \
+✅ **Swipe-to-Dismiss Gesture** (dismissalScroll): Enable a *swipe-down-to-dismiss* gesture with a customizable 
 threshold, controlling how much scrolling is required to dismiss the fullscreen view.
 
-#### Cover presentation
+<br/>
+
+#### Cover
 To display a view using a *cover* presentation mode, you can utilize the `cover()` modifier provided by `PopupKit`. 
 Here's how you can implement it:
 
@@ -387,22 +389,24 @@ struct YourView: View {
 </p></details>
 
 Key elements of `cover()` modifier:
-- **Presentation Control** (isPresented): A `Binding<Bool>` variable controls when the cover view is presented or dismissed. Toggling this binding will trigger the presentation state.
-- **Background Customization** (background): You can choose the cover's background style, such as `.ultraThinMaterial` to add a subtle blur effect, or any other `ShapeStyle`.
-- **Modal behavior** (modal):
+
+✅ **Background Customization** (background): You can choose the cover's background style, such as `.ultraThinMaterial` to add a subtle blur effect, or any other `ShapeStyle`. \
+✅ **Modal behavior** (modal):
   - **Non-modal**: The cover view does not block interaction with other views on the screen.
   - **Modal-interactive**: A dimmed background appears around the cover, and the cover can be dismissed by 
   tapping the dimmed area or scrolling it down.
   - **Modal-noninteractive**: Similar to the interactive modal, but the cover cannot be dismissed by tapping 
   outside the cover or scrolling.
-- **Corner Radius** (cornerRadius): You can adjust the corner radius of the cover to create a smooth, rounded edge 
+✅ **Corner Radius** (cornerRadius): You can adjust the corner radius of the cover to create a smooth, rounded edge 
 for the view.
 
 The content inside the cover view is provided as a trailing closure. The height of the cover is determined by the 
 content you provide. If the content’s height exceeds the device’s screen height, the cover will occupy the full 
 screen, and its content will align to the top of the screen.
 
-#### Notification presentation
+<br/>
+
+#### Notification
 You can display a view with a notification presentation style by using the `notification()` view modifier. 
 Here’s an example implementation:
 
@@ -430,22 +434,26 @@ struct YourView: View {
 </p></details>
 
 Key Elements of `notification()` modifier:
-- **Presentation Control** (isPresented): Similar to other presentation modes, a `Binding<Bool>` controls the state of the notification. Toggling this binding will present or dismiss the notification.
-- **Expiration Time** (expiration): You can set an expiration time using `.timeout()` to specify how long the notification 
+
+✅ **Expiration Time** (expiration): You can set an expiration time using `.timeout()` to specify how long the notification 
 remains visible. For instance, `.seconds(2)` means the notification will automatically dismiss after 2 seconds. 
 If no expiration is set, the notification will remain until dismissed manually (e.g., by swiping).
 
-Dismissal behaviour
-- **Manual Dismissal**: All notifications can be manually dismissed by the user with swipe, similar to system push 
-notifications. If no expiration time is set, manual dismissal will be the only method of removal.
-- **Automatic Dismissal**: When an expiration time is set, the notification will automatically dismiss itself once 
+Dismissal behaviour:
+
+✅ **Manual Dismissal**: All notifications can be manually dismissed by the user with swipe, similar to system push
+notifications. If no expiration time is set, manual dismissal will be the only method of removal. \
+✅ **Automatic Dismissal**: When an expiration time is set, the notification will automatically dismiss itself once 
 the timer expires.
+
 > [!TIP]
 > If multiple notifications are presented in sequence, the timer resets when a new notification is shown.
 > For example, if Notification A is still active when Notification B appears, A’s timer will restart when B is
 > dismissed.
 
-#### Confirm presentation
+<br/>
+
+#### Confirm
 When you need to make user pick one of actions you can use a *confirm* presentation mode, utilizing the `confirm()` modifier provided by `PopupKit`. 
 Here's how you can implement it:
 
@@ -480,19 +488,22 @@ struct YourView: View {
 </p></details>
 
 Key elements of `confirm()` modifier:
-- **Presentation Control** (isPresented): A `Binding<Bool>` variable controls when the dialog is presented or dismissed. Toggling this binding will trigger the presentation state.
-- **Header Customization** (header): You can use any `View` to present as dialog's header.
-- **Actions**: Simplified syntax with `@ActionBuilder`, just list actions with dedicated role (**Regular**, **Destructive**, **Cancel**).
-- **actions sorting**: Order of actions during dialog's presentation is the same as you provides, except the **cancel** actions listed below.
+
+✅ **Header Customization** (header): You can use any `View` to present as dialog's header. \
+✅ **ActionBuilder**: Simplified syntax with `@ActionBuilder` for implementig actions. \
+✅ **Auto-sorting**: Order of actions during dialog's presentation is the same as you provides, except the **cancel** actions listed below. \
 
 You can customize actions font appearence using dedicated `EnvironmentValues` through `View` extension functions - `.popupActionTint(_)` and `.popupActionFonts(_)`. Also, a number of parameters can be customized with passing parameters to `.confirmRoot()` call:
-- **background** - background of dialog
-- **cancelBackground** - background of section with *cancel* actions.
-- **cornerRadius** - a corner radius of section with header and *regular* actions and section with *cancel* actions.
+
+✅ **background** - background of dialog \
+✅ **cancelBackground** - background of section with *cancel* actions. \
+✅ **cornerRadius** - a corner radius of section with header and *regular* actions and section with *cancel* actions. \
 > [!NOTE]
 > It is possible to present only one *confirm* at a time, any attempts to present a dialog, while there is presented one, will be ignored.
 
-#### Popup presentation
+<br/>
+
+#### Popup
 To present some information to user, request text input or some action to pick you can utilize `.popup()` presentation modifier provided by `PopupKit`. 
 Here's how you can implement it:
 
@@ -512,7 +523,7 @@ struct YourView: View {
                 outTapBehavior: .dismiss,     // 2. Determines behaviour when user tap outside the view
                 ignoresEdges: []              // 3. Ignore specified edges of the safe area
             ) {
-                PopupView()                   // Content of the notification view
+                PopupView()                   // Content of the popup view
             }
         }
     }
@@ -526,7 +537,45 @@ Key elements of `popup()` modifier:
 - **Safe Area Ignoring** (ignoresEdges): By default, the content respects the safe areas of the device, 
 but you can specify which edges should be ignored if desired.
 
-You also can take advantage of `popupAlert()` modifier, that displays a mimic of system alert popup with customizable actions.
+<br/>
+
+#### Alert
+`popupAlert()` is right tool for you if you want more freedom than system `.alert()` has to offer.
+Here's how you can implement it:
+
+<details><summary>Example</summary><p>
+
+```
+struct YourView: View {
+    @State private var isPresented = false
+
+    var body: some View {
+        VStack {
+            Button("Show PopupKit Cover") {
+                isPresented.toggle()
+            }
+            .popupAlert(isPresented: $isPresented) {     // 1. Controls the presentation state
+                YouCustomHeader()                        // 2. Content of the popup view
+            } actions: {
+                Regular(                                 // 3. Actions to offer
+                    text: Text("Okt"),
+                    action: { print("Ok") }
+                )
+            )
+        }
+    }
+}
+```
+</p></details>
+
+Key elements of `popupAlert()` modifier:
+
+✅ **Respects safe area insets** \
+✅ **Auto scrollable**: Alert's actions list becames scrollable if height of the screen is not enough. \
+✅ **ActionBuilder**: Simplified syntax with `@ActionBuilder` for implementig actions. \
+✅ **Auto-sorting**: Order of actions during dialog's presentation is the same as you provides, except the **cancel** actions listed below. \
+
+Actions font can be changed appearence using dedicated `EnvironmentValues` through `View` extension functions - `.popupActionTint(_)` and `.popupActionFonts(_)`.
 
 ### Controlling Presentation with `Presenter`
 In addition to view modifiers, `PopupKit` offers another powerful tool for managing presentations: the `Presenter`. 
