@@ -136,6 +136,9 @@ which `PopupKit` will use for presentation.
 If you are fine with the default settings for transitions, animations, and anchor points, you can use the built-in 
 `PopupKitSceneDelegate` class. If your app does not yet have a `SceneDelegate`, use this class directly. 
 If you already have a `SceneDelegate`, inherit from `PopupKitSceneDelegate` and call the superclass method:
+
+<details><summary>Code</summary><p>
+
 ```
 class YourSceneDelegate: PopupKitSceneDelegate {
     override func scene(
@@ -148,11 +151,15 @@ class YourSceneDelegate: PopupKitSceneDelegate {
     }
 }
 ```
+
+</p></details>
 And you are good to go to the next step.
 
 ##### Advanced setup
 For a more advanced approach, you can fully customize the presentation behavior by copying 
 and modifying the `PopupKitSceneDelegate` code into your own `SceneDelegate`:
+<details><summary>Code</summary><p>
+
 ```
 class YourSceneDelegate: NSObject, UIWindowSceneDelegate, ObservableObject {
     private var popupKitWindow: UIWindow?
@@ -195,6 +202,7 @@ class YourSceneDelegate: NSObject, UIWindowSceneDelegate, ObservableObject {
     }
 }
 ```
+</p></details>
 
 This code sets up a secondary `UIWindow` that will hold and display the `PopupKit` presentation layers. The  
 components of each presentation layer setup include:
@@ -227,6 +235,8 @@ you can proceed to the [next step](#app-struct-setup) with the default `PopupKit
 However, if you already have an `AppDelegate`, ensure that you are using the `SceneDelegate` you configured in 
 the [earlier step](#sceneDelegate-setup):
 
+<details><summary>Code</summary><p>
+
 ```
 class YourAppDelegate: NSObject, UIApplicationDelegate {
     func application(
@@ -240,6 +250,7 @@ class YourAppDelegate: NSObject, UIApplicationDelegate {
     }
 }
 ```
+</p></details>
 Once this is done, you are ready to proceed to the [next step](#app-struct-setup).
 
 #### 3. `App` struct setup<a id='app-struct-setup'></a>
@@ -311,6 +322,8 @@ view, passing a `Binding` variable to control its state, and toggling that `Bind
 #### Fullscreen presentation
 To present a view in fullscreen mode, you can use the `fullscreen()` modifier. Here's an example:
 
+<details><summary>Example</summary><p>
+
 ```
 struct YourView: View {
     @State private var isPresented = false
@@ -332,6 +345,7 @@ struct YourView: View {
     }
 }
 ```
+</p></details>
 
 Let's break down the key elements of the `fullscreen()` modifier:
 - **Presentation Control** (isPresented): Use a `Binding<Bool>` to manage the presentation state.
@@ -346,6 +360,8 @@ threshold, controlling how much scrolling is required to dismiss the fullscreen 
 #### Cover presentation
 To display a view using a *cover* presentation mode, you can utilize the `cover()` modifier provided by `PopupKit`. 
 Here's how you can implement it:
+
+<details><summary>Example</summary><p>
 
 ```
 struct YourView: View {
@@ -368,6 +384,7 @@ struct YourView: View {
     }
 }
 ```
+</p></details>
 
 Key elements of `cover()` modifier:
 - **Presentation Control** (isPresented): A `Binding<Bool>` variable controls when the cover view is presented or dismissed. Toggling this binding will trigger the presentation state.
@@ -389,6 +406,8 @@ screen, and its content will align to the top of the screen.
 You can display a view with a notification presentation style by using the `notification()` view modifier. 
 Here’s an example implementation:
 
+<details><summary>Example</summary><p>
+
 ```
 struct YourView: View {
     @State private var isPresented = false
@@ -408,6 +427,7 @@ struct YourView: View {
     }
 }
 ```
+</p></details>
 
 Key Elements of `notification()` modifier:
 - **Presentation Control** (isPresented): Similar to other presentation modes, a `Binding<Bool>` controls the state of the notification. Toggling this binding will present or dismiss the notification.
@@ -428,6 +448,8 @@ the timer expires.
 #### Confirm presentation
 When you need to make user pick one of actions you can use a *confirm* presentation mode, utilizing the `confirm()` modifier provided by `PopupKit`. 
 Here's how you can implement it:
+
+<details><summary>Example</summary><p>
 
 ```
 struct YourView: View {
@@ -455,6 +477,7 @@ struct YourView: View {
     }
 }
 ```
+</p></details>
 
 Key elements of `confirm()` modifier:
 - **Presentation Control** (isPresented): A `Binding<Bool>` variable controls when the dialog is presented or dismissed. Toggling this binding will trigger the presentation state.
@@ -472,6 +495,8 @@ You can customize actions font appearence using dedicated `EnvironmentValues` th
 #### Popup presentation
 To present some information to user, request text input or some action to pick you can utilize `.popup()` presentation modifier provided by `PopupKit`. 
 Here's how you can implement it:
+
+<details><summary>Example</summary><p>
 
 ```
 struct YourView: View {
@@ -493,6 +518,7 @@ struct YourView: View {
     }
 }
 ```
+</p></details>
 
 Key elements of `popup()` modifier:
 - **Presentation Control** (isPresented): A `Binding<Bool>` variable controls when the popup is presented or dismissed. Toggling this binding will trigger the presentation state.
