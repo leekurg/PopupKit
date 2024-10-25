@@ -2,11 +2,10 @@
 
 `PopupKit` is a tool designed for enhanced view presentation within a `SwiftUI` app.
 
-> [!CAUTION]
+> [!WARNING]
 > With the public release of `iOS 18.0`, Apple modified the internal behavior of `UIView.hitTest()`, which has
 > affected the `UIWindow-layering` pattern that `PopupKit` relies on. 
-> As a result, some `PopupKit` presentation methods, specifically those that allow interaction
-> with underlying content (such as *notifications* and *interactive covers*), no longer function as expected. 
+> As a result, `PopupKit`'s interactive `cover` presentation no longer function as expected. 
 > Currently, they block all user interactions with the content underneath while they are presented.
 > I'm working on the solution.
 
@@ -15,7 +14,7 @@
 
 ## Motivation
 I have a passion for `SwiftUI` and use it daily for work. While I appreciate its design, 
-some components — especially the presentation APIs — still (**iOS 17**) lack the flexibility developers 
+some components — especially the presentation APIs — still (**iOS 18**) lack the flexibility developers 
 often require. `PopupKit` is my attempt to bridge these gaps while respecting `SwiftUI` design principles, but 
 with added freedom and flexibility where needed.
 
@@ -74,6 +73,12 @@ It is displayed above the app's view hierarchy.
   - Customizable transition, appearance animations, and visual style.
   - Customizable header.
   - Customizable actions appearence(color, font, image)
+  - Haptic support
+ 
+- **Popup**: popup modal window with ability to be stacked and customized.
+  - Customizable transition, appearance animations, and visual style.
+  - Customizable content.
+  - Built-in style to mimic system alerts with customizable header, actions and more.
   - Haptic support
 
 ## Usage
@@ -139,6 +144,7 @@ class YourSceneDelegate: NSObject, UIWindowSceneDelegate, ObservableObject {
     public lazy var fullscreenPresenter = FullscreenPresenter()
     public lazy var notificationPresenter = NotificationPresenter()
     public lazy var confirmPresenter = ConfirmPresenter()
+    public lazy var popupPresenter = PopupPresenter()
     
     open func scene(
         _ scene: UIScene,
@@ -155,10 +161,13 @@ class YourSceneDelegate: NSObject, UIWindowSceneDelegate, ObservableObject {
                     .fullscreenRoot()
                     .notificationRoot()
                     .confirmRoot()
+                    .popupRoot()
                     .environmentObject(coverPresenter)
                     .environmentObject(fullscreenPresenter)
                     .environmentObject(notificationPresenter)
                     .environmentObject(confirmPresenter)
+                    .environmentObject(popupPresenter)
+                    .popupActionTint(.blue)
             )
 
             popupKitViewController.view.backgroundColor = .clear
@@ -266,6 +275,7 @@ struct MainSceneView: View {
             .environmentObject(sceneDelegate.fullscreenPresenter)  // Injects the fullscreen presenter
             .environmentObject(sceneDelegate.notificationPresenter)  // Injects the notification presenter
             .environmentObject(sceneDelegate.confirmPresenter)  // Injects the confirm presenter
+            .environmentObject(sceneDelegate.popupPresenter)    // Injects the popup presenter
     }
 }
 ```
@@ -411,20 +421,18 @@ struct YourView: View {
             Button("Show PopupKit Cover") {
                 isPresented.toggle()
             }
-            .confirm(isPresented: $c1) {
+            .confirm(isPresented: $isPresented) {
                 Text("Are you sure?")
             } actions: {
-                [
-                    .action(
-                        text: Text("Maybe not"),
-                        action: { print("Maybe not was picked") }
-                    ),
-                    .cancel(text: Text("Not this time")),
-                    .destructive(
-                        text: Text("I am sure"),
-                        action: { print("I am sure was picked") }
-                    )
-                ]
+                Regular(
+                    text: Text("Maybe not"),
+                    action: { print("Maybe not was picked") }
+                )
+                Cancel(text: Text("Not this time"))
+                Destructive(
+                    text: Text("I am sure"),
+                    action: { print("I am sure was picked") }
+                )
             }
         }
     }
@@ -434,15 +442,48 @@ struct YourView: View {
 Key elements of `confirm()` modifier:
 - **Presentation Control** (isPresented): A `Binding<Bool>` variable controls when the dialog is presented or dismissed. Toggling this binding will trigger the presentation state.
 - **Header Customization** (header): You can use any `View` to present as dialog's header.
-- **actions roles**: Each action initializer determines action's role (**action**, **destructive**, **cancel**).
+- **Actions**: Simplified syntax with `@ActionBuilder`, just list actions with dedicated role (**Regular**, **Destructive**, **Cancel**).
 - **actions sorting**: Order of actions during dialog's presentation is the same as you provides, except the **cancel** actions listed below.
 
-You can customize actions font appearence using dedicated `EnvironmentValues` through `View` extension functions - `.confirmTint(_)` and `.confirmFonts(_)`. Also, a number of parameters can be customized with passing parameters to `.confirmRoot()` call:
+You can customize actions font appearence using dedicated `EnvironmentValues` through `View` extension functions - `.popupActionTint(_)` and `.popupActionFonts(_)`. Also, a number of parameters can be customized with passing parameters to `.confirmRoot()` call:
 - **background** - background of dialog
 - **cancelBackground** - background of section with *cancel* actions.
 - **cornerRadius** - a corner radius of section with header and *regular* actions and section with *cancel* actions.
 > [!NOTE]
 > It is possible to present only one *confirm* at a time, any attempts to present a dialog, while there is presented one, will be ignored.
+
+#### Popup presentation
+To present some information to user, request text input or some action to pick you can utilize `.popup()` presentation modifier provided by `PopupKit`. 
+Here's how you can implement it:
+
+```
+struct YourView: View {
+    @State private var isPresented = false
+
+    var body: some View {
+        VStack {
+            Button("Show PopupKit Cover") {
+                isPresented.toggle()
+            }
+            .popup(
+                isPresented: $isPresented,    // 1. Controls the presentation state
+                outTapBehavior: .dismiss,     // 2. Determines behaviour when user tap outside the view
+                ignoresEdges: []              // 3. Ignore specified edges of the safe area
+            ) {
+                PopupView()                   // Content of the notification view
+            }
+        }
+    }
+}
+```
+
+Key elements of `popup()` modifier:
+- **Presentation Control** (isPresented): A `Binding<Bool>` variable controls when the popup is presented or dismissed. Toggling this binding will trigger the presentation state.
+- **Tap Outside Behaviour** (outTapBehavior): Popup could be dismissed on outside tap.
+- **Safe Area Ignoring** (ignoresEdges): By default, the content respects the safe areas of the device, 
+but you can specify which edges should be ignored if desired.
+
+You also can take advantage of `popupAlert()` modifier, that displays a mimic of system alert popup with customizable actions.
 
 ### Controlling Presentation with `Presenter`
 In addition to view modifiers, `PopupKit` offers another powerful tool for managing presentations: the `Presenter`. 
@@ -510,17 +551,16 @@ so make sure this root view occupies the full screen — otherwise, the presenta
 press **Add package**. After that, you should complete the [integration](#integration-into-the-app).
 
 ## Known issues
-❌ Keyboard behavoiur within presented views\
 ❌ `NavigationStack` is not working inside a `cover`\
 ❌ `NavigationStack` is not working inside a dismissable `fullscreen`. Fullscreen with `DismissalScroll.none` is fine.\
-❌ User interactions with the underneath content is blocked during any `PopupKit`'s presentation. thanks to `iOS 18` hit 
-testing breaking changes.
+❌ Interactive covers is not letting you to interact with the content beneath on `iOS 18`.
 
 ## Roadmap
 - [x] Notification
 - [x] Cover
 - [x] Fullscreen
 - [x] Confirmation dialog
+- [x] Popup
+- [x] Alert
+- [ ] Confirm support for album orientation
 - [ ] Fix [known issues](#known-issues)
-- [ ] Popup: customizable analogue to system alert with or without buttons
-- [ ] \(Optional) Push navigation: customizable system-like navigation stack. At least I'm going to give it a try 🙈.
