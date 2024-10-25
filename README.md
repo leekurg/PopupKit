@@ -49,6 +49,18 @@ in app development:
               <img src="https://github.com/user-attachments/assets/1d110614-c162-4431-9bae-4d460932159b" width="250">
             </td>
         </tr>
+        <tr>
+            <td> <p align="center"> <strong>Popup</strong> </p> </td>
+            <td> <p align="center"> <strong>Alert</strong> </p> </td>
+        </tr>
+        <tr>
+            <td>
+              <img src="https://github.com/user-attachments/assets/9a9321f2-4456-4a32-b29c-14f0f78e37b8" width="250">
+            </td>
+            <td>
+              <img src="https://github.com/user-attachments/assets/f6c2d950-7863-4be8-9763-823726c9d2f6" width="250">
+            </td>
+        </tr>
     </tbody>
 </table>
 
@@ -60,26 +72,31 @@ It is displayed above the app's view hierarchy.
 
 - **Cover**: analogue of the system `.sheet` presentation style with several enhancements:
   - Customizable transition, appearance animations, and background.
-  - Configurable height (system .sheet supports this only in iOS 16+).
+  - Configurable height (system `.sheet` supports this only since iOS 16).
   - The cover's anchor point can be placed on any screen edge, not just the bottom.
-  - Flexible modality: allows you to block user interaction with content beneath the cover or with the cover itself.
+  - Flexible modality: allows you to block user interaction with content beneath the cover or with the cover itself(not working in iOS 18).
 
-- **Fullscreen**: analogue of the system `.fullscreenCover` presentation style, but with enhanced customizability:
-  - Configurable transition and appearance animations.
-  - Customizable background.
-  - Optional *scroll-down-to-dismiss* gesture for dismissing the current fullscreen view.
+- **Fullscreen**: analogue of the system `.fullscreenCover` presentation style, but with enhanced customizability of:
+  - Transition and appearance animations
+  - Background
+  - Optional *scroll-down-to-dismiss* gesture for dismissing the current fullscreen view
  
-- **Confirm**: analogue of the system `.confirmationDialog` with several features.
-  - Customizable transition, appearance animations, and visual style.
-  - Customizable header.
-  - Customizable actions appearence(color, font, image)
-  - Haptic support
+- **Confirm**: analogue of the system `.confirmationDialog` with several features. Customize:
+  - Transition, appearance animations, and visual style
+  - Header content
+  - Actions appearence
+  - Confirm supports haptic feedback
  
-- **Popup**: popup modal window with ability to be stacked and customized.
-  - Customizable transition, appearance animations, and visual style.
-  - Customizable content.
-  - Built-in style to mimic system alerts with customizable header, actions and more.
-  - Haptic support
+- **Popup**: popup modal window with ability to be stacked and customize parameters:
+  - Transition, appearance animations, and visual style
+  - Content
+  - Popups are stackable
+ 
+- **Alert**: modal window similar to system `.alert`. You can customize:
+  - Transition, appearance animations, and visual style
+  - Header content
+  - Actions appearance
+  - Alerts are stackable
 
 ## Usage
 Although in `SwiftUI` it's possible to display views above your app's view hierarchy, system sheets and fullscreen 
