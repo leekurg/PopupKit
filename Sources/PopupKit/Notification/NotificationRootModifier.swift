@@ -10,9 +10,9 @@ import SwiftUI
 public extension View {
     func notificationRoot(
         alignment: Alignment = .bottom,
-        transition: AnyTransition = .notification,
+        transition: AnyTransition = .notificationBottom,
         maxNotificationWidth: CGFloat = 500.0,
-        minNotificationHeight: CGFloat = 100.0,
+        minNotificationFrameHeight: CGFloat? = nil,
         dragThreshold: CGFloat = 300.0
     ) -> some View {
         modifier(
@@ -20,7 +20,7 @@ public extension View {
                 alignment: alignment,
                 transition: transition,
                 maxNotificationWidth: maxNotificationWidth,
-                minNotificationHeight: minNotificationHeight,
+                minNotificationFrameHeight: minNotificationFrameHeight,
                 dragThreshold: dragThreshold
             )
         )
@@ -37,14 +37,14 @@ struct NotificationRootModifier: ViewModifier {
 
     private let dismissDirection: DismissDirection
     private let maxNotificationWidth: CGFloat
-    private let minNotificationHeight: CGFloat
+    private let minNotificationFrameHeight: CGFloat?
     private let dragThreshold: CGFloat
     
     init(
         alignment: Alignment,
         transition: AnyTransition,
         maxNotificationWidth: CGFloat,
-        minNotificationHeight: CGFloat,
+        minNotificationFrameHeight: CGFloat?,
         dragThreshold: CGFloat
     ) {
         self.alignment = alignment
@@ -52,7 +52,7 @@ struct NotificationRootModifier: ViewModifier {
         self.dismissDirection = .init(alignment: alignment)
         
         self.maxNotificationWidth = maxNotificationWidth
-        self.minNotificationHeight = minNotificationHeight
+        self.minNotificationFrameHeight = minNotificationFrameHeight
         self.dragThreshold = dragThreshold
         
         self._dragHeight = GestureState(
@@ -69,7 +69,7 @@ struct NotificationRootModifier: ViewModifier {
                         VStack {
                             entry.view
                         }
-                        .frame(maxWidth: maxNotificationWidth, minHeight: minNotificationHeight)
+                        .frame(maxWidth: maxNotificationWidth, minHeight: minNotificationFrameHeight)
                         .zIndex(Double(entry.deep))
                         .offset(
                             calcOffset(

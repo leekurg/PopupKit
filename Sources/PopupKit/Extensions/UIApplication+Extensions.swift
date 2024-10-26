@@ -24,4 +24,9 @@ extension UIApplication {
             .flatMap { $0.windows }
             .first
     }
+    
+    /// Hides keyboard if presented.
+    static func hideKeyboard() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+    }
 }

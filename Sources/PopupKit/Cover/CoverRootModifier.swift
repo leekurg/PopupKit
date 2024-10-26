@@ -20,6 +20,7 @@ public extension View {
                 dragThreshold: dragThreshold
             )
         )
+        .ignoresSafeArea(.container, edges: .all)
     }
 }
 
@@ -60,7 +61,7 @@ struct CoverRootModifier: ViewModifier {
                             entry.view
                         }
                         .zIndex(Double(entry.deep))
-                        .cornerRadius(presenter.isTop(entry.id) ? 0 : 16)
+                        .cornerRadius(presenter.isTop(entry.id) ? 0 : 16, corners: [.topLeft, .topRight])
                         .offset(
                             calcOffset(
                                 deep: entry.deep,
@@ -97,7 +98,6 @@ struct CoverRootModifier: ViewModifier {
                                     case .noninteractive:
                                         break
                                     }
-                                    
                                 }
                                 .zIndex(Double(presenter.stack.last?.deep ?? 0) - 0.5)
                         case .none:

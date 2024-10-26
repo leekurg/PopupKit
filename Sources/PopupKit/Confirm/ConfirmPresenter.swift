@@ -14,7 +14,8 @@ public final class ConfirmPresenter: ObservableObject {
 
     public let insertionAnimation: Animation
     public let removalAnimation: Animation
-    public let feedback: UIImpactFeedbackGenerator
+
+    @State private var feedback = UIImpactFeedbackGenerator(style: .medium)
 
     public init(
         verbose: Bool = false,
@@ -24,8 +25,6 @@ public final class ConfirmPresenter: ObservableObject {
         self.isVerbose = verbose
         self.insertionAnimation = insertAnimation
         self.removalAnimation = removeAnimation
-
-        self.feedback = UIImpactFeedbackGenerator(style: .medium)
     }
 
     /// Present an entry if possible.
@@ -35,7 +34,7 @@ public final class ConfirmPresenter: ObservableObject {
     @discardableResult func present<Content: View>(
         animated: Bool = true,
         tint: Color,
-        fonts: ConfirmPresenter.Entry.Fonts,
+        fonts: ActionFonts,
         header: @escaping () -> Content,
         actions: () -> [Action]
     ) -> Bool {
@@ -44,7 +43,7 @@ public final class ConfirmPresenter: ObservableObject {
             return false
         }
 
-        presented = .init(view: AnyView(header()), tint: tint, fonts: fonts, actions: actions())
+        presented = Entry(view: AnyView(header()), tint: tint, fonts: fonts, actions: actions())
         feedback.prepare()
 
         return true
@@ -80,7 +79,7 @@ public extension ConfirmPresenter {
         /// Tint color for actions
         public let tint: Color
         /// Actions fonts
-        public let fonts: Fonts
+        public let fonts: ActionFonts
         /// Regular actions
         public let actions: [Action]
         /// Cancel actions
@@ -89,7 +88,7 @@ public extension ConfirmPresenter {
         public init(
             view: AnyView,
             tint: Color,
-            fonts: Fonts,
+            fonts: ActionFonts,
             actions: [Action]
         ) {
             self.id = UUID()
@@ -97,16 +96,9 @@ public extension ConfirmPresenter {
             self.tint = tint
             self.fonts = fonts
 
-            let preprocessed = Self.preprocess(actions)
-            self.actions = preprocessed.regular
-            self.cancelActions = preprocessed.cancel
-        }
-        
-        static func preprocess(_ actions: [Action]) -> (regular: [Action], cancel: [Action]) {
-            let regular = actions.filter { $0.role != .cancel }
-            let cancel = actions.filter { $0.role == .cancel }
-            
-            return (regular, cancel.isEmpty ? [.default] : cancel)
+            let preprecessed = actions.segregate()
+            self.actions = preprecessed.regular
+            self.cancelActions = preprecessed.cancel
         }
         
         public static func == (lhs: Self, rhs: Self) -> Bool {

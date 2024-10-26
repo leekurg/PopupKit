@@ -10,7 +10,7 @@ import SwiftUI
 public extension View {
     func fullscreenRoot(_ transition: AnyTransition = .fullscreen) -> some View {
         modifier(FullscreenRootModifier(transition: transition))
-            .ignoresSafeArea(.all)
+            .ignoresSafeArea(.container, edges: .all)
     }
 }
 
@@ -19,8 +19,9 @@ struct FullscreenRootModifier: ViewModifier {
 
     @GestureState private var dragHeight: CGFloat
     @State private var topEntryDraggedAway = false
-    @State private var safeAreaInsets: EdgeInsets = Self.initInsets()
-    
+    @State private var safeAreaInsets: EdgeInsets = Self.fetchInsets()
+    @State private var isKeyboardPresent: Bool = false
+
     let transition: AnyTransition
     let dismissDirection: DismissDirection = .topToBottom
     
@@ -45,8 +46,9 @@ struct FullscreenRootModifier: ViewModifier {
                                 
                                 entry.view
                                     .padding(safeAreaInsets.resolvingInSet(entry.ignoresEdges))
+                                    .padding(.bottom, isKeyboardPresent ? 0 : safeAreaInsets.bottom)
                             }
-                            .clipShape(RoundedRectangle(cornerRadius: safeAreaInsets.bottom))
+                            .cornerRadius(safeAreaInsets.bottom, corners: [.topLeft, .topRight])
                             .offset(presenter.isTop(entry.id) ? calcOffset(dragHeight) : .zero)
                             .gesture(if: entry.dismissalScroll.predictedThreshold > 0) {
                                 makeDragGesture(threshold: entry.dismissalScroll.predictedThreshold)
@@ -56,9 +58,18 @@ struct FullscreenRootModifier: ViewModifier {
                         }
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .onReceive(NotificationCenter.default.publisher(for: .popupKitSafeAreaChangedNotification)) { msg in
-                        if let newInsets = msg.object as? EdgeInsets {
-                            safeAreaInsets = newInsets
+                    .onReceive(
+                        NotificationCenter.default
+                            .publisher(for: UIDevice.orientationDidChangeNotification)
+                            .delay(for: .milliseconds(1), scheduler: RunLoop.main)
+                            .map { _ in Self.fetchInsets() }
+                            .removeDuplicates()
+                    ) { newInsets in
+                        safeAreaInsets = newInsets
+                    }
+                    .onKeyboardAppear { appeared in
+                        if !presenter.stack.isEmpty {
+                            withAnimation(.spring) { isKeyboardPresent = appeared }
                         }
                     }
                     .transition(transition)
@@ -68,7 +79,7 @@ struct FullscreenRootModifier: ViewModifier {
     }
 
     private func makeDragGesture(threshold: CGFloat) -> some Gesture {
-        DragGesture(minimumDistance: 0)
+        DragGesture(minimumDistance: 1)
             .updating($dragHeight) { value, state, _ in
                 withAnimation(.spring) {
                     state = topEntryDraggedAway ? 0.0 : value.translation.height
@@ -77,8 +88,8 @@ struct FullscreenRootModifier: ViewModifier {
             .onChanged { gesture in
                 if
                     !topEntryDraggedAway,
-                    abs(gesture.predictedEndTranslation.height) > threshold,
-                    dismissDirection.isForward(gesture.predictedEndTranslation.height) == true
+                    dismissDirection.isForward(gesture.predictedEndTranslation.height) == true,
+                    abs(gesture.predictedEndTranslation.height) > threshold
                 {
                     topEntryDraggedAway = true
                     presenter.popLast()
@@ -95,12 +106,8 @@ struct FullscreenRootModifier: ViewModifier {
         }
     }
     
-    private static func initInsets() -> EdgeInsets {
-        if ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] != nil {
-            UIApplication.shared.keyWindow?.safeAreaInsets.toSwiftUIInsets ?? EdgeInsets()
-        } else {
-            UIApplication.shared.popupKitWindow?.safeAreaInsets.toSwiftUIInsets ?? EdgeInsets()
-        }
+    private static func fetchInsets() -> EdgeInsets {
+        UIApplication.shared.keyWindow?.safeAreaInsets.toSwiftUIInsets ?? EdgeInsets()
     }
 }
 

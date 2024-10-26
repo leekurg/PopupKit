@@ -25,6 +25,7 @@ open class PopupKitSceneDelegate: NSObject, UIWindowSceneDelegate, ObservableObj
     public lazy var fullscreenPresenter = FullscreenPresenter()
     public lazy var notificationPresenter = NotificationPresenter()
     public lazy var confirmPresenter = ConfirmPresenter()
+    public lazy var popupPresenter = PopupPresenter()
     
     open func scene(
         _ scene: UIScene,
@@ -41,10 +42,13 @@ open class PopupKitSceneDelegate: NSObject, UIWindowSceneDelegate, ObservableObj
                     .fullscreenRoot()
                     .notificationRoot()
                     .confirmRoot()
+                    .popupRoot()
                     .environmentObject(coverPresenter)
                     .environmentObject(fullscreenPresenter)
                     .environmentObject(notificationPresenter)
                     .environmentObject(confirmPresenter)
+                    .environmentObject(popupPresenter)
+                    .popupActionTint(.blue)
             )
 
             popupKitViewController.view.backgroundColor = .clear

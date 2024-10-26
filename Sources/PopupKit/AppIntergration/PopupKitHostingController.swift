@@ -23,12 +23,6 @@ open class PopupKitHostingController<Content>: UIHostingController<Content> wher
     }
 }
 
-extension Notification.Name {
-    static let popupKitSafeAreaChangedNotification = Notification.Name("PopupKitSafeAreaChangedNotification")
-}
-
-extension UIEdgeInsets {
-    var toSwiftUIInsets: EdgeInsets {
-        EdgeInsets(top: top, leading: left, bottom: bottom, trailing: right)
-    }
+extension Foundation.Notification.Name {
+    static let popupKitSafeAreaChangedNotification = Foundation.Notification.Name("PopupKitSafeAreaChangedNotification")
 }
