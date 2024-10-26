@@ -139,7 +139,7 @@ If you already have a `SceneDelegate`, inherit from `PopupKitSceneDelegate` and 
 
 <details><summary>Code</summary><p>
 
-```
+```swift
 class YourSceneDelegate: PopupKitSceneDelegate {
     override func scene(
         _ scene: UIScene,
@@ -160,7 +160,7 @@ For a more advanced approach, you can fully customize the presentation behavior 
 and modifying the `PopupKitSceneDelegate` code into your own `SceneDelegate`:
 <details><summary>Code</summary><p>
 
-```
+```swift
 class YourSceneDelegate: NSObject, UIWindowSceneDelegate, ObservableObject {
     private var popupKitWindow: UIWindow?
 
@@ -237,7 +237,7 @@ the [earlier step](#sceneDelegate-setup):
 
 <details><summary>Code</summary><p>
 
-```
+```swift
 class YourAppDelegate: NSObject, UIApplicationDelegate {
     func application(
         _ application: UIApplication,
@@ -258,7 +258,7 @@ On this step, you need to ensure that you tell to `SwiftUI` to use the configure
 for your app. To do this, add (or verify that it's already present) the following line of code in your `App` struct. 
 Replace `YourAppDelegate` with the actual `AppDelegate` class you configured in the [previous step](#appDelegate-setup):
 
-```
+```swift
 @main
 struct YourApp: App {
     @UIApplicationDelegateAdaptor var adaptor: YourAppDelegate  //this
@@ -278,7 +278,7 @@ At this point, your app's `SceneDelegate` holds a set of presenters responsible 
 functionality. Now, you need to inject these presenters into the view hierarchy. To achieve this, create a 
 dedicated root view in your `App` struct, such as a `MainSceneView`:
 
-```
+```swift
 @main
 struct YourApp: App {
     @UIApplicationDelegateAdaptor var adaptor: YourAppDelegate
@@ -293,7 +293,7 @@ struct YourApp: App {
 
 In the `MainSceneView`, inject all the necessary `PopupKit` presenters into the `SwiftUI` environment as follows:
 
-```
+```swift
 struct MainSceneView: View {
     @EnvironmentObject var sceneDelegate: YourSceneDelegate
 
@@ -326,7 +326,7 @@ To present a view in fullscreen mode, you can use the `fullscreen()` modifier. H
 
 <details><summary>Example</summary><p>
 
-```
+```swift
 struct YourView: View {
     @State private var isPresented = false
     
@@ -349,12 +349,12 @@ struct YourView: View {
 ```
 </p></details>
 
-Let's break down the key elements of the `fullscreen()` modifier: \
-✅ **Background Customization** (background): You can define the fullscreen background using a `ShapeStyle` of 
-your choice (e.g., `.ultraThinMaterial` for a blur effect). \
-✅ **Safe Area Ignoring** (ignoresEdges): By default, the content respects the safe areas of the device, 
-but you can specify which edges should be ignored if desired. \
-✅ **Swipe-to-Dismiss Gesture** (dismissalScroll): Enable a *swipe-down-to-dismiss* gesture with a customizable 
+Let's break down the key elements of the `fullscreen()` modifier:
+- **Background Customization** (background): You can define the fullscreen background using a `ShapeStyle` of 
+your choice (e.g., `.ultraThinMaterial` for a blur effect).
+- **Safe Area Ignoring** (ignoresEdges): By default, the content respects the safe areas of the device, 
+but you can specify which edges should be ignored if desired.
+- **Swipe-to-Dismiss Gesture** (dismissalScroll): Enable a *swipe-down-to-dismiss* gesture with a customizable 
 threshold, controlling how much scrolling is required to dismiss the fullscreen view.
 
 <br/>
@@ -365,7 +365,7 @@ Here's how you can implement it:
 
 <details><summary>Example</summary><p>
 
-```
+```swift
 struct YourView: View {
     @State private var isPresented = false
 
@@ -389,15 +389,14 @@ struct YourView: View {
 </p></details>
 
 Key elements of `cover()` modifier:
-
-✅ **Background Customization** (background): You can choose the cover's background style, such as `.ultraThinMaterial` to add a subtle blur effect, or any other `ShapeStyle`. \
-✅ **Modal behavior** (modal):
+- **Background Customization** (background): You can choose the cover's background style, such as `.ultraThinMaterial` to add a subtle blur effect, or any other `ShapeStyle`.
+- **Modal behavior** (modal):
   - **Non-modal**: The cover view does not block interaction with other views on the screen.
   - **Modal-interactive**: A dimmed background appears around the cover, and the cover can be dismissed by 
   tapping the dimmed area or scrolling it down.
   - **Modal-noninteractive**: Similar to the interactive modal, but the cover cannot be dismissed by tapping 
   outside the cover or scrolling.
-✅ **Corner Radius** (cornerRadius): You can adjust the corner radius of the cover to create a smooth, rounded edge 
+- **Corner Radius** (cornerRadius): You can adjust the corner radius of the cover to create a smooth, rounded edge 
 for the view.
 
 The content inside the cover view is provided as a trailing closure. The height of the cover is determined by the 
@@ -412,7 +411,7 @@ Here’s an example implementation:
 
 <details><summary>Example</summary><p>
 
-```
+```swift
 struct YourView: View {
     @State private var isPresented = false
 
@@ -434,17 +433,14 @@ struct YourView: View {
 </p></details>
 
 Key Elements of `notification()` modifier:
-
-✅ **Expiration Time** (expiration): You can set an expiration time using `.timeout()` to specify how long the notification 
+- **Expiration Time** (expiration): You can set an expiration time using `.timeout()` to specify how long the notification 
 remains visible. For instance, `.seconds(2)` means the notification will automatically dismiss after 2 seconds. 
 If no expiration is set, the notification will remain until dismissed manually (e.g., by swiping).
-
-Dismissal behaviour:
-
-✅ **Manual Dismissal**: All notifications can be manually dismissed by the user with swipe, similar to system push
-notifications. If no expiration time is set, manual dismissal will be the only method of removal. \
-✅ **Automatic Dismissal**: When an expiration time is set, the notification will automatically dismiss itself once 
-the timer expires.
+- **Dismissal behaviour**:
+    - **Manual Dismissal**: All notifications can be manually dismissed by the user with swipe, similar to system push
+    notifications. If no expiration time is set, manual dismissal will be the only method of removal.
+    - **Automatic Dismissal**: When an expiration time is set, the notification will automatically dismiss itself once 
+    the timer expires.
 
 > [!TIP]
 > If multiple notifications are presented in sequence, the timer resets when a new notification is shown.
@@ -459,7 +455,7 @@ Here's how you can implement it:
 
 <details><summary>Example</summary><p>
 
-```
+```swift
 struct YourView: View {
     @State private var isPresented = false
 
@@ -488,16 +484,15 @@ struct YourView: View {
 </p></details>
 
 Key elements of `confirm()` modifier:
-
-✅ **Header Customization** (header): You can use any `View` to present as dialog's header. \
-✅ **ActionBuilder**: Simplified syntax with `@ActionBuilder` for implementig actions. \
-✅ **Auto-sorting**: Order of actions during dialog's presentation is the same as you provides, except the **cancel** actions listed below. \
+- **Header Customization** (header): You can use any `View` to present as dialog's header.
+- **ActionBuilder**: Simplified syntax with `@ActionBuilder` for implementig actions.
+- **Auto-sorting**: Order of actions during dialog's presentation is the same as you provides, except the **cancel** actions listed below.
 
 You can customize actions font appearence using dedicated `EnvironmentValues` through `View` extension functions - `.popupActionTint(_)` and `.popupActionFonts(_)`. Also, a number of parameters can be customized with passing parameters to `.confirmRoot()` call:
+- **background** - background of dialog
+- **cancelBackground** - background of section with *cancel* actions.
+- **cornerRadius** - a corner radius of section with header and *regular* actions and section with *cancel* actions.
 
-✅ **background** - background of dialog \
-✅ **cancelBackground** - background of section with *cancel* actions. \
-✅ **cornerRadius** - a corner radius of section with header and *regular* actions and section with *cancel* actions. \
 > [!NOTE]
 > It is possible to present only one *confirm* at a time, any attempts to present a dialog, while there is presented one, will be ignored.
 
@@ -509,7 +504,7 @@ Here's how you can implement it:
 
 <details><summary>Example</summary><p>
 
-```
+```swift
 struct YourView: View {
     @State private var isPresented = false
 
@@ -545,7 +540,7 @@ Here's how you can implement it:
 
 <details><summary>Example</summary><p>
 
-```
+```swift
 struct YourView: View {
     @State private var isPresented = false
 
@@ -569,11 +564,10 @@ struct YourView: View {
 </p></details>
 
 Key elements of `popupAlert()` modifier:
-
-✅ **Respects safe area insets** \
-✅ **Auto scrollable**: Alert's actions list becames scrollable if height of the screen is not enough. \
-✅ **ActionBuilder**: Simplified syntax with `@ActionBuilder` for implementig actions. \
-✅ **Auto-sorting**: Order of actions during dialog's presentation is the same as you provides, except the **cancel** actions listed below. \
+- **Respects safe area insets**
+- **Auto scrollable**: Alert's actions list becames scrollable if height of the screen is not enough.
+- **ActionBuilder**: Simplified syntax with `@ActionBuilder` for implementig actions.
+- **Auto-sorting**: Order of actions during dialog's presentation is the same as you provides, except the **cancel** actions listed below.
 
 Actions font can be changed appearence using dedicated `EnvironmentValues` through `View` extension functions - `.popupActionTint(_)` and `.popupActionFonts(_)`.
 
@@ -619,7 +613,7 @@ which is more suitable in your case.
 If you don’t need `PopupKit` to work in `Previews`, you can easily disable it. Go to the 
 `Package.swift` file in `PopupKit` package and uncomment the section that includes the line:
 
-```
+```swift
 .define(«DISABLE_POPUPKIT_IN_PREVIEWS»)
 ```
 
@@ -643,7 +637,7 @@ so make sure this root view occupies the full screen — otherwise, the presenta
 press **Add package**. After that, you should complete the [integration](#integration-into-the-app).
 
 ## Known issues
-❌ `NavigationStack` is not working inside a `cover`\
+❌ `NavigationStack` is not working inside a `cover`.\
 ❌ `NavigationStack` is not working inside a dismissable `fullscreen`. Fullscreen with `DismissalScroll.none` is fine.\
 ❌ Interactive covers is not letting you to interact with the content beneath on `iOS 18`.
 
