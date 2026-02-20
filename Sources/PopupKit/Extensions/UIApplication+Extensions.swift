@@ -17,12 +17,12 @@ extension UIApplication {
             .first
     }
     
-    /// Returns an app's key windiw if exists.
-    var keyWindow: UIWindow? {
+    /// Returns an app's first key window if exists.
+    var firstKeyWindow: UIWindow? {
         connectedScenes
             .compactMap { $0 as? UIWindowScene }
             .flatMap { $0.windows }
-            .first
+            .first { $0.isKeyWindow }
     }
     
     /// Hides keyboard if presented.

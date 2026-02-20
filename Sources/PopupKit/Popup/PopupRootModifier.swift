@@ -66,13 +66,7 @@ struct PopupRootModifier: ViewModifier {
                         }
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .onReceive(
-                        NotificationCenter.default
-                            .publisher(for: UIDevice.orientationDidChangeNotification)
-                            .delay(for: .milliseconds(1), scheduler: RunLoop.main)
-                            .map { _ in Self.fetchInsets() }
-                            .removeDuplicates()
-                    ) { newInsets in
+                    .receiveInsetsOnOrientationChange { newInsets in
                         safeAreaInsets = newInsets
                     }
                     .onKeyboardAppear { appeared in
@@ -82,6 +76,9 @@ struct PopupRootModifier: ViewModifier {
                     }
                     .transition(transition)
                 }
+            }
+            .receiveInsetsOnAppBecameActive { newInsets in
+                safeAreaInsets = newInsets
             }
             .statusBarHidden(!presenter.stack.isEmpty)
     }

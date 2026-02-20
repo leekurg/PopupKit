@@ -58,13 +58,7 @@ struct FullscreenRootModifier: ViewModifier {
                         }
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .onReceive(
-                        NotificationCenter.default
-                            .publisher(for: UIDevice.orientationDidChangeNotification)
-                            .delay(for: .milliseconds(1), scheduler: RunLoop.main)
-                            .map { _ in Self.fetchInsets() }
-                            .removeDuplicates()
-                    ) { newInsets in
+                    .receiveInsetsOnOrientationChange { newInsets in
                         safeAreaInsets = newInsets
                     }
                     .onKeyboardAppear { appeared in
@@ -74,6 +68,9 @@ struct FullscreenRootModifier: ViewModifier {
                     }
                     .transition(transition)
                 }
+            }
+            .receiveInsetsOnAppBecameActive { newInsets in
+                safeAreaInsets = newInsets
             }
             .statusBarHidden(!presenter.stack.isEmpty)
     }
@@ -107,7 +104,7 @@ struct FullscreenRootModifier: ViewModifier {
     }
     
     private static func fetchInsets() -> EdgeInsets {
-        UIApplication.shared.keyWindow?.safeAreaInsets.toSwiftUIInsets ?? EdgeInsets()
+        UIApplication.shared.firstKeyWindow?.safeAreaInsets.toSwiftUIInsets ?? EdgeInsets()
     }
 }
 

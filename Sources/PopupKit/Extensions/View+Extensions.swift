@@ -21,4 +21,45 @@ extension View {
             perform: action
         )
     }
+    
+    func receiveInsetsOnOrientationChange(perform action: @escaping (EdgeInsets) -> Void) -> some View {
+        onReceive(
+            NotificationCenter.default
+                .publisher(for: UIDevice.orientationDidChangeNotification)
+                .receive(on: RunLoop.main)
+                .map { _ in UIDevice.current.orientation }
+                .filter { current in
+                    [
+                        UIDeviceOrientation.portrait,
+                        UIDeviceOrientation.landscapeLeft,
+                        UIDeviceOrientation.landscapeRight
+                    ]
+                    .contains(current)
+                }
+                .compactMap { _ in
+                    UIApplication.shared
+                        .firstKeyWindow?
+                        .safeAreaInsets
+                        .toSwiftUIInsets
+                }
+                .removeDuplicates(),
+            perform: action
+        )
+    }
+    
+    func receiveInsetsOnAppBecameActive(perform action: @escaping (EdgeInsets) -> Void) -> some View {
+        onReceive(
+            NotificationCenter.default
+                .publisher(for: UIApplication.didBecomeActiveNotification)
+                .receive(on: RunLoop.main)
+                .compactMap { _ in
+                    UIApplication.shared
+                        .firstKeyWindow?
+                        .safeAreaInsets
+                        .toSwiftUIInsets
+                }
+                .removeDuplicates(),
+            perform: action
+        )
+    }
 }
