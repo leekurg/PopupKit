@@ -6,3 +6,4 @@ SwiftUITest/Assets.xcassets/.DS_Store
 SwiftUITest.xcodeproj/xcuserdata/anikin.xcuserdatad/xcschemes/xcschememanagement.plist
 .swiftpm/xcode/xcuserdata/anikin.xcuserdatad/xcschemes/xcschememanagement.plist
 .DS_Store
+*anikin.xcuserdatad*
